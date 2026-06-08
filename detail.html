@@ -686,10 +686,14 @@ function render() {
   renderRelated(section, id);
 }
 
+// Urutan tetap jurusan
+const JURUSAN_ORDER = ['tpm','tkro','dpib','tkp','titl','tkj'];
+
 function renderRelated(section, currentId) {
   const sectionData = DATA[section] || {};
-  // Tampilkan semua jurusan kecuali yang sedang dibuka (selalu 5)
-  const keys = Object.keys(sectionData).filter(k => k !== currentId);
+  // Urut sesuai JURUSAN_ORDER, skip yang sedang dibuka
+  const keys = (section === 'jurusan' ? JURUSAN_ORDER : Object.keys(sectionData))
+    .filter(k => k !== currentId && sectionData[k]);
   const container = document.getElementById('relatedContent');
   if (keys.length === 0) {
     container.innerHTML = '<p style="font-size:12.5px;color:var(--text-3);">Tidak ada konten terkait.</p>';
