@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail — SMK Negeri 2 Sragen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1a3566; --navy-dk: #122448; --navy-lt: #2451a0;
+      --gold: #e8a020; --gold-lt: #f5c842;
+      --white: #ffffff; --gray-1: #f7f8fc; --gray-2: #eef0f6; --gray-3: #d1d5e0;
+      --text-1: #0f1a35; --text-2: #4a5578; --text-3: #8a94b8;
+      --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --r-md: 16px; --r-lg: 24px; --r-xl: 32px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--white); color: var(--text-1); line-height: 1.65; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+    /* NAVBAR */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--gray-2);
+      box-shadow: 0 2px 20px rgba(26,53,102,.08);
+    }
+    .nav-inner {
+      max-width: 1000px; margin: 0 auto; padding: 0 24px;
+      height: 62px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-icon { width: 38px; height: 38px; border-radius: 8px; overflow: hidden; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-logo-text { font-size: 13.5px; font-weight: 700; color: var(--text-1); }
+    .nav-logo-sub { font-size: 10px; color: var(--text-3); display: block; }
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gray-1); border: 1px solid var(--gray-2);
+      color: var(--text-2); padding: 7px 16px; border-radius: 100px;
+      font-size: 12.5px; font-weight: 600; text-decoration: none;
+      transition: all .2s;
+    }
+    .nav-back:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    /* HERO */
+    .detail-hero {
+      padding-top: 62px;
+      min-height: 360px; position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .detail-hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--navy-dk), var(--navy), var(--navy-lt));
+    }
+    .detail-hero-bg img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: .18;
+    }
+    .detail-hero-pattern {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .detail-hero-inner {
+      position: relative; z-index: 2;
+      width: 100%; padding: 48px 24px 40px;
+      max-width: 1000px; margin: 0 auto;
+    }
+    .detail-hero-inner.gold { }
+    .detail-cat {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.9); border-radius: 100px;
+      padding: 5px 16px; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .detail-cat i { color: var(--gold-lt); font-size: 9px; }
+    .detail-hero-title {
+      font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800;
+      color: #fff; line-height: 1.2; margin-bottom: 14px; max-width: 700px;
+    }
+    .detail-hero-title span { color: var(--gold-lt); }
+    .detail-hero-desc {
+      font-size: 15px; color: rgba(255,255,255,.75);
+      max-width: 580px; line-height: 1.8; margin-bottom: 24px;
+    }
+    .detail-meta-row {
+      display: flex; flex-wrap: wrap; gap: 16px;
+    }
+    .detail-meta-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: rgba(255,255,255,.65);
+    }
+    .detail-meta-item i { color: var(--gold-lt); }
+
+    /* BREADCRUMB */
+    .breadcrumb {
+      padding: 16px 0; border-bottom: 1px solid var(--gray-2);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-3); flex-wrap: wrap;
+    }
+    .breadcrumb a { color: var(--navy); text-decoration: none; font-weight: 600; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb i { font-size: 9px; }
+
+    /* CONTENT AREA */
+    .detail-body { padding: 48px 0 80px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 300px; gap: 40px; align-items: start; }
+
+    /* Main content */
+    .detail-main { }
+    .detail-section { margin-bottom: 40px; }
+    .detail-section h2 {
+      font-size: 1.25rem; font-weight: 800; color: var(--text-1);
+      margin-bottom: 16px; padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-2);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .detail-section h2 i { color: var(--navy); font-size: 1rem; }
+    .detail-section p {
+      font-size: 14.5px; color: var(--text-2); line-height: 1.9; margin-bottom: 14px;
+    }
+    .detail-section ul, .detail-section ol {
+      padding-left: 0; list-style: none;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .detail-section li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--text-2); line-height: 1.7;
+    }
+    .detail-section li::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--navy); flex-shrink: 0; margin-top: 7px;
+    }
+
+    /* Info card grid */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .info-item {
+      background: var(--gray-1); border-radius: var(--r-md); padding: 16px 18px;
+      border: 1px solid var(--gray-2);
+    }
+    .info-item-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3); margin-bottom: 5px; }
+    .info-item-value { font-size: 14px; font-weight: 700; color: var(--text-1); }
+
+    /* Photo gallery mini */
+    .photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 20px; }
+    .photo-item {
+      border-radius: 12px; overflow: hidden; aspect-ratio: 4/3;
+      background: var(--gray-2); cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .photo-item:hover { transform: scale(1.03); box-shadow: 0 8px 24px rgba(26,53,102,.15); }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Tags */
+    .tag-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag {
+      background: rgba(26,53,102,.08); color: var(--navy);
+      font-size: 11px; font-weight: 700; letter-spacing: .5px;
+      padding: 5px 14px; border-radius: 100px; border: 1px solid rgba(26,53,102,.12);
+    }
+
+    /* Sidebar */
+    .detail-sidebar { position: sticky; top: 80px; }
+    .sidebar-card {
+      background: var(--white); border-radius: var(--r-xl); padding: 24px;
+      border: 1px solid var(--gray-2);
+      box-shadow: 0 2px 16px rgba(26,53,102,.07);
+      margin-bottom: 20px;
+    }
+    .sidebar-card h4 {
+      font-size: 13px; font-weight: 800; color: var(--text-1);
+      margin-bottom: 16px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-card h4 i { color: var(--navy); }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      text-decoration: none; font-size: 13px; font-weight: 500; color: var(--text-2);
+      transition: background .2s, color .2s;
+      cursor: pointer; margin-bottom: 2px;
+    }
+    .sidebar-link:hover, .sidebar-link.active { background: rgba(26,53,102,.07); color: var(--navy); }
+    .sidebar-link i { width: 16px; text-align: center; font-size: 12px; color: var(--navy); }
+    .btn-cta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px;
+      background: var(--navy); color: #fff;
+      border-radius: 100px; text-decoration: none;
+      font-size: 13.5px; font-weight: 700;
+      transition: background .2s, transform .2s;
+      margin-top: 12px;
+    }
+    .btn-cta:hover { background: var(--navy-lt); transform: translateY(-1px); }
+    .btn-cta.gold-btn { background: var(--gold); color: var(--navy-dk); }
+    .btn-cta.gold-btn:hover { background: var(--gold-lt); }
+
+    /* Related cards */
+    .related-card {
+      display: flex; gap: 12px; padding: 12px;
+      border-radius: 12px; border: 1px solid var(--gray-2);
+      cursor: pointer; text-decoration: none;
+      transition: border-color .2s, box-shadow .2s;
+      margin-bottom: 10px;
+    }
+    .related-card:hover { border-color: var(--navy); box-shadow: 0 4px 16px rgba(26,53,102,.1); }
+    .related-thumb {
+      width: 60px; height: 52px; border-radius: 9px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy), var(--navy-lt));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; overflow: hidden;
+    }
+    .related-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .related-title { font-size: 12.5px; font-weight: 700; color: var(--text-1); line-height: 1.4; margin-bottom: 4px; }
+    .related-meta { font-size: 11px; color: var(--text-3); }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, var(--navy-dk), var(--navy));
+      border-radius: var(--r-xl); padding: 28px 28px;
+      color: #fff; margin-bottom: 28px;
+    }
+    .highlight-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; }
+    .highlight-box p { font-size: 13.5px; color: rgba(255,255,255,.75); line-height: 1.75; margin-bottom: 16px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .detail-sidebar { position: static; }
+      .info-grid { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 480px) {
+      .photo-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon"><img src="https://smkn2sragen.sch.id/twosra-iot/assets/img/profile-img.png" alt="Logo" /></div>
+      <div>
+        <div class="nav-logo-text">SMK Negeri 2 Sragen</div>
+        <span class="nav-logo-sub">Kabupaten Sragen · Jawa Tengah</span>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+  </div>
+</nav>
+
+<!-- HERO — diisi dinamis via JS -->
+<div class="detail-hero" id="detailHero">
+  <div class="detail-hero-bg">
+    <img id="heroBgImg" src="" alt="" />
+  </div>
+  <div class="detail-hero-pattern"></div>
+  <div class="detail-hero-inner container">
+    <div class="detail-cat" id="heroCat"><i class="fas fa-circle"></i> <span id="heroCatText">Kategori</span></div>
+    <h1 class="detail-hero-title" id="heroTitle">Judul Konten</h1>
+    <p class="detail-hero-desc" id="heroDesc">Deskripsi singkat konten ini.</p>
+    <div class="detail-meta-row" id="heroMeta"></div>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div style="background:var(--gray-1);border-bottom:1px solid var(--gray-2);">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html"><i class="fas fa-home"></i> Beranda</a>
+      <i class="fas fa-chevron-right"></i>
+      <span id="bcSection">Section</span>
+      <i class="fas fa-chevron-right"></i>
+      <span id="bcTitle" style="color:var(--text-1);font-weight:600;">Judul</span>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="detail-body">
+  <div class="container">
+    <div class="detail-grid">
+      <!-- Main -->
+      <div class="detail-main" id="detailMain">
+        <!-- Diisi dinamis -->
+      </div>
+
+      <!-- Sidebar -->
+      <div class="detail-sidebar">
+        <div class="sidebar-card" id="sidebarInfo">
+          <!-- Diisi dinamis -->
+        </div>
+        <div class="sidebar-card">
+          <h4><i class="fas fa-compass"></i> Navigasi Cepat</h4>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkj')"><i class="fas fa-laptop-code"></i> TKJ</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkro')"><i class="fas fa-car"></i> TKRO</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','titl')"><i class="fas fa-bolt"></i> TITL</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tpm')"><i class="fas fa-cog"></i> Teknik Pemesinan</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','dpib')"><i class="fas fa-drafting-compass"></i> DPIB</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkp')"><i class="fas fa-home"></i> Teknik Konstruksi</a>
+        </div>
+        <div class="sidebar-card">
+          <h4><i class="fas fa-link"></i> Konten Terkait</h4>
+          <div id="relatedContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA KONTEN
+// ══════════════════════════════════════════════
+const DATA = {
+
+  // ── JURUSAN ──
+  jurusan: {
+    tkj: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-laptop-code',
+      title: 'Teknik Komputer & Jaringan',
+      desc: 'Program keahlian yang mempersiapkan siswa menjadi profesional IT handal di bidang jaringan komputer, keamanan siber, dan infrastruktur teknologi informasi.',
+      heroImg: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?w=1200&q=80',
+      meta: [
+        { icon: 'fas fa-users', text: '±72 Siswa/Angkatan' },
+        { icon: 'fas fa-certificate', text: 'Akreditasi A' },
+        { icon: 'fas fa-clock', text: '3 Tahun (6 Semester)' },
+      ],
+      main: `
+        <div class="highlight-box">
+          <h3>🖥️ Teknik Komputer & Jaringan (TKJ)</h3>
+          <p>Jurusan TKJ di SMKN 2 Sragen menjadi salah satu jurusan paling diminati. Didukung laboratorium jaringan modern dengan perangkat Cisco, fiber optic, dan server rack berstandar industri.</p>
+          <a href="index.html#jurusan" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-arrow-right"></i> Daftar Sekarang</a>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-info-circle"></i> Tentang Jurusan</h2>
+          <p>Teknik Komputer dan Jaringan (TKJ) adalah program keahlian yang berada di bawah Bidang Keahlian Teknologi Informasi dan Komunikasi. Siswa dididik untuk menguasai instalasi, konfigurasi, dan pemeliharaan jaringan komputer skala kecil hingga enterprise.</p>
+          <p>Kurikulum TKJ SMKN 2 Sragen mengacu pada standar SKKNI dan disusun bersama mitra industri, termasuk PT Telkom Indonesia dan beberapa perusahaan IT di Solo Raya.</p>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-book"></i> Kompetensi yang Dipelajari</h2>
+          <ul>
+            <li>Instalasi dan konfigurasi jaringan LAN, WAN, dan WLAN</li>
+            <li>Administrasi server Linux dan Windows Server</li>
+            <li>Keamanan jaringan dan siber (Cybersecurity)</li>
+            <li>Teknologi fiber optic dan structured cabling</li>
+            <li>Cloud computing dan virtualisasi (VMware, VirtualBox)</li>
+            <li>Pemrograman dasar: Python, HTML, CSS, JavaScript</li>
+            <li>Troubleshooting hardware dan software</li>
+            <li>Mikrotik RouterOS dan manajemen bandwidth</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-industry"></i> Peluang Karir & Industri</h2>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Network Engineer</div><div class="info-item-value">Telekomunikasi & IT</div></div>
+            <div class="info-item"><div class="info-item-label">IT Support</div><div class="info-item-value">Semua Sektor</div></div>
+            <div class="info-item"><div class="info-item-label">Cyber Security Analyst</div><div class="info-item-value">Perbankan & Pemerintahan</div></div>
+            <div class="info-item"><div class="info-item-label">System Administrator</div><div class="info-item-value">Perusahaan Teknologi</div></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-images"></i> Fasilitas Lab TKJ</h2>
+          <div class="photo-grid">
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80" alt="Lab Jaringan" /></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1562813733-b31f71025d54?w=400&q=80" alt="Server Rack" /></div>
+            <div class="photo-item"><img src="https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=400&q=80" alt="Lab Komputer" /></div>
+          </div>
+        </div>
+        <div class="tag-wrap">
+          <span class="tag">Jaringan Komputer</span><span class="tag">Cisco</span><span class="tag">Linux</span>
+          <span class="tag">Fiber Optic</span><span class="tag">Cloud Computing</span><span class="tag">Cybersecurity</span>
+        </div>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKJ</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi Informasi</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Durasi</span><strong>3 Tahun</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kapasitas</span><strong>±72 Siswa</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+    tkro: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-car',
+      title: 'Teknik Kendaraan Ringan Otomotif',
+      desc: 'Program keahlian unggulan yang mempersiapkan teknisi otomotif profesional sesuai standar industri kendaraan modern.',
+      heroImg: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=1200&q=80',
+      meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-trophy', text: 'Juara 1 LKS Provinsi 2025' }],
+      main: `
+        <div class="highlight-box">
+          <h3>🚗 Teknik Kendaraan Ringan Otomotif (TKRO)</h3>
+          <p>TKRO SMKN 2 Sragen meraih Juara 1 LKS Tingkat Provinsi Jawa Tengah 2025. Bengkel dilengkapi dengan kendaraan praktik terbaru, engine stand EFI, dan peralatan scan tool berstandar bengkel resmi.</p>
+          <a href="index.html#jurusan" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-arrow-right"></i> Daftar Sekarang</a>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-info-circle"></i> Tentang Jurusan</h2>
+          <p>Teknik Kendaraan Ringan Otomotif (TKRO) merupakan program keahlian di bawah Bidang Teknologi dan Rekayasa. Siswa dididik untuk menguasai teknik perawatan, perbaikan, dan diagnosa kendaraan bermotor ringan berbasis teknologi terkini.</p>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-book"></i> Kompetensi yang Dipelajari</h2>
+          <ul>
+            <li>Sistem bahan bakar konvensional dan EFI (Electronic Fuel Injection)</li>
+            <li>Sistem pengapian elektronik dan transmisi otomatis</li>
+            <li>Diagnosa kerusakan menggunakan scan tool modern</li>
+            <li>Sistem rem ABS, airbag, dan keselamatan aktif</li>
+            <li>Servis berkala dan tune-up mesin</li>
+            <li>Teknologi kendaraan listrik (EV) dasar</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-industry"></i> Peluang Karir</h2>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Teknisi Bengkel Resmi</div><div class="info-item-value">Toyota, Honda, Suzuki</div></div>
+            <div class="info-item"><div class="info-item-label">Wirausaha Bengkel</div><div class="info-item-value">Bengkel Mandiri</div></div>
+            <div class="info-item"><div class="info-item-label">Quality Control</div><div class="info-item-value">Industri Otomotif</div></div>
+            <div class="info-item"><div class="info-item-label">Fleet Technician</div><div class="info-item-value">Perusahaan Transportasi</div></div>
+          </div>
+        </div>
+        <div class="tag-wrap">
+          <span class="tag">Otomotif</span><span class="tag">EFI</span><span class="tag">Scan Tool</span>
+          <span class="tag">Tune Up</span><span class="tag">Transmisi</span><span class="tag">Electric Vehicle</span>
+        </div>`,
+      sidebar: `<h4><i class="fas fa-car"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKRO</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi & Rekayasa</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Prestasi</span><strong style="color:var(--gold);">🥇 Juara 1 Provinsi</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+    titl: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-bolt',
+      title: 'Teknik Instalasi Tenaga Listrik',
+      desc: 'Program keahlian yang mempersiapkan tenaga ahli instalasi, pemeliharaan, dan perbaikan sistem kelistrikan industri maupun residensial.',
+      heroImg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80',
+      meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-trophy', text: 'Finalis LKS Nasional' }],
+      main: `
+        <div class="highlight-box">
+          <h3>⚡ Teknik Instalasi Tenaga Listrik (TITL)</h3>
+          <p>TITL SMKN 2 Sragen berhasil meloloskan siswanya ke Finalis LKS Nasional. Dilengkapi laboratorium instalasi listrik berstandar PLN dan bengkel panel listrik industri.</p>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-book"></i> Kompetensi yang Dipelajari</h2>
+          <ul>
+            <li>Instalasi listrik tegangan rendah dan menengah</li>
+            <li>Pemasangan dan pemeliharaan panel distribusi</li>
+            <li>Sistem kontrol motor listrik (PLC dasar)</li>
+            <li>Instalasi panel surya (PLTS) dan energi terbarukan</li>
+            <li>Keselamatan kerja bidang kelistrikan (K3)</li>
+            <li>Pengukuran dan pengujian instalasi listrik</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h2><i class="fas fa-industry"></i> Peluang Karir</h2>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Teknisi PLN</div><div class="info-item-value">PT PLN (Persero)</div></div>
+            <div class="info-item"><div class="info-item-label">Electrical Engineer</div><div class="info-item-value">Industri Manufaktur</div></div>
+            <div class="info-item"><div class="info-item-label">Teknisi Listrik Gedung</div><div class="info-item-value">Properti & Konstruksi</div></div>
+            <div class="info-item"><div class="info-item-label">Kontraktor Listrik</div><div class="info-item-value">Wirausaha Mandiri</div></div>
+          </div>
+        </div>
+        <div class="tag-wrap">
+          <span class="tag">Instalasi Listrik</span><span class="tag">PLN</span><span class="tag">PLC</span>
+          <span class="tag">Panel Surya</span><span class="tag">K3 Listrik</span>
+        </div>`,
+      sidebar: `<h4><i class="fas fa-bolt"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TITL</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Ketenagalistrikan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+    tpm: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-cog',
+      title: 'Teknik Pemesinan',
+      desc: 'Program keahlian yang membekali siswa dengan kemampuan pengoperasian mesin bubut, frais, CNC, dan pemesinan presisi standar industri.',
+      heroImg: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
+      meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-industry', text: 'Berstandar Industri' }],
+      main: `
+        <div class="highlight-box"><h3>⚙️ Teknik Pemesinan</h3><p>Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling terbaru. Siswa langsung berlatih pada mesin industri sesungguhnya.</p></div>
+        <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pengoperasian mesin bubut konvensional dan CNC</li><li>Pengoperasian mesin frais dan gerinda</li><li>Pemrograman CNC (G-code & M-code)</li><li>Gambar teknik mesin dengan AutoCAD</li><li>Pengukuran dan quality control produk</li><li>K3 bengkel permesinan</li></ul></div>
+        <div class="tag-wrap"><span class="tag">CNC</span><span class="tag">Mesin Bubut</span><span class="tag">Frais</span><span class="tag">AutoCAD</span><span class="tag">Pemesinan Presisi</span></div>`,
+      sidebar: `<h4><i class="fas fa-cog"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TPM</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi & Rekayasa</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+    dpib: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-drafting-compass',
+      title: 'Desain Pemodelan & Informasi Bangunan',
+      desc: 'Program keahlian perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.',
+      heroImg: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
+      meta: [{ icon: 'fas fa-trophy', text: 'Juara 2 LKS Provinsi' }, { icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }],
+      main: `
+        <div class="highlight-box"><h3>🏗️ Desain Pemodelan & Informasi Bangunan (DPIB)</h3><p>Jurusan DPIB menjadi yang terdepan dalam penguasaan teknologi BIM (Building Information Modeling) di Jawa Tengah. Meraih Juara 2 LKS Provinsi 2024.</p></div>
+        <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Menggambar teknik bangunan dengan AutoCAD 2D & 3D</li><li>Pemodelan bangunan dengan Revit (BIM)</li><li>Desain arsitektur dan interior bangunan</li><li>Estimasi biaya dan RAB konstruksi</li><li>Gambar kerja struktur dan arsitektur</li></ul></div>
+        <div class="tag-wrap"><span class="tag">AutoCAD</span><span class="tag">Revit</span><span class="tag">BIM</span><span class="tag">Arsitektur</span><span class="tag">RAB</span></div>`,
+      sidebar: `<h4><i class="fas fa-drafting-compass"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>DPIB</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Prestasi</span><strong style="color:var(--gold);">🥈 Juara 2 Provinsi</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+    tkp: {
+      cat: 'Program Keahlian', catIcon: 'fas fa-home',
+      title: 'Teknik Konstruksi & Perumahan',
+      desc: 'Program keahlian perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis dan keselamatan kerja.',
+      heroImg: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80',
+      meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }],
+      main: `
+        <div class="highlight-box"><h3>🏠 Teknik Konstruksi & Perumahan (TKP)</h3><p>Jurusan TKP mempersiapkan tenaga terampil di bidang konstruksi bangunan yang siap bekerja di perusahaan kontraktor maupun wirausaha mandiri.</p></div>
+        <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pekerjaan pasangan bata, plester, dan acian</li><li>Pekerjaan konstruksi beton bertulang</li><li>Pemasangan keramik, kusen, dan pintu</li><li>Pekerjaan atap dan plafon</li><li>Pengawasan mutu dan K3 konstruksi</li></ul></div>
+        <div class="tag-wrap"><span class="tag">Konstruksi</span><span class="tag">Beton</span><span class="tag">K3</span><span class="tag">Bangunan</span></div>`,
+      sidebar: `<h4><i class="fas fa-home"></i> Info Jurusan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKP</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi Konstruksi</strong></div>
+        </div>
+        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+    },
+  },
+
+  // ── PRESTASI ──
+  prestasi: {
+    lks_tkro: {
+      cat: 'Prestasi Siswa', catIcon: 'fas fa-trophy',
+      title: 'Juara 1 LKS Teknik Kendaraan Ringan — Jawa Tengah 2025',
+      desc: 'Siswa SMKN 2 Sragen berhasil meraih Juara 1 Lomba Kompetensi Siswa (LKS) Bidang Teknik Kendaraan Ringan Otomotif tingkat Provinsi Jawa Tengah tahun 2025.',
+      heroImg: 'https://images.unsplash.com/photo-1567443024551-f3e3cc2be870?w=1200&q=80',
+      meta: [{ icon: 'fas fa-medal', text: '🥇 Juara 1' }, { icon: 'fas fa-map-marker-alt', text: 'Tingkat Provinsi' }, { icon: 'fas fa-calendar', text: 'Tahun 2025' }],
+      main: `
+        <div class="highlight-box"><h3>🏆 Juara 1 LKS Teknik Kendaraan Ringan Otomotif</h3><p>Prestasi membanggakan dari siswa jurusan TKRO SMKN 2 Sragen yang berhasil menjuarai LKS tingkat Provinsi Jawa Tengah tahun 2025, mengalahkan peserta dari 35 kabupaten/kota.</p></div>
+        <div class="detail-section"><h2><i class="fas fa-info-circle"></i> Detail Prestasi</h2>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Nama Lomba</div><div class="info-item-value">LKS Teknik Kendaraan Ringan</div></div>
+            <div class="info-item"><div class="info-item-label">Tingkat</div><div class="info-item-value">Provinsi Jawa Tengah</div></div>
+            <div class="info-item"><div class="info-item-label">Hasil</div><div class="info-item-value">🥇 Juara 1</div></div>
+            <div class="info-item"><div class="info-item-label">Tahun</div><div class="info-item-value">2025</div></div>
+          </div>
+          <p>Lomba Kompetensi Siswa (LKS) merupakan ajang bergengsi yang mempertemukan siswa SMK terbaik dari seluruh Jawa Tengah. Bidang Teknik Kendaraan Ringan Otomotif menguji kemampuan diagnosa kerusakan, perawatan mesin, dan perbaikan sistem kendaraan ringan berteknologi terkini.</p>
+        </div>
+        <div class="tag-wrap"><span class="tag">LKS</span><span class="tag">Otomotif</span><span class="tag">Juara 1</span><span class="tag">Jawa Tengah</span><span class="tag">2025</span></div>`,
+      sidebar: `<h4><i class="fas fa-trophy"></i> Detail Penghargaan</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Medali</span><strong>🥇 Emas</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Tingkat</span><strong>Provinsi</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Tahun</span><strong>2025</strong></div>
+        </div>`,
+    },
+  },
+
+  // ── BERITA ──
+  berita: {
+    mapsi: {
+      cat: 'Berita Sekolah', catIcon: 'fas fa-newspaper',
+      title: 'Elsa Mutia Hafid Raih Juara 3 Khitobah Putri MAPSI SMK Jawa Tengah 2025',
+      desc: 'Ajang bergengsi MAPSI (Mata Pelajaran Pendidikan Agama Islam dan Seni Islami) tingkat SMK se-Provinsi Jawa Tengah 2025 mengharumkan nama SMKN 2 Sragen.',
+      heroImg: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&q=80',
+      meta: [{ icon: 'fas fa-calendar', text: '25 November 2025' }, { icon: 'fas fa-tag', text: 'Prestasi' }, { icon: 'fas fa-user', text: 'Elsa Mutia Hafid' }],
+      main: `
+        <div class="detail-section"><h2><i class="fas fa-newspaper"></i> Isi Berita</h2>
+          <p><strong>Sragen</strong> — Ajang bergengsi Mata Pelajaran Pendidikan Agama Islam dan Seni Islami (MAPSI) tingkat SMK se-Provinsi Jawa Tengah 2025 resmi digelar. Salah satu siswi SMKN 2 Sragen, <strong>Elsa Mutia Hafid</strong>, berhasil meraih Juara 3 pada cabang Khitobah Putri.</p>
+          <p>Prestasi ini membuktikan bahwa SMKN 2 Sragen bukan hanya unggul di bidang teknik dan kejuruan, tetapi juga mampu berprestasi di bidang keagamaan dan seni islami. Elsa berhasil mengalahkan puluhan peserta dari berbagai SMK se-Provinsi Jawa Tengah.</p>
+          <p>Kepala SMKN 2 Sragen, Dr. Sutikno, S.Pd., M.Pd., mengucapkan selamat dan bangga atas pencapaian Elsa. "Ini membuktikan bahwa pendidikan karakter dan keagamaan di sekolah kami berjalan dengan baik seiring dengan keunggulan vokasi," ujar beliau.</p>
+        </div>
+        <div class="tag-wrap"><span class="tag">MAPSI</span><span class="tag">Prestasi</span><span class="tag">Keagamaan</span><span class="tag">Jawa Tengah</span><span class="tag">2025</span></div>`,
+      sidebar: `<h4><i class="fas fa-info-circle"></i> Info Berita</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Tanggal</span><strong>25 Nov 2025</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Prestasi</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Penulis</span><strong>Redaksi</strong></div>
+        </div>`,
+    },
+    lkbb: {
+      cat: 'Berita Sekolah', catIcon: 'fas fa-newspaper',
+      title: 'SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1',
+      desc: 'Tim Paskibra SMKN 2 Sragen berhasil merebut Piala Bergilir pada ajang LKBB (Lomba Ketangkasan Baris Berbaris) Garuda Muda Season 1.',
+      heroImg: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=1200&q=80',
+      meta: [{ icon: 'fas fa-calendar', text: '20 November 2025' }, { icon: 'fas fa-tag', text: 'Kesiswaan' }],
+      main: `
+        <div class="detail-section"><h2><i class="fas fa-newspaper"></i> Isi Berita</h2>
+          <p><strong>Sragen</strong> — Tim Paskibra SMK Negeri 2 Sragen berhasil merebut Piala Bergilir pada ajang LKBB (Lomba Ketangkasan Baris Berbaris) Garuda Muda Season 1. Kompetisi ini diikuti oleh puluhan sekolah dari wilayah eks-Karesidenan Surakarta.</p>
+          <p>Penampilan tim Paskibra SMKN 2 Sragen memukau dewan juri dengan kekompakan, ketepatan gerakan, dan penampilan visual yang memukau. Mereka berlatih keras selama beberapa bulan di bawah bimbingan pembina Paskibra sekolah.</p>
+        </div>
+        <div class="tag-wrap"><span class="tag">LKBB</span><span class="tag">Paskibra</span><span class="tag">Kesiswaan</span><span class="tag">Piala Bergilir</span></div>`,
+      sidebar: `<h4><i class="fas fa-info-circle"></i> Info Berita</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Tanggal</span><strong>20 Nov 2025</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kategori</span><strong>Kesiswaan</strong></div>
+        </div>`,
+    },
+  },
+
+  // ── FASILITAS ──
+  fasilitas: {
+    bengkel_cnc: {
+      cat: 'Fasilitas Sekolah', catIcon: 'fas fa-industry',
+      title: 'Bengkel CNC — Teknik Pemesinan',
+      desc: 'Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling berstandar industri untuk praktik siswa Teknik Pemesinan.',
+      heroImg: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
+      meta: [{ icon: 'fas fa-industry', text: 'Berstandar Industri' }, { icon: 'fas fa-tools', text: 'CNC Turning & Milling' }],
+      main: `
+        <div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Bengkel CNC</h2>
+          <p>Bengkel CNC SMKN 2 Sragen merupakan salah satu bengkel kejuruan paling lengkap di Kabupaten Sragen. Dilengkapi dengan mesin CNC turning, CNC milling, mesin bubut konvensional, dan mesin frais.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Jumlah Mesin CNC</div><div class="info-item-value">4 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Mesin Bubut</div><div class="info-item-value">8 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">32 Siswa</div></div>
+            <div class="info-item"><div class="info-item-label">Standar</div><div class="info-item-value">Industri / SKKNI</div></div>
+          </div>
+        </div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&q=80" alt="CNC" /></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80" alt="Mesin Bubut" /></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=80" alt="Workshop" /></div>
+        </div>`,
+      sidebar: `<h4><i class="fas fa-industry"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Bengkel Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kapasitas</span><strong>32 Siswa</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Standar</span><strong>Industri</strong></div>
+        </div>`,
+    },
+  },
+};
+
+// ══════════════════════════════════════════════
+// RENDER ENGINE
+// ══════════════════════════════════════════════
+function getParam(key) {
+  return new URLSearchParams(window.location.search).get(key);
+}
+
+function goDetail(section, id) {
+  window.location.href = `detail.html?section=${section}&id=${id}`;
+}
+
+function render() {
+  const section = getParam('section');
+  const id      = getParam('id');
+
+  // Default jika tidak ada param
+  if (!section || !id || !DATA[section] || !DATA[section][id]) {
+    renderDefault();
+    return;
+  }
+
+  const d = DATA[section][id];
+
+  // Hero
+  document.title = d.title + ' — SMK Negeri 2 Sragen';
+  document.getElementById('heroBgImg').src = d.heroImg;
+  document.getElementById('heroCatText').textContent = d.cat;
+  document.querySelector('#heroCat i').className = d.catIcon;
+  document.getElementById('heroTitle').innerHTML = d.title;
+  document.getElementById('heroDesc').textContent = d.desc;
+
+  // Meta
+  const metaRow = document.getElementById('heroMeta');
+  metaRow.innerHTML = (d.meta || []).map(m =>
+    `<div class="detail-meta-item"><i class="${m.icon}"></i> ${m.text}</div>`
+  ).join('');
+
+  // Breadcrumb
+  document.getElementById('bcSection').textContent = d.cat;
+  document.getElementById('bcTitle').textContent = d.title.length > 50 ? d.title.slice(0,50)+'…' : d.title;
+
+  // Main body
+  document.getElementById('detailMain').innerHTML = d.main;
+
+  // Sidebar
+  document.getElementById('sidebarInfo').innerHTML = d.sidebar;
+
+  // Related content
+  renderRelated(section, id);
+}
+
+function renderRelated(section, currentId) {
+  const sectionData = DATA[section] || {};
+  const keys = Object.keys(sectionData).filter(k => k !== currentId).slice(0, 3);
+  const container = document.getElementById('relatedContent');
+  if (keys.length === 0) { container.innerHTML = '<p style="font-size:12.5px;color:var(--text-3);">Tidak ada konten terkait.</p>'; return; }
+  container.innerHTML = keys.map(k => {
+    const item = sectionData[k];
+    return `<a class="related-card" onclick="goDetail('${section}','${k}')">
+      <div class="related-thumb"><img src="${item.heroImg}" alt="" onerror="this.style.display='none'" /></div>
+      <div><div class="related-title">${item.title}</div><div class="related-meta">${item.cat}</div></div>
+    </a>`;
+  }).join('');
+}
+
+function renderDefault() {
+  document.getElementById('heroTitle').textContent = 'Konten SMKN 2 Sragen';
+  document.getElementById('heroDesc').textContent = 'Pilih konten yang ingin ditampilkan dari halaman utama.';
+  document.getElementById('heroCatText').textContent = 'Informasi';
+  document.getElementById('detailMain').innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:4rem;margin-bottom:16px;">📄</div>
+      <h2 style="font-size:1.4rem;font-weight:800;color:var(--text-1);margin-bottom:10px;">Pilih Konten</h2>
+      <p style="font-size:14px;color:var(--text-2);margin-bottom:24px;">Halaman detail ini menampilkan informasi lengkap setiap konten di website SMKN 2 Sragen.</p>
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:12px 28px;border-radius:100px;font-size:13.5px;font-weight:700;text-decoration:none;">
+        <i class="fas fa-home"></i> Kembali ke Beranda
+      </a>
+    </div>`;
+  document.getElementById('sidebarInfo').innerHTML = `<h4><i class="fas fa-compass"></i> Menu</h4><p style="font-size:13px;color:var(--text-3);">Pilih konten dari beranda.</p>`;
+}
+
+render();
+</script>
+</body>
+</html>

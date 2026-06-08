@@ -366,6 +366,13 @@
       transition: transform .3s, box-shadow .3s, border-color .3s;
     }
     .jcard:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(26,53,102,.12); border-color: var(--navy); }
+    .jcard { cursor: pointer; }
+    .prcard { cursor: pointer; }
+    .berita-main { cursor: pointer; }
+    .berita-item { cursor: pointer; }
+    .fcard { cursor: pointer; }
+    .bkk-card { cursor: pointer; }
+    .pcard { cursor: pointer; }
     .jcard-num {
       position: absolute; top: 16px; right: 20px;
       font-size: 3.5rem; font-weight: 800; color: rgba(26,53,102,.06); line-height: 1;
@@ -1063,45 +1070,30 @@
       <p class="s-desc">Dirancang sesuai standar SKKNI dan kebutuhan industri, membekali siswa dengan kompetensi teknis terukur.</p>
     </div>
     <div class="jurusan-grid">
-      <div class="jcard rv d1">
-        <span class="jcard-num">01</span>
-        <div class="jcard-ico"><i class="fas fa-cog"></i></div>
-        <h3>Teknik Pemesinan</h3>
+      <div class="jcard rv d1" onclick="location.href='detail.html?section=jurusan&id=tpm'">
         <p>Pengoperasian mesin bubut, frais, CNC, dan peralatan pemesinan presisi untuk produksi komponen industri.</p>
         <span class="jcard-tag">Teknik Mesin</span>
       </div>
-      <div class="jcard rv d2">
-        <span class="jcard-num">02</span>
-        <div class="jcard-ico"><i class="fas fa-car"></i></div>
-        <h3>Teknik Kendaraan Ringan Otomotif</h3>
+      <div class="jcard rv d2" onclick="location.href='detail.html?section=jurusan&id=tkro'">
         <p>Perawatan, perbaikan, dan teknologi kendaraan ringan bermotor sesuai standar industri otomotif modern.</p>
         <span class="jcard-tag">Teknik Otomotif</span>
       </div>
-      <div class="jcard rv d3">
-        <span class="jcard-num">03</span>
-        <div class="jcard-ico"><i class="fas fa-drafting-compass"></i></div>
-        <h3>Desain Pemodelan &amp; Informasi Bangunan</h3>
+      <div class="jcard rv d3" onclick="location.href='detail.html?section=jurusan&id=dpib'">
         <p>Perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.</p>
         <span class="jcard-tag">Teknik Bangunan</span>
       </div>
-      <div class="jcard rv d1">
+      <div class="jcard rv d1" onclick="location.href='detail.html?section=jurusan&id=tkp'">
         <span class="jcard-num">04</span>
-        <div class="jcard-ico"><i class="fas fa-home"></i></div>
-        <h3>Teknik Konstruksi &amp; Perumahan</h3>
         <p>Perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis dan keselamatan kerja.</p>
         <span class="jcard-tag">Teknik Konstruksi</span>
       </div>
-      <div class="jcard rv d2">
+      <div class="jcard rv d2" onclick="location.href='detail.html?section=jurusan&id=titl'">
         <span class="jcard-num">05</span>
-        <div class="jcard-ico"><i class="fas fa-bolt"></i></div>
-        <h3>Teknik Instalasi Tenaga Listrik</h3>
         <p>Instalasi, pemeliharaan, dan perbaikan sistem kelistrikan skala industri maupun residensial.</p>
         <span class="jcard-tag">Teknik Ketenagalistrikan</span>
       </div>
-      <div class="jcard rv d3">
+      <div class="jcard rv d3" onclick="location.href='detail.html?section=jurusan&id=tkj'">
         <span class="jcard-num">06</span>
-        <div class="jcard-ico"><i class="fas fa-laptop-code"></i></div>
-        <h3>Teknik Komputer &amp; Jaringan</h3>
         <p>Instalasi jaringan, keamanan siber, administrasi server, cloud computing, dan infrastruktur IT.</p>
         <span class="jcard-tag">Teknologi Informasi</span>
       </div>
@@ -1152,10 +1144,7 @@
     </div>
     <div class="prestasi-grid">
       <!-- Diisi otomatis dari _data/prestasi/*.json -->
-      <div class="prcard rv d1">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 1 LKS Teknik Kendaraan Ringan</h4>
+      <div class="prcard rv d1" onclick="location.href='detail.html?section=prestasi&id=lks_tkro'">
         <p>Lomba Kompetensi Siswa Bidang Otomotif — Jawa Tengah</p>
       </div>
       <div class="prcard rv d2">
@@ -1310,7 +1299,7 @@
     </div>
     <div class="berita-grid">
       <!-- Berita utama -->
-      <div class="berita-main rv d1">
+      <div class="berita-main rv d1" onclick="location.href='detail.html?section=berita&id=mapsi'">
         <div class="berita-main-img" style="background:var(--navy-dk);padding:0;">
           <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/59450345_371680263555244_5513103156207457382_n.jpg" alt="Berita SMKN 2 Sragen" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy" />
           <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(18,36,72,.5) 100%);"></div>
@@ -1335,7 +1324,7 @@
             <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> 5 November 2025</div>
           </div>
         </div>
-        <div class="berita-item">
+        <div class="berita-item" onclick="location.href='detail.html?section=berita&id=lkbb'">
           <div class="berita-item-img" style="overflow:hidden;padding:0;">
             <img src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=160&q=80" alt="LKBB" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
           </div>
