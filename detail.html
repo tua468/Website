@@ -42,7 +42,7 @@
       background: var(--gray-1); border: 1px solid var(--gray-2);
       color: var(--text-2); padding: 7px 16px; border-radius: 100px;
       font-size: 12.5px; font-weight: 600; text-decoration: none;
-      transition: all .2s;
+      transition: all .2s; cursor: pointer;
     }
     .nav-back:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
 
@@ -254,7 +254,7 @@
         <span class="nav-logo-sub">Kabupaten Sragen · Jawa Tengah</span>
       </div>
     </a>
-    <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+    <a onclick="goBack()" class="nav-back"><i class="fas fa-arrow-left"></i> Kembali</a>
   </div>
 </nav>
 
@@ -339,7 +339,7 @@ const DATA = {
         <div class="highlight-box">
           <h3>🖥️ Teknik Komputer & Jaringan (TKJ)</h3>
           <p>Jurusan TKJ di SMKN 2 Sragen menjadi salah satu jurusan paling diminati. Didukung laboratorium jaringan modern dengan perangkat Cisco, fiber optic, dan server rack berstandar industri.</p>
-          <a href="index.html#jurusan" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-arrow-right"></i> Daftar Sekarang</a>
+          <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-external-link-alt"></i> Info SPMB Resmi</a>
         </div>
         <div class="detail-section">
           <h2><i class="fas fa-info-circle"></i> Tentang Jurusan</h2>
@@ -380,15 +380,12 @@ const DATA = {
           <span class="tag">Jaringan Komputer</span><span class="tag">Cisco</span><span class="tag">Linux</span>
           <span class="tag">Fiber Optic</span><span class="tag">Cloud Computing</span><span class="tag">Cybersecurity</span>
         </div>`,
-      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKJ</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi Informasi</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Durasi</span><strong>3 Tahun</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kapasitas</span><strong>±72 Siswa</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru SMKN 2 Sragen dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong> — bukan daftar langsung ke sekolah.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;">
+          <i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pastikan mendaftar melalui situs resmi pemerintah untuk menghindari penipuan.
+        </div>`,
     },
     tkro: {
       cat: 'Program Keahlian', catIcon: 'fas fa-car',
@@ -400,7 +397,7 @@ const DATA = {
         <div class="highlight-box">
           <h3>🚗 Teknik Kendaraan Ringan Otomotif (TKRO)</h3>
           <p>TKRO SMKN 2 Sragen meraih Juara 1 LKS Tingkat Provinsi Jawa Tengah 2025. Bengkel dilengkapi dengan kendaraan praktik terbaru, engine stand EFI, dan peralatan scan tool berstandar bengkel resmi.</p>
-          <a href="index.html#jurusan" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-arrow-right"></i> Daftar Sekarang</a>
+          <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;"><i class="fas fa-external-link-alt"></i> Info SPMB Resmi</a>
         </div>
         <div class="detail-section">
           <h2><i class="fas fa-info-circle"></i> Tentang Jurusan</h2>
@@ -430,14 +427,10 @@ const DATA = {
           <span class="tag">Otomotif</span><span class="tag">EFI</span><span class="tag">Scan Tool</span>
           <span class="tag">Tune Up</span><span class="tag">Transmisi</span><span class="tag">Electric Vehicle</span>
         </div>`,
-      sidebar: `<h4><i class="fas fa-car"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKRO</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi & Rekayasa</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Prestasi</span><strong style="color:var(--gold);">🥇 Juara 1 Provinsi</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pendaftaran resmi hanya melalui situs pemerintah.</div>`,
     },
     titl: {
       cat: 'Program Keahlian', catIcon: 'fas fa-bolt',
@@ -474,13 +467,10 @@ const DATA = {
           <span class="tag">Instalasi Listrik</span><span class="tag">PLN</span><span class="tag">PLC</span>
           <span class="tag">Panel Surya</span><span class="tag">K3 Listrik</span>
         </div>`,
-      sidebar: `<h4><i class="fas fa-bolt"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TITL</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Bidang</span><strong>Ketenagalistrikan</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Akreditasi</span><strong style="color:var(--navy);">A</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pendaftaran resmi hanya melalui situs pemerintah.</div>`,
     },
     tpm: {
       cat: 'Program Keahlian', catIcon: 'fas fa-cog',
@@ -492,12 +482,10 @@ const DATA = {
         <div class="highlight-box"><h3>⚙️ Teknik Pemesinan</h3><p>Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling terbaru. Siswa langsung berlatih pada mesin industri sesungguhnya.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pengoperasian mesin bubut konvensional dan CNC</li><li>Pengoperasian mesin frais dan gerinda</li><li>Pemrograman CNC (G-code & M-code)</li><li>Gambar teknik mesin dengan AutoCAD</li><li>Pengukuran dan quality control produk</li><li>K3 bengkel permesinan</li></ul></div>
         <div class="tag-wrap"><span class="tag">CNC</span><span class="tag">Mesin Bubut</span><span class="tag">Frais</span><span class="tag">AutoCAD</span><span class="tag">Pemesinan Presisi</span></div>`,
-      sidebar: `<h4><i class="fas fa-cog"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TPM</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi & Rekayasa</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pendaftaran resmi hanya melalui situs pemerintah.</div>`,
     },
     dpib: {
       cat: 'Program Keahlian', catIcon: 'fas fa-drafting-compass',
@@ -509,12 +497,10 @@ const DATA = {
         <div class="highlight-box"><h3>🏗️ Desain Pemodelan & Informasi Bangunan (DPIB)</h3><p>Jurusan DPIB menjadi yang terdepan dalam penguasaan teknologi BIM (Building Information Modeling) di Jawa Tengah. Meraih Juara 2 LKS Provinsi 2024.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Menggambar teknik bangunan dengan AutoCAD 2D & 3D</li><li>Pemodelan bangunan dengan Revit (BIM)</li><li>Desain arsitektur dan interior bangunan</li><li>Estimasi biaya dan RAB konstruksi</li><li>Gambar kerja struktur dan arsitektur</li></ul></div>
         <div class="tag-wrap"><span class="tag">AutoCAD</span><span class="tag">Revit</span><span class="tag">BIM</span><span class="tag">Arsitektur</span><span class="tag">RAB</span></div>`,
-      sidebar: `<h4><i class="fas fa-drafting-compass"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>DPIB</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Prestasi</span><strong style="color:var(--gold);">🥈 Juara 2 Provinsi</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pendaftaran resmi hanya melalui situs pemerintah.</div>`,
     },
     tkp: {
       cat: 'Program Keahlian', catIcon: 'fas fa-home',
@@ -526,12 +512,10 @@ const DATA = {
         <div class="highlight-box"><h3>🏠 Teknik Konstruksi & Perumahan (TKP)</h3><p>Jurusan TKP mempersiapkan tenaga terampil di bidang konstruksi bangunan yang siap bekerja di perusahaan kontraktor maupun wirausaha mandiri.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pekerjaan pasangan bata, plester, dan acian</li><li>Pekerjaan konstruksi beton bertulang</li><li>Pemasangan keramik, kusen, dan pintu</li><li>Pekerjaan atap dan plafon</li><li>Pengawasan mutu dan K3 konstruksi</li></ul></div>
         <div class="tag-wrap"><span class="tag">Konstruksi</span><span class="tag">Beton</span><span class="tag">K3</span><span class="tag">Bangunan</span></div>`,
-      sidebar: `<h4><i class="fas fa-home"></i> Info Jurusan</h4>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Singkatan</span><strong>TKP</strong></div>
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Bidang</span><strong>Teknologi Konstruksi</strong></div>
-        </div>
-        <a href="index.html#jurusan" class="btn-cta"><i class="fas fa-pen-to-square"></i> Daftar PPDB</a>`,
+      sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">Pendaftaran siswa baru dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta"><i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi</a>
+        <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;"><i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i> Pendaftaran resmi hanya melalui situs pemerintah.</div>`,
     },
   },
 
@@ -647,7 +631,19 @@ function getParam(key) {
 }
 
 function goDetail(section, id) {
+  // Simpan scroll position sebelum pindah
+  sessionStorage.setItem('scrollPos', window.scrollY);
   window.location.href = `detail.html?section=${section}&id=${id}`;
+}
+
+function goBack() {
+  // Cek apakah ada history
+  if (document.referrer && document.referrer.includes('index.html')) {
+    window.history.back();
+  } else {
+    const anchor = getParam('from') || 'jurusan';
+    window.location.href = 'index.html#' + anchor;
+  }
 }
 
 function render() {
