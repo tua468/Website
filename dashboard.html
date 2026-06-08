@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin — SMK Negeri 2 Sragen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #1a3566; --navy-dk: #122448; --navy-lt: #2451a0;
+      --gold: #e8a020; --gold-lt: #f5c842;
+      --white: #ffffff; --gray-1: #f7f8fc; --gray-2: #eef0f6; --gray-3: #d1d5e0;
+      --text-1: #0f1a35; --text-2: #4a5578; --text-3: #8a94b8;
+      --green: #38a169; --red: #e53e3e; --orange: #dd6b20;
+      --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --sidebar-w: 260px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--gray-1); color: var(--text-1); display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--navy-dk);
+      position: fixed; top: 0; left: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      z-index: 100; transition: transform .3s;
+    }
+    .sidebar-logo {
+      padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-logo-icon {
+      width: 40px; height: 40px; border-radius: 9px;
+      overflow: hidden; background: rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sidebar-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .sidebar-logo-text .name { font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.3; }
+    .sidebar-logo-text .sub { font-size: 10px; color: rgba(255,255,255,.45); }
+
+    .sidebar-section-title {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,.35); padding: 20px 20px 8px;
+    }
+    .sidebar-nav { flex: 1; overflow-y: auto; padding-bottom: 16px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px; font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,.65); text-decoration: none; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+    .nav-item.active { background: rgba(255,255,255,.1); color: #fff; border-left-color: var(--gold); }
+    .nav-item i { width: 16px; text-align: center; font-size: 13px; }
+    .nav-item .badge {
+      margin-left: auto; background: var(--gold); color: var(--navy-dk);
+      font-size: 9px; font-weight: 800; padding: 1px 7px; border-radius: 100px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .admin-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .admin-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--navy-lt); display: flex; align-items: center;
+      justify-content: center; font-size: 14px; color: var(--gold-lt); flex-shrink: 0;
+    }
+    .admin-name { font-size: 12.5px; font-weight: 600; color: #fff; }
+    .admin-role { font-size: 10.5px; color: rgba(255,255,255,.45); }
+    .btn-logout {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 9px 14px; border-radius: 9px;
+      background: rgba(229,62,62,.15); border: 1px solid rgba(229,62,62,.25);
+      color: #fc8181; font-family: var(--sans); font-size: 12.5px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-logout:hover { background: rgba(229,62,62,.25); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      display: flex; flex-direction: column; min-height: 100vh;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: var(--white); border-bottom: 1px solid var(--gray-2);
+      padding: 0 32px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-left h2 { font-size: 17px; font-weight: 800; color: var(--text-1); }
+    .topbar-left p { font-size: 12px; color: var(--text-3); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: var(--gray-1); border: 1px solid var(--gray-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-2); cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .topbar-btn:hover { background: var(--navy); color: #fff; }
+    .view-site-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--navy); color: #fff;
+      padding: 8px 16px; border-radius: 100px;
+      font-size: 12.5px; font-weight: 700; text-decoration: none;
+      transition: background .2s;
+    }
+    .view-site-btn:hover { background: var(--navy-lt); }
+
+    /* Content area */
+    .content { padding: 32px; flex: 1; }
+
+    /* ── PANELS (tabs) ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── OVERVIEW CARDS ── */
+    .overview-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+    .ov-card {
+      background: var(--white); border-radius: 16px; padding: 20px 22px;
+      border: 1px solid var(--gray-2);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .ov-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .ov-icon.navy { background: rgba(26,53,102,.1); color: var(--navy); }
+    .ov-icon.gold { background: rgba(232,160,32,.12); color: var(--gold); }
+    .ov-icon.green { background: rgba(56,161,105,.12); color: var(--green); }
+    .ov-icon.red { background: rgba(229,62,62,.1); color: var(--red); }
+    .ov-num { font-size: 1.6rem; font-weight: 800; color: var(--text-1); line-height: 1; }
+    .ov-lbl { font-size: 11.5px; color: var(--text-3); margin-top: 3px; }
+
+    /* ── SECTION HEADER ── */
+    .sec-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .sec-header h3 { font-size: 16px; font-weight: 800; color: var(--text-1); }
+    .sec-header p { font-size: 12.5px; color: var(--text-3); margin-top: 2px; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--navy); color: #fff;
+      padding: 9px 18px; border-radius: 100px;
+      font-family: var(--sans); font-size: 12.5px; font-weight: 700;
+      border: none; cursor: pointer; transition: background .2s, transform .2s;
+    }
+    .btn-primary:hover { background: var(--navy-lt); transform: translateY(-1px); }
+    .btn-danger {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(229,62,62,.1); color: var(--red);
+      padding: 7px 14px; border-radius: 100px;
+      font-family: var(--sans); font-size: 11.5px; font-weight: 700;
+      border: 1px solid rgba(229,62,62,.2); cursor: pointer; transition: background .2s;
+    }
+    .btn-danger:hover { background: rgba(229,62,62,.18); }
+    .btn-edit {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(26,53,102,.08); color: var(--navy);
+      padding: 7px 14px; border-radius: 100px;
+      font-family: var(--sans); font-size: 11.5px; font-weight: 700;
+      border: 1px solid rgba(26,53,102,.15); cursor: pointer; transition: background .2s;
+    }
+    .btn-edit:hover { background: rgba(26,53,102,.15); }
+    .btn-sm {
+      padding: 5px 12px !important; font-size: 11px !important;
+    }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--white); border-radius: 16px;
+      border: 1px solid var(--gray-2); overflow: hidden;
+    }
+    .table-toolbar {
+      padding: 16px 20px; border-bottom: 1px solid var(--gray-2);
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1; min-width: 180px; padding: 8px 14px;
+      border: 1.5px solid var(--gray-3); border-radius: 100px;
+      font-family: var(--sans); font-size: 13px; color: var(--text-1);
+      outline: none; background: var(--gray-1);
+    }
+    .search-input:focus { border-color: var(--navy); background: var(--white); }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: var(--gray-1); padding: 11px 16px;
+      text-align: left; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--text-3);
+      border-bottom: 1px solid var(--gray-2);
+    }
+    tbody tr { border-bottom: 1px solid var(--gray-2); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--gray-1); }
+    tbody td { padding: 13px 16px; font-size: 13px; color: var(--text-2); vertical-align: middle; }
+    tbody td strong { color: var(--text-1); font-weight: 600; }
+    .td-actions { display: flex; gap: 6px; }
+
+    /* Badge status */
+    .status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: .5px;
+      padding: 3px 10px; border-radius: 100px;
+    }
+    .status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+    .status.aktif { background: rgba(56,161,105,.12); color: var(--green); }
+    .status.aktif::before { background: var(--green); }
+    .status.draft { background: rgba(139,148,184,.12); color: var(--text-3); }
+    .status.draft::before { background: var(--text-3); }
+    .status.hot { background: rgba(232,160,32,.12); color: var(--orange); }
+    .status.hot::before { background: var(--orange); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 900; display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 20px;
+      width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,.3);
+      animation: modalIn .25s ease;
+    }
+    @keyframes modalIn { from { opacity:0; transform: translateY(20px) scale(.97); } to { opacity:1; transform: none; } }
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 17px; font-weight: 800; color: var(--text-1); }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--gray-1); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--text-2); transition: background .2s;
+    }
+    .modal-close:hover { background: var(--gray-2); }
+    .modal-body { padding: 20px 28px 28px; }
+
+    /* Form fields */
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 11.5px; font-weight: 700;
+      color: var(--text-2); margin-bottom: 7px; letter-spacing: .3px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gray-3); border-radius: 10px;
+      font-family: var(--sans); font-size: 13.5px; color: var(--text-1);
+      background: var(--gray-1); outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--navy); background: var(--white);
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .modal-footer {
+      padding: 16px 28px; border-top: 1px solid var(--gray-2);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+    .btn-cancel {
+      padding: 9px 20px; border-radius: 100px;
+      background: var(--gray-1); border: 1px solid var(--gray-3);
+      font-family: var(--sans); font-size: 13px; font-weight: 600;
+      color: var(--text-2); cursor: pointer;
+    }
+    .btn-save {
+      padding: 9px 24px; border-radius: 100px;
+      background: var(--navy); border: none;
+      font-family: var(--sans); font-size: 13px; font-weight: 700;
+      color: #fff; cursor: pointer; transition: background .2s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .btn-save:hover { background: var(--navy-lt); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      background: var(--navy-dk); color: #fff;
+      padding: 12px 20px; border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.25);
+      transform: translateY(80px); opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast i { color: var(--gold-lt); }
+
+    /* ── QUICK EDIT CARD ── */
+    .edit-card {
+      background: var(--white); border-radius: 16px;
+      border: 1px solid var(--gray-2); margin-bottom: 16px; overflow: hidden;
+    }
+    .edit-card-header {
+      padding: 16px 20px; background: var(--gray-1);
+      border-bottom: 1px solid var(--gray-2);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .edit-card-header h4 { font-size: 14px; font-weight: 700; color: var(--text-1); }
+    .edit-card-body { padding: 20px; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .overview-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: none; }
+      .main { margin-left: 0; }
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+      .content { padding: 20px 16px; }
+      .topbar { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">
+      <img src="https://smkn2sragen.sch.id/twosra-iot/assets/img/profile-img.png" alt="Logo" />
+    </div>
+    <div class="sidebar-logo-text">
+      <div class="name">SMKN 2 Sragen</div>
+      <div class="sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="sidebar-section-title">Menu Utama</div>
+    <a class="nav-item active" onclick="showPanel('overview')"><i class="fas fa-th-large"></i> Overview</a>
+    <a class="nav-item" onclick="showPanel('jurusan')"><i class="fas fa-graduation-cap"></i> Jurusan / Program</a>
+    <a class="nav-item" onclick="showPanel('fasilitas')"><i class="fas fa-building"></i> Fasilitas</a>
+    <a class="nav-item" onclick="showPanel('prestasi')"><i class="fas fa-trophy"></i> Prestasi</a>
+    <a class="nav-item" onclick="showPanel('bkk')"><i class="fas fa-briefcase"></i> BKK / Lowongan</a>
+    <a class="nav-item" onclick="showPanel('berita')"><i class="fas fa-newspaper"></i> Berita <span class="badge">4</span></a>
+    <a class="nav-item" onclick="showPanel('galeri')"><i class="fas fa-images"></i> Galeri / Momen</a>
+    <a class="nav-item" onclick="showPanel('program')"><i class="fas fa-star"></i> Program Unggulan</a>
+    <a class="nav-item" onclick="showPanel('pengumuman')"><i class="fas fa-bullhorn"></i> Info &amp; Pengumuman</a>
+    <a class="nav-item" onclick="showPanel('polling')"><i class="fas fa-poll"></i> Polling / Suara</a>
+    <div class="sidebar-section-title">Pengaturan</div>
+    <a class="nav-item" onclick="showPanel('profil')"><i class="fas fa-school"></i> Profil Sekolah</a>
+    <a class="nav-item" onclick="showPanel('hero')"><i class="fas fa-image"></i> Hero &amp; Banner</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="admin-info">
+      <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+      <div>
+        <div class="admin-name">Administrator</div>
+        <div class="admin-role" id="sidebarEmail">admin@smkn2sragen.sch.id</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2 id="topbarTitle">Dashboard Overview</h2>
+      <p id="topbarSub">Selamat datang di panel admin SMKN 2 Sragen</p>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" title="Notifikasi"><i class="fas fa-bell"></i></button>
+      <a href="index.html" target="_blank" class="view-site-btn"><i class="fas fa-external-link-alt"></i> Lihat Website</a>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="panel active" id="panel-overview">
+      <div class="overview-grid">
+        <div class="ov-card">
+          <div class="ov-icon navy"><i class="fas fa-graduation-cap"></i></div>
+          <div><div class="ov-num">6</div><div class="ov-lbl">Program Keahlian</div></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-icon gold"><i class="fas fa-trophy"></i></div>
+          <div><div class="ov-num">12</div><div class="ov-lbl">Prestasi Tercatat</div></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-icon green"><i class="fas fa-briefcase"></i></div>
+          <div><div class="ov-num">3</div><div class="ov-lbl">Lowongan BKK Aktif</div></div>
+        </div>
+        <div class="ov-card">
+          <div class="ov-icon red"><i class="fas fa-newspaper"></i></div>
+          <div><div class="ov-num">4</div><div class="ov-lbl">Berita Terpublish</div></div>
+        </div>
+      </div>
+
+      <div class="edit-card">
+        <div class="edit-card-header">
+          <h4><i class="fas fa-info-circle" style="color:var(--navy);margin-right:8px;"></i>Panduan Penggunaan</h4>
+        </div>
+        <div class="edit-card-body">
+          <p style="font-size:13.5px;color:var(--text-2);line-height:1.8;margin-bottom:12px;">Gunakan menu di sidebar kiri untuk mengelola konten website SMKN 2 Sragen. Semua perubahan akan tersimpan secara lokal dan bisa dilihat langsung di website.</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex-wrap:wrap;">
+            <div onclick="showPanel('jurusan')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-graduation-cap" style="font-size:1.5rem;color:var(--navy);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">Jurusan</div>
+            </div>
+            <div onclick="showPanel('berita')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-newspaper" style="font-size:1.5rem;color:var(--navy);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">Berita</div>
+            </div>
+            <div onclick="showPanel('prestasi')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-trophy" style="font-size:1.5rem;color:var(--gold);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">Prestasi</div>
+            </div>
+            <div onclick="showPanel('bkk')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-briefcase" style="font-size:1.5rem;color:var(--green);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">BKK</div>
+            </div>
+            <div onclick="showPanel('galeri')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-images" style="font-size:1.5rem;color:var(--orange);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">Galeri</div>
+            </div>
+            <div onclick="showPanel('pengumuman')" style="background:var(--gray-1);border:1px solid var(--gray-2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--gray-2)'">
+              <i class="fas fa-bullhorn" style="font-size:1.5rem;color:var(--red);margin-bottom:6px;display:block;"></i>
+              <div style="font-size:12px;font-weight:700;color:var(--text-1);">Pengumuman</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ JURUSAN ══ -->
+    <div class="panel" id="panel-jurusan">
+      <div class="sec-header">
+        <div><h3>Program Keahlian / Jurusan</h3><p>Kelola daftar jurusan yang ditampilkan di website</p></div>
+        <button class="btn-primary" onclick="openModal('jurusan')"><i class="fas fa-plus"></i> Tambah Jurusan</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari jurusan..." oninput="filterTable(this,'tbl-jurusan')" />
+        </div>
+        <table id="tbl-jurusan">
+          <thead><tr><th>#</th><th>Nama Jurusan</th><th>Bidang</th><th>Deskripsi Singkat</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>01</td><td><strong>Teknik Pemesinan</strong></td><td>Teknik Mesin</td><td>CNC, bubut, frais, pemesinan presisi</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('Teknik Pemesinan')"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>02</td><td><strong>Teknik Kendaraan Ringan Otomotif</strong></td><td>Teknik Otomotif</td><td>Perawatan dan perbaikan kendaraan ringan</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKRO')"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>03</td><td><strong>Desain Pemodelan &amp; Informasi Bangunan</strong></td><td>Teknik Bangunan</td><td>Gambar teknik, BIM, desain arsitektur</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('DPIB')"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>04</td><td><strong>Teknik Konstruksi &amp; Perumahan</strong></td><td>Teknik Konstruksi</td><td>Konstruksi bangunan perumahan</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKP')"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>05</td><td><strong>Teknik Instalasi Tenaga Listrik</strong></td><td>Ketenagalistrikan</td><td>Instalasi listrik industri dan residensial</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TITL')"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>06</td><td><strong>Teknik Komputer &amp; Jaringan</strong></td><td>Teknologi Informasi</td><td>Jaringan, server, cloud, keamanan siber</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKJ')"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ FASILITAS ══ -->
+    <div class="panel" id="panel-fasilitas">
+      <div class="sec-header">
+        <div><h3>Fasilitas Sekolah</h3><p>Kelola daftar fasilitas yang ditampilkan</p></div>
+        <button class="btn-primary" onclick="openModal('fasilitas')"><i class="fas fa-plus"></i> Tambah Fasilitas</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari fasilitas..." oninput="filterTable(this,'tbl-fasilitas')" />
+        </div>
+        <table id="tbl-fasilitas">
+          <thead><tr><th>#</th><th>Nama Fasilitas</th><th>Kategori</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Ruang Kelas</strong></td><td>Umum</td><td>30 ruang kelas ber-AC</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>2</td><td><strong>Bengkel CNC</strong></td><td>Kejuruan</td><td>Mesin CNC, bubut, frais modern</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>3</td><td><strong>Bengkel Otomotif</strong></td><td>Kejuruan</td><td>Lengkap dengan engine stand, scanner</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>4</td><td><strong>Lab Jaringan &amp; Server</strong></td><td>Kejuruan</td><td>Fiber optic, server rack, cisco</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>5</td><td><strong>Perpustakaan</strong></td><td>Umum</td><td>Koleksi buku teknik dan digital</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>6</td><td><strong>Lapangan Olahraga</strong></td><td>Umum</td><td>Lapangan basket, voli, futsal</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PRESTASI ══ -->
+    <div class="panel" id="panel-prestasi">
+      <div class="sec-header">
+        <div><h3>Data Prestasi Siswa</h3><p>Kelola catatan prestasi siswa SMKN 2 Sragen</p></div>
+        <button class="btn-primary" onclick="openModal('prestasi')"><i class="fas fa-plus"></i> Tambah Prestasi</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari prestasi..." oninput="filterTable(this,'tbl-prestasi')" />
+        </div>
+        <table id="tbl-prestasi">
+          <thead><tr><th>Medali</th><th>Nama Prestasi</th><th>Tingkat</th><th>Keterangan</th><th>Tahun</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>🥇</td><td><strong>Juara 1 LKS Teknik Kendaraan Ringan</strong></td><td>Provinsi</td><td>LKS Bidang Otomotif — Jawa Tengah</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>🏆</td><td><strong>Finalis LKS Nasional Teknik Listrik</strong></td><td>Nasional</td><td>LKS Tingkat Nasional — Jakarta</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>🥇</td><td><strong>Juara Umum Olimpiade Sains Terapan</strong></td><td>Kabupaten</td><td>OST Kabupaten Sragen</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>🥇</td><td><strong>Juara 3 Khitobah Putri MAPSI SMK</strong></td><td>Provinsi</td><td>MAPSI Jawa Tengah 2025</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>🥈</td><td><strong>Juara 2 LKS Desain Pemodelan Bangunan</strong></td><td>Provinsi</td><td>LKS Bidang Teknik Bangunan</td><td>2024</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>🎖️</td><td><strong>Piala Bergilir LKBB Garuda Muda Season 1</strong></td><td>Kabupaten</td><td>Paskibra SMKN 2 Sragen</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ BKK ══ -->
+    <div class="panel" id="panel-bkk">
+      <div class="sec-header">
+        <div><h3>BKK — Bursa Kerja Khusus</h3><p>Kelola lowongan kerja untuk alumni</p></div>
+        <button class="btn-primary" onclick="openModal('bkk')"><i class="fas fa-plus"></i> Tambah Lowongan</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari lowongan..." oninput="filterTable(this,'tbl-bkk')" />
+        </div>
+        <table id="tbl-bkk">
+          <thead><tr><th>Perusahaan</th><th>Posisi</th><th>Lokasi</th><th>Jurusan</th><th>Batas</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td><strong>PT Sinar Mas Agribusiness</strong></td><td>Teknisi Mesin Industri</td><td>Sragen</td><td>Teknik Mesin</td><td>30 Jun 2026</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><strong>PT Telkom Indonesia</strong></td><td>Network Technician</td><td>Solo</td><td>TKJ</td><td>15 Jul 2026</td><td><span class="status hot">🔥 Hot</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><strong>PT PLN (Persero) ULP Sragen</strong></td><td>Teknisi Instalasi Listrik</td><td>Sragen</td><td>TITL</td><td>25 Jun 2026</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ BERITA ══ -->
+    <div class="panel" id="panel-berita">
+      <div class="sec-header">
+        <div><h3>Berita &amp; Artikel</h3><p>Kelola konten berita sekolah</p></div>
+        <button class="btn-primary" onclick="openModal('berita')"><i class="fas fa-plus"></i> Tambah Berita</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari berita..." oninput="filterTable(this,'tbl-berita')" />
+        </div>
+        <table id="tbl-berita">
+          <thead><tr><th>Tanggal</th><th>Judul Berita</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>25 Nov 2025</td><td><strong>Elsa Mutia Hafid Raih Juara 3 Khitobah MAPSI Jawa Tengah 2025</strong></td><td>Prestasi</td><td><span class="status aktif">Publish</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('berita',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>20 Nov 2025</td><td><strong>SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1</strong></td><td>Kesiswaan</td><td><span class="status aktif">Publish</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('berita',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>5 Nov 2025</td><td><strong>SMKN 2 Sragen Terima Bantuan Lab Fiber Optic dari Kominfo</strong></td><td>Teknologi</td><td><span class="status aktif">Publish</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('berita',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>5 Mar 2025</td><td><strong>HUT ke-23 SMKN 2 Sragen dengan Penanaman 2.300 Pohon</strong></td><td>Lingkungan</td><td><span class="status draft">Draft</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('berita',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ GALERI ══ -->
+    <div class="panel" id="panel-galeri">
+      <div class="sec-header">
+        <div><h3>Galeri Foto &amp; Momen Kegiatan</h3><p>Kelola foto dan dokumentasi kegiatan sekolah</p></div>
+        <button class="btn-primary" onclick="openModal('galeri')"><i class="fas fa-plus"></i> Upload Foto</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <input class="search-input" placeholder="Cari foto..." oninput="filterTable(this,'tbl-galeri')" />
+        </div>
+        <table id="tbl-galeri">
+          <thead><tr><th>Preview</th><th>Judul / Caption</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg" style="width:100%;height:100%;object-fit:cover;" /></div></td><td><strong>Gerbang Utama SMKN 2 Sragen</strong></td><td>Gedung</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/42944920_1890171144435131_8386577090693483445_n(1).jpg" style="width:100%;height:100%;object-fit:cover;" /></div></td><td><strong>Kegiatan Siswa SMKN 2 Sragen</strong></td><td>Kegiatan</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;background:var(--gray-2);display:flex;align-items:center;justify-content:center;font-size:18px;">⚙️</div></td><td><strong>Praktik Bengkel CNC — Teknik Pemesinan</strong></td><td>Praktik</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PROGRAM UNGGULAN ══ -->
+    <div class="panel" id="panel-program">
+      <div class="sec-header">
+        <div><h3>Program Unggulan</h3><p>Kelola konten "Apa yang Kami Tawarkan"</p></div>
+        <button class="btn-primary" onclick="openModal('program')"><i class="fas fa-plus"></i> Tambah Program</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tbl-program">
+          <thead><tr><th>Ikon</th><th>Nama Program</th><th>Deskripsi</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td><i class="fas fa-users" style="color:var(--navy);font-size:18px;"></i></td><td><strong>OSIS &amp; MPK</strong></td><td>Fondasi kepemimpinan dan organisasi siswa</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><i class="fas fa-futbol" style="color:var(--navy);font-size:18px;"></i></td><td><strong>Ekstrakurikuler</strong></td><td>15+ pilihan ekskul akademik dan non-akademik</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td><i class="fas fa-brain" style="color:var(--navy);font-size:18px;"></i></td><td><strong>Pengembangan Diri</strong></td><td>Bimbingan karakter, disiplin, tanggung jawab</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ PENGUMUMAN ══ -->
+    <div class="panel" id="panel-pengumuman">
+      <div class="sec-header">
+        <div><h3>Info &amp; Pengumuman</h3><p>Kelola pengumuman resmi sekolah</p></div>
+        <button class="btn-primary" onclick="openModal('pengumuman')"><i class="fas fa-plus"></i> Tambah Pengumuman</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tbl-pengumuman">
+          <thead><tr><th>Tanggal</th><th>Judul Pengumuman</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>01 Jun 2026</td><td><strong>PPDB Tahun Ajaran 2025/2026 resmi dibuka!</strong></td><td>PPDB</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('pengumuman',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>05 Jun 2026</td><td><strong>Pengambilan Ijazah Alumni Angkatan 2025</strong></td><td>Administrasi</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('pengumuman',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+            <tr><td>07 Jun 2026</td><td><strong>Pelantikan Taruna OSIS Angkatan XIII</strong></td><td>Kesiswaan</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('pengumuman',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ POLLING ══ -->
+    <div class="panel" id="panel-polling">
+      <div class="sec-header">
+        <div><h3>Polling &amp; Jajak Pendapat</h3><p>Kelola pertanyaan polling untuk pengunjung website</p></div>
+        <button class="btn-primary" onclick="openModal('polling')"><i class="fas fa-plus"></i> Buat Polling</button>
+      </div>
+      <div class="edit-card">
+        <div class="edit-card-header"><h4>Polling Aktif Saat Ini</h4></div>
+        <div class="edit-card-body">
+          <div style="margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:12px;">❓ Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:38%;height:100%;background:var(--navy);border-radius:100px;"></div></div>
+                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">38%</span>
+                <span style="font-size:12.5px;color:var(--text-2);">Lab Komputer &amp; Jaringan</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:29%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
+                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">29%</span>
+                <span style="font-size:12.5px;color:var(--text-2);">Bengkel Praktik</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:21%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
+                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">21%</span>
+                <span style="font-size:12.5px;color:var(--text-2);">Perpustakaan Digital</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:12%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
+                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">12%</span>
+                <span style="font-size:12.5px;color:var(--text-2);">Kantin &amp; Area Istirahat</span>
+              </div>
+            </div>
+            <div style="margin-top:12px;font-size:12px;color:var(--text-3);">Total responden: <strong>248 orang</strong></div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-edit" onclick="openModal('polling',{id:1})"><i class="fas fa-edit"></i> Edit Polling</button>
+            <button class="btn-danger"><i class="fas fa-trash"></i> Hapus</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROFIL SEKOLAH ══ -->
+    <div class="panel" id="panel-profil">
+      <div class="sec-header">
+        <div><h3>Profil Sekolah</h3><p>Edit informasi dasar sekolah</p></div>
+      </div>
+      <div class="edit-card">
+        <div class="edit-card-header"><h4>Data Sekolah</h4></div>
+        <div class="edit-card-body">
+          <div class="field-row">
+            <div class="field"><label>Nama Sekolah</label><input type="text" value="SMK Negeri 2 Sragen" /></div>
+            <div class="field"><label>NPSN</label><input type="text" value="20314394" /></div>
+          </div>
+          <div class="field"><label>Alamat</label><input type="text" value="Jl. Dr. Sutomo No.4, Kebayan 1, Sragen Kulon, Kec. Sragen, Kabupaten Sragen, Jawa Tengah 57212" /></div>
+          <div class="field-row">
+            <div class="field"><label>Telepon</label><input type="text" value="(0271) 891047" /></div>
+            <div class="field"><label>Email</label><input type="text" value="smkn2sragen@gmail.com" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Kepala Sekolah</label><input type="text" value="Dr. Sutikno, S.Pd., M.Pd." /></div>
+            <div class="field"><label>Akreditasi</label><input type="text" value="A (BAN-S/M)" /></div>
+          </div>
+          <div class="field"><label>Slogan / Tagline</label><input type="text" value="Excellent, Competent, Character" /></div>
+          <div class="field"><label>Deskripsi Singkat</label><textarea>SMK Negeri 2 Sragen adalah sekolah menengah kejuruan negeri yang berkomitmen mencetak lulusan kompeten, berkarakter mulia, dan siap bersaing di dunia industri nasional maupun internasional.</textarea></div>
+          <button class="btn-primary" onclick="saveToast()"><i class="fas fa-save"></i> Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HERO & BANNER ══ -->
+    <div class="panel" id="panel-hero">
+      <div class="sec-header">
+        <div><h3>Hero &amp; Banner</h3><p>Edit teks dan gambar hero di halaman utama</p></div>
+      </div>
+      <div class="edit-card">
+        <div class="edit-card-header"><h4>Hero Section</h4></div>
+        <div class="edit-card-body">
+          <div class="field"><label>Judul Utama (Headline)</label><input type="text" value="Membentuk Generasi Unggul, Berkarakter, dan Siap Kerja" /></div>
+          <div class="field"><label>Sub Judul / Deskripsi</label><textarea>SMK Negeri 2 Sragen — sekolah kejuruan negeri terkemuka di Kabupaten Sragen yang mencetak lulusan kompeten dan berdaya saing tinggi di dunia industri.</textarea></div>
+          <div class="field-row">
+            <div class="field"><label>Teks Tombol 1</label><input type="text" value="Lihat Program Kami" /></div>
+            <div class="field"><label>Teks Tombol 2</label><input type="text" value="Profil Sekolah" /></div>
+          </div>
+          <div class="field"><label>URL Gambar Background</label><input type="text" value="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg" /></div>
+          <div class="field-row">
+            <div class="field"><label>Jumlah Siswa Aktif</label><input type="number" value="1900" /></div>
+            <div class="field"><label>Jumlah Tenaga Pendidik</label><input type="number" value="120" /></div>
+          </div>
+          <button class="btn-primary" onclick="saveToast()"><i class="fas fa-save"></i> Simpan Perubahan</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══ MODAL ══ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Edit Data</h3>
+      <button class="modal-close" onclick="closeModalDirect()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModalDirect()">Batal</button>
+      <button class="btn-save" onclick="saveModal()"><i class="fas fa-save"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Perubahan berhasil disimpan!</span></div>
+
+<script>
+  // ── Auth check
+  if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+    window.location.href = 'admin.html';
+  }
+  // Set email
+  const email = sessionStorage.getItem('adminEmail') || 'admin@smkn2sragen.sch.id';
+  document.getElementById('sidebarEmail').textContent = email;
+
+  // ── Panel switching
+  const panels = {
+    overview:    { title: 'Dashboard Overview',         sub: 'Ringkasan konten website SMKN 2 Sragen' },
+    jurusan:     { title: 'Program Keahlian / Jurusan', sub: 'Kelola data jurusan' },
+    fasilitas:   { title: 'Fasilitas Sekolah',          sub: 'Kelola sarana dan prasarana' },
+    prestasi:    { title: 'Prestasi Siswa',             sub: 'Kelola catatan prestasi' },
+    bkk:         { title: 'BKK — Bursa Kerja Khusus',  sub: 'Kelola lowongan kerja alumni' },
+    berita:      { title: 'Berita & Artikel',           sub: 'Kelola konten berita sekolah' },
+    galeri:      { title: 'Galeri Foto & Momen',        sub: 'Kelola dokumentasi kegiatan' },
+    program:     { title: 'Program Unggulan',           sub: 'Kelola "Apa yang Kami Tawarkan"' },
+    pengumuman:  { title: 'Info & Pengumuman',          sub: 'Kelola pengumuman resmi sekolah' },
+    polling:     { title: 'Polling & Jajak Pendapat',   sub: 'Kelola polling pengunjung' },
+    profil:      { title: 'Profil Sekolah',             sub: 'Edit informasi dasar sekolah' },
+    hero:        { title: 'Hero & Banner',              sub: 'Edit tampilan hero halaman utama' },
+  };
+
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`).classList.add('active');
+    document.getElementById('topbarTitle').textContent = panels[id].title;
+    document.getElementById('topbarSub').textContent   = panels[id].sub;
+  }
+
+  // ── Table filter
+  function filterTable(input, tableId) {
+    const q = input.value.toLowerCase();
+    document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  // ── Modal forms per section
+  const modalForms = {
+    jurusan: `
+      <div class="field"><label>Nama Jurusan</label><input type="text" placeholder="cth: Teknik Pemesinan" /></div>
+      <div class="field-row">
+        <div class="field"><label>Bidang Keahlian</label><input type="text" placeholder="cth: Teknik Mesin" /></div>
+        <div class="field"><label>Singkatan</label><input type="text" placeholder="cth: TPM" /></div>
+      </div>
+      <div class="field"><label>Deskripsi</label><textarea placeholder="Deskripsi singkat jurusan..."></textarea></div>
+      <div class="field"><label>Ikon (Font Awesome class)</label><input type="text" placeholder="cth: fas fa-cog" /></div>
+      <div class="field-row">
+        <div class="field"><label>Status</label><select><option>Aktif</option><option>Non-aktif</option></select></div>
+        <div class="field"><label>Urutan Tampil</label><input type="number" placeholder="1" /></div>
+      </div>`,
+
+    fasilitas: `
+      <div class="field"><label>Nama Fasilitas</label><input type="text" placeholder="cth: Bengkel CNC" /></div>
+      <div class="field-row">
+        <div class="field"><label>Kategori</label><select><option>Umum</option><option>Kejuruan</option><option>Olahraga</option><option>Ibadah</option></select></div>
+        <div class="field"><label>Jumlah / Kapasitas</label><input type="text" placeholder="cth: 2 unit, 30 kursi" /></div>
+      </div>
+      <div class="field"><label>Keterangan</label><textarea placeholder="Keterangan detail fasilitas..."></textarea></div>
+      <div class="field"><label>URL Foto</label><input type="text" placeholder="https://..." /></div>
+      <div class="field"><label>Status</label><select><option>Aktif</option><option>Perbaikan</option><option>Non-aktif</option></select></div>`,
+
+    prestasi: `
+      <div class="field"><label>Nama / Judul Prestasi</label><input type="text" placeholder="cth: Juara 1 LKS TKJ" /></div>
+      <div class="field-row">
+        <div class="field"><label>Tingkat</label><select><option>Kabupaten</option><option>Provinsi</option><option>Nasional</option><option>Internasional</option></select></div>
+        <div class="field"><label>Medali</label><select><option>🥇 Emas / Juara 1</option><option>🥈 Perak / Juara 2</option><option>🥉 Perunggu / Juara 3</option><option>🏆 Piala/Finalis</option><option>🎖️ Penghargaan</option></select></div>
+      </div>
+      <div class="field"><label>Keterangan Lomba</label><textarea placeholder="Nama lomba, penyelenggara, lokasi..."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Nama Siswa</label><input type="text" placeholder="Nama peserta" /></div>
+        <div class="field"><label>Tahun</label><input type="number" value="2026" /></div>
+      </div>`,
+
+    bkk: `
+      <div class="field"><label>Nama Perusahaan</label><input type="text" placeholder="cth: PT Telkom Indonesia" /></div>
+      <div class="field"><label>Posisi / Jabatan</label><input type="text" placeholder="cth: Network Technician" /></div>
+      <div class="field-row">
+        <div class="field"><label>Lokasi</label><input type="text" placeholder="cth: Sragen, Jawa Tengah" /></div>
+        <div class="field"><label>Jurusan yang Dibutuhkan</label><input type="text" placeholder="cth: TKJ, TITL" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Jenis Pekerjaan</label><select><option>Full Time</option><option>Part Time</option><option>Kontrak</option><option>Magang</option></select></div>
+        <div class="field"><label>Batas Lamaran</label><input type="date" /></div>
+      </div>
+      <div class="field"><label>Deskripsi Pekerjaan</label><textarea placeholder="Tugas, syarat, benefit..."></textarea></div>
+      <div class="field"><label>Status</label><select><option>Aktif</option><option>Tutup</option></select></div>`,
+
+    berita: `
+      <div class="field"><label>Judul Berita</label><input type="text" placeholder="Judul berita yang menarik..." /></div>
+      <div class="field-row">
+        <div class="field"><label>Kategori</label><select><option>Prestasi</option><option>Teknologi</option><option>Kesiswaan</option><option>Akademik</option><option>Lingkungan</option><option>Umum</option></select></div>
+        <div class="field"><label>Tanggal Publikasi</label><input type="date" /></div>
+      </div>
+      <div class="field"><label>Ringkasan / Snippet</label><textarea placeholder="Ringkasan singkat isi berita (2-3 kalimat)..."></textarea></div>
+      <div class="field"><label>Isi Berita Lengkap</label><textarea style="min-height:140px;" placeholder="Tulis isi berita selengkapnya di sini..."></textarea></div>
+      <div class="field"><label>URL Foto / Thumbnail</label><input type="text" placeholder="https://..." /></div>
+      <div class="field"><label>Status</label><select><option>Publish</option><option>Draft</option></select></div>`,
+
+    galeri: `
+      <div class="field"><label>Judul / Caption Foto</label><input type="text" placeholder="cth: Upacara Hari Pahlawan 2025" /></div>
+      <div class="field"><label>URL Foto</label><input type="text" placeholder="https://..." /></div>
+      <div class="field-row">
+        <div class="field"><label>Kategori</label><select><option>Gedung</option><option>Kegiatan</option><option>Prestasi</option><option>Praktik</option><option>Wisuda</option><option>Lainnya</option></select></div>
+        <div class="field"><label>Ukuran Tampil</label><select><option>Normal</option><option>Besar (2x2)</option><option>Lebar (2x1)</option></select></div>
+      </div>
+      <div class="field"><label>Status</label><select><option>Tampil</option><option>Sembunyikan</option></select></div>`,
+
+    program: `
+      <div class="field"><label>Nama Program</label><input type="text" placeholder="cth: Ekstrakurikuler" /></div>
+      <div class="field"><label>Ikon (Font Awesome)</label><input type="text" placeholder="cth: fas fa-futbol" /></div>
+      <div class="field"><label>Deskripsi</label><textarea placeholder="Deskripsi singkat program..."></textarea></div>
+      <div class="field"><label>Status</label><select><option>Aktif</option><option>Non-aktif</option></select></div>`,
+
+    pengumuman: `
+      <div class="field"><label>Judul Pengumuman</label><input type="text" placeholder="Judul pengumuman..." /></div>
+      <div class="field-row">
+        <div class="field"><label>Kategori</label><select><option>PPDB</option><option>Akademik</option><option>Kesiswaan</option><option>Administrasi</option><option>Umum</option></select></div>
+        <div class="field"><label>Tanggal</label><input type="date" /></div>
+      </div>
+      <div class="field"><label>Isi Pengumuman</label><textarea style="min-height:120px;" placeholder="Isi lengkap pengumuman..."></textarea></div>
+      <div class="field"><label>Status</label><select><option>Aktif</option><option>Arsip</option></select></div>`,
+
+    polling: `
+      <div class="field"><label>Pertanyaan Polling</label><textarea placeholder="Tulis pertanyaan polling di sini..."></textarea></div>
+      <div class="field"><label>Pilihan 1</label><input type="text" placeholder="Opsi jawaban pertama" /></div>
+      <div class="field"><label>Pilihan 2</label><input type="text" placeholder="Opsi jawaban kedua" /></div>
+      <div class="field"><label>Pilihan 3</label><input type="text" placeholder="Opsi jawaban ketiga" /></div>
+      <div class="field"><label>Pilihan 4</label><input type="text" placeholder="Opsi jawaban keempat" /></div>
+      <div class="field"><label>Status</label><select><option>Aktif</option><option>Tutup</option></select></div>`,
+  };
+
+  const modalTitles = {
+    jurusan: 'Tambah / Edit Jurusan',
+    fasilitas: 'Tambah / Edit Fasilitas',
+    prestasi: 'Tambah / Edit Prestasi',
+    bkk: 'Tambah / Edit Lowongan BKK',
+    berita: 'Tambah / Edit Berita',
+    galeri: 'Upload / Edit Foto Galeri',
+    program: 'Tambah / Edit Program Unggulan',
+    pengumuman: 'Tambah / Edit Pengumuman',
+    polling: 'Buat / Edit Polling',
+  };
+
+  function openModal(type, data) {
+    document.getElementById('modalTitle').textContent = modalTitles[type] || 'Edit Data';
+    document.getElementById('modalBody').innerHTML = modalForms[type] || '<p>Form tidak tersedia.</p>';
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function saveModal() {
+    closeModalDirect();
+    showToast('Data berhasil disimpan!');
+  }
+
+  // ── Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg || 'Perubahan berhasil disimpan!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+  function saveToast() { showToast('Perubahan berhasil disimpan!'); }
+
+  // ── Delete confirm
+  function confirmDelete(name) {
+    if (confirm(`Hapus "${name}"? Tindakan ini tidak bisa dibatalkan.`)) {
+      showToast(`"${name}" berhasil dihapus.`);
+    }
+  }
+
+  // ── Logout
+  function logout() {
+    if (confirm('Yakin ingin keluar dari panel admin?')) {
+      sessionStorage.removeItem('adminLoggedIn');
+      sessionStorage.removeItem('adminEmail');
+      window.location.href = 'admin.html';
+    }
+  }
+</script>
+</body>
+</html>
