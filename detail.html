@@ -637,13 +637,12 @@ function goDetail(section, id) {
 }
 
 function goBack() {
-  // Cek apakah ada history
-  if (document.referrer && document.referrer.includes('index.html')) {
-    window.history.back();
-  } else {
-    const anchor = getParam('from') || 'jurusan';
-    window.location.href = 'index.html#' + anchor;
+  // Simpan flag agar index.html tahu harus restore scroll
+  const pos = sessionStorage.getItem('scrollPos');
+  if (pos) {
+    sessionStorage.setItem('doRestore', '1');
   }
+  window.history.back();
 }
 
 function render() {
