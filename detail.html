@@ -1357,9 +1357,11 @@ window._DATA = DATA;
   }
 
   function renderPrestasi(id, d) {
-    // Sembunyikan navigasi cepat — tidak relevan untuk halaman prestasi
+    // Sembunyikan navigasi cepat & konten terkait — tidak relevan untuk halaman prestasi
     const navEl = document.getElementById('sidebarNavCepat');
     if (navEl) navEl.style.display = 'none';
+    const relEl = document.getElementById('relatedContent');
+    if (relEl) { const card = relEl.closest('.sidebar-card'); if (card) card.style.display = 'none'; }
 
     setHero(
       'Prestasi Siswa', 'fas fa-trophy',
