@@ -594,21 +594,39 @@
 
     .info-card {
       background: var(--white); border: 1px solid var(--gray-2);
-      border-radius: var(--r-lg); padding: 18px 20px;
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 12px; cursor: pointer;
+      border-radius: var(--r-lg); padding: 16px 20px;
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 10px; cursor: pointer;
       transition: border-color .2s, box-shadow .2s, transform .2s;
     }
     .info-card:hover { border-color: var(--navy); box-shadow: 0 4px 16px rgba(26,53,102,.1); transform: translateX(4px); }
     .info-card-dot {
       width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-      background: var(--navy);
+      background: var(--navy); margin-top: 6px;
     }
-    .info-card-dot.new { background: #e53e3e; box-shadow: 0 0 0 3px rgba(229,62,62,.2); }
+    .info-card-dot.new  { background: #e53e3e; box-shadow: 0 0 0 3px rgba(229,62,62,.2); }
     .info-card-dot.info { background: var(--gold); }
-    .info-card-body { flex: 1; }
-    .info-card-title { font-size: 13.5px; font-weight: 600; color: var(--text-1); line-height: 1.45; margin-bottom: 3px; }
-    .info-card-meta { font-size: 11px; color: var(--text-3); }
+    .info-card-body { flex: 1; min-width: 0; }
+    .info-card-top  { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+    .info-card-badge {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      padding: 2px 9px; border-radius: 100px; white-space: nowrap;
+    }
+    .info-card-badge.ppdb    { background: #fff3cd; color: #856404; }
+    .info-card-badge.kesiswaan { background: var(--navy-dim); color: var(--navy); }
+    .info-card-badge.administrasi { background: #e8f5e9; color: #2e7d32; }
+    .info-card-badge.akademik { background: #e3f2fd; color: #1565c0; }
+    .info-card-badge.umum    { background: var(--gray-2); color: var(--text-2); }
+    .info-card-status {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 2px 9px; border-radius: 100px;
+      background: #d4edda; color: #155724; white-space: nowrap;
+    }
+    .info-card-title { font-size: 13.5px; font-weight: 700; color: var(--text-1); line-height: 1.5; margin-bottom: 4px; }
+    .info-card-snippet { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 5px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .info-card-meta { font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 4px; }
+    .info-card-arrow { color: var(--text-3); font-size: 11px; flex-shrink: 0; margin-top: 4px; }
 
     .ppdb-box {
       background: var(--white); border: 2px solid var(--navy);
@@ -2171,25 +2189,40 @@
       .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
     if (!aktif.length) return;
     const [top, ...rest] = aktif;
+
+    const badgeClass = kat => {
+      const k = (kat||'').toLowerCase();
+      if (k === 'ppdb') return 'ppdb';
+      if (k === 'kesiswaan') return 'kesiswaan';
+      if (k === 'administrasi') return 'administrasi';
+      if (k === 'akademik') return 'akademik';
+      return 'umum';
+    };
+
     grid.innerHTML = `
       <div>
         <div class="info-alert rv on d1" onclick="goToDetail('pengumuman','${top.id}','pengumuman')" style="cursor:pointer;">
           <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
           <div class="info-alert-body">
-            <div class="info-alert-tag">🔥 Terbaru</div>
+            <div class="info-alert-tag">🔥 Terbaru · ${top.kategori||''}</div>
             <div class="info-alert-title">${top.judul||''}</div>
-            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> ${top.tanggal||''} · ${top.kategori||''}</div>
+            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> ${top.tanggal||''} &nbsp;·&nbsp; ${top.isi ? top.isi.slice(0,60)+(top.isi.length>60?'...':'') : ''}</div>
           </div>
           <i class="fas fa-chevron-right info-alert-arrow"></i>
         </div>
         ${rest.slice(0,5).map(d => `
         <div class="info-card rv on d2" onclick="goToDetail('pengumuman','${d.id}','pengumuman')" style="cursor:pointer;">
-          <div class="info-card-dot ${d.kategori==='PPDB'?'new':''}"></div>
+          <div class="info-card-dot ${d.kategori==='PPDB'?'new':d.kategori==='Akademik'?'info':''}"></div>
           <div class="info-card-body">
+            <div class="info-card-top">
+              <span class="info-card-badge ${badgeClass(d.kategori)}">${d.kategori||''}</span>
+              <span class="info-card-status">${d.status||'Aktif'}</span>
+            </div>
             <div class="info-card-title">${d.judul||''}</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> ${d.tanggal||''} &nbsp;·&nbsp; ${d.kategori||''}</div>
+            ${d.isi ? `<div class="info-card-snippet">${d.isi.slice(0,80)}${d.isi.length>80?'...':''}</div>` : ''}
+            <div class="info-card-meta"><i class="fas fa-calendar-alt"></i> ${d.tanggal||''}</div>
           </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
+          <i class="fas fa-chevron-right info-card-arrow"></i>
         </div>`).join('')}
         <div style="text-align:center;margin-top:20px;">
           <a href="#" class="btn-navy" style="margin-top:0;display:inline-flex;"><i class="fas fa-list"></i> Lihat Semua Pengumuman</a>
