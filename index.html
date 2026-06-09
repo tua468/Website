@@ -270,7 +270,7 @@
 
     /* ── PROGRAM CARDS ── */
     .program { padding: 96px 0; background: var(--gray-1); }
-    .program-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .program-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
     .pcard {
       background: var(--white); border-radius: var(--r-xl);
       padding: 40px 28px; text-align: center;
@@ -910,7 +910,8 @@
     @media (max-width: 768px) {
       .nav-menu { display: none; }
       .nav-search.open .nav-search-input { width: 150px; }
-      .program-grid, .jurusan-grid, .prestasi-grid, .bkk-grid { grid-template-columns: 1fr; }
+      .program-grid, .jurusan-grid, .prestasi-grid, .bkk-grid { grid-template-columns: repeat(2,1fr); }
+      @media (max-width: 540px) { .program-grid { grid-template-columns: 1fr 1fr; } }
       .fasil-grid { grid-template-columns: repeat(2,1fr); }
       .testi-grid { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr; }
@@ -1414,23 +1415,53 @@
       <p class="s-desc">Program pembinaan siswa yang komprehensif untuk mencetak generasi unggul dan berdaya saing.</p>
     </div>
     <div class="program-grid">
-      <div class="pcard rv d1">
-        <div class="pcard-ico"><i class="fas fa-users"></i></div>
-        <h3>OSIS &amp; MPK</h3>
-        <p>Fondasi utama dalam melatih kepemimpinan, manajemen organisasi dan menyalurkan aspirasi siswa di sekolah.</p>
-        <a href="#" class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
-      </div>
-      <div class="pcard rv d2">
+      <div class="pcard rv d1" onclick="goToDetail('program','ekstrakurikuler','program')">
         <div class="pcard-ico"><i class="fas fa-futbol"></i></div>
         <h3>Ekstrakurikuler</h3>
-        <p>Wadah pengembangan bakat dan minat dengan 15+ pilihan — akademik, non-akademik, atletik, dan keagamaan.</p>
-        <a href="#" class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+        <p>15+ pilihan ekskul — olahraga, seni, robotik, pramuka, hingga keagamaan.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
       </div>
-      <div class="pcard rv d3">
-        <div class="pcard-ico"><i class="fas fa-brain"></i></div>
-        <h3>Pengembangan Diri</h3>
-        <p>Kegiatan bimbingan dan pembinaan untuk menciptakan pribadi yang disiplin, berkarakter, dan bertanggung jawab.</p>
-        <a href="#" class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      <div class="pcard rv d2" onclick="goToDetail('program','osis','program')">
+        <div class="pcard-ico"><i class="fas fa-users"></i></div>
+        <h3>OSIS &amp; MPK</h3>
+        <p>Organisasi siswa untuk melatih jiwa kepemimpinan, manajemen, dan demokrasi sejak dini.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d3" onclick="goToDetail('program','paskibra','program')">
+        <div class="pcard-ico"><i class="fas fa-flag"></i></div>
+        <h3>Paskibra</h3>
+        <p>Unit pasukan pengibar bendera berprestasi — aktif di lomba LKBB tingkat kabupaten dan provinsi.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d1" onclick="goToDetail('program','pkl','program')">
+        <div class="pcard-ico"><i class="fas fa-industry"></i></div>
+        <h3>Praktik Kerja Lapangan</h3>
+        <p>Program magang di 120+ mitra industri DUDI selama 6 bulan untuk pengalaman kerja nyata.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d2" onclick="goToDetail('program','sertifikasi','program')">
+        <div class="pcard-ico"><i class="fas fa-certificate"></i></div>
+        <h3>Sertifikasi Kompetensi</h3>
+        <p>Uji kompetensi resmi melalui LSP-P1 terakreditasi BNSP untuk bekal karir lulusan.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d3" onclick="goToDetail('program','bkk','program')">
+        <div class="pcard-ico"><i class="fas fa-briefcase"></i></div>
+        <h3>Bursa Kerja Khusus</h3>
+        <p>Menyalurkan alumni ke 120+ mitra perusahaan dengan tingkat serapan kerja 95%.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d1" onclick="goToDetail('program','lks','program')">
+        <div class="pcard-ico"><i class="fas fa-trophy"></i></div>
+        <h3>Lomba Kompetensi Siswa</h3>
+        <p>Pembinaan siswa berprestasi untuk kompetisi LKS dari tingkat kabupaten hingga nasional.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="pcard rv d2" onclick="goToDetail('program','karakter','program')">
+        <div class="pcard-ico"><i class="fas fa-heart"></i></div>
+        <h3>Pembinaan Karakter</h3>
+        <p>Program P5, kajian keagamaan, dan pembiasaan disiplin untuk mencetak siswa berkarakter.</p>
+        <a class="pcard-link">Selengkapnya <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
   </div>
