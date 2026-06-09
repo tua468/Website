@@ -1035,11 +1035,8 @@ function goDetail(section, id) {
 }
 
 function goBack() {
-  // Simpan flag agar index.html tahu harus restore scroll
   const pos = sessionStorage.getItem('scrollPos');
-  if (pos) {
-    sessionStorage.setItem('doRestore', '1');
-  }
+  if (pos) sessionStorage.setItem('doRestore', '1');
   window.history.back();
 }
 
@@ -1180,33 +1177,16 @@ window._DATA = DATA;
   const id      = params.get('id');
 
   if (section && id && COL_MAP[section]) {
-    // Firebase hanya dipakai kalau DATA lokal TIDAK punya konten tersebut
-    // (misalnya konten baru yang ditambah admin dari dashboard)
     const hasLocal = window._DATA && window._DATA[section] && window._DATA[section][id];
 
+    // Hanya render dari Firestore kalau konten TIDAK ada di DATA lokal
+    // (konten baru yang ditambah admin — bukan fasilitas/jurusan yang sudah hardcode)
     if (!hasLocal) {
-      // Konten baru dari admin — ambil dari Firestore
       getDoc(doc(db, COL_MAP[section], id)).then(snap => {
-        if (snap.exists()) {
-          renderFromFirestore(section, id, snap.data());
-        }
-      }).catch(err => {
-        console.warn('Firestore error:', err);
-      });
+        if (snap.exists()) renderFromFirestore(section, id, snap.data());
+      }).catch(() => {});
     }
-    // else: konten lama sudah dirender oleh DATA lokal, biarkan saja
-
-    // Load related dari Firestore — hanya untuk section jurusan tambahan
-    getDocs(collection(db, COL_MAP[section])).then(snap => {
-      const all = snap.docs
-        .filter(d => d.id !== id)
-        .map(d => ({ id: d.id, ...d.data() }));
-      // Hanya update related kalau ada data baru dari Firestore yang tidak ada di lokal
-      const hasNewItems = all.some(item =>
-        !window._DATA || !window._DATA[section] || !window._DATA[section][item.id]
-      );
-      if (hasNewItems) renderRelatedFirestore(section, all);
-    }).catch(() => {});
+    // Jika konten lokal sudah ada → JANGAN timpa, biarkan saja
   }
 
   // ── Render halaman dari data Firestore
