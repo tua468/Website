@@ -729,6 +729,9 @@ function renderDefault() {
 }
 
 render();
+
+// Expose DATA ke window supaya Firebase module bisa cek
+window._DATA = DATA;
 </script>
 
 <!-- ══ FIREBASE — baca data dari Firestore ══ -->
@@ -763,22 +766,32 @@ render();
   const id      = params.get('id');
 
   if (section && id && COL_MAP[section]) {
-    // Coba ambil dari Firestore dulu
-    getDoc(doc(db, COL_MAP[section], id)).then(snap => {
-      if (snap.exists()) {
-        renderFromFirestore(section, id, snap.data());
-      }
-      // Kalau tidak ada di Firestore, fallback ke DATA lokal (sudah di-render sebelumnya)
-    }).catch(err => {
-      console.warn('Firestore error, pakai data lokal:', err);
-    });
+    // Firebase hanya dipakai kalau DATA lokal TIDAK punya konten tersebut
+    // (misalnya konten baru yang ditambah admin dari dashboard)
+    const hasLocal = window._DATA && window._DATA[section] && window._DATA[section][id];
 
-    // Juga load related dari Firestore
+    if (!hasLocal) {
+      // Konten baru dari admin — ambil dari Firestore
+      getDoc(doc(db, COL_MAP[section], id)).then(snap => {
+        if (snap.exists()) {
+          renderFromFirestore(section, id, snap.data());
+        }
+      }).catch(err => {
+        console.warn('Firestore error:', err);
+      });
+    }
+    // else: konten lama sudah dirender oleh DATA lokal, biarkan saja
+
+    // Load related dari Firestore — hanya untuk section jurusan tambahan
     getDocs(collection(db, COL_MAP[section])).then(snap => {
       const all = snap.docs
         .filter(d => d.id !== id)
         .map(d => ({ id: d.id, ...d.data() }));
-      renderRelatedFirestore(section, all);
+      // Hanya update related kalau ada data baru dari Firestore yang tidak ada di lokal
+      const hasNewItems = all.some(item =>
+        !window._DATA || !window._DATA[section] || !window._DATA[section][item.id]
+      );
+      if (hasNewItems) renderRelatedFirestore(section, all);
     }).catch(() => {});
   }
 
