@@ -2103,18 +2103,31 @@
     }, err => console.warn(colName, err));
   }
 
-  // ── PRESTASI
+  // ── PRESTASI — hanya update jika ada data baru dari Firebase (bukan replace konten awal)
+  let _prestasiLoaded = false;
   watchCol('prestasi', data => {
     const grid = document.getElementById('prestasi-grid');
     if (!grid) return;
+    // Jangan flash: update hanya setelah load pertama selesai
+    // atau jika jumlah data berbeda dari card yang ada
+    const existingCards = grid.querySelectorAll('.prcard');
+    if (!_prestasiLoaded) {
+      _prestasiLoaded = true;
+      // Jika sudah ada konten hardcode (6 card), skip update pertama
+      if (existingCards.length >= 6) return;
+    }
     const delays = ['d1','d2','d3'];
-    grid.innerHTML = data.map((d,i) => `
+    const newHTML = data.map((d,i) => `
       <div class="prcard rv on ${delays[i%3]}">
         <span class="prcard-medal">${d.medal||'🏆'}</span>
         <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
         <h4>${d.nama||''}</h4>
         <p>${d.keterangan||''}</p>
       </div>`).join('');
+    // Hanya replace jika konten benar-benar berbeda
+    if (grid.innerHTML.trim() !== newHTML.trim()) {
+      grid.innerHTML = newHTML;
+    }
   });
 
   // ── BERITA
