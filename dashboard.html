@@ -485,7 +485,7 @@
       </div>
       <div class="table-wrap">
         <table id="tbl-pengumuman">
-          <thead><tr><th>Tanggal</th><th>Judul Pengumuman</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead>
+          <thead><tr><th>Tanggal</th><th>Judul Pengumuman</th><th>Kategori</th><th>Status</th><th>Foto</th><th>Aksi</th></tr></thead>
           <tbody>
             <tr><td>01 Jun 2026</td><td><strong>PPDB Tahun Ajaran 2025/2026 resmi dibuka!</strong></td><td>PPDB</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('pengumuman',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td>05 Jun 2026</td><td><strong>Pengambilan Ijazah Alumni Angkatan 2025</strong></td><td>Administrasi</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('pengumuman',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
@@ -786,7 +786,7 @@
     if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama||'-'}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td><td>${d.foto ? `<div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="${d.foto}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div>` : '<span style="font-size:11px;color:#aaa;">-</span>'}</td>${acts}</tr>`;
     if (col==='berita')     return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status ${d.status==='Publish'?'aktif':'draft'}">${d.status||'Draft'}</span></td>${acts}</tr>`;
     if (col==='galeri')     return `<tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;background:#eef0f6;"><img src="${d.foto||''}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div></td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Tampil'}</span></td>${acts}</tr>`;
-    if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${acts}</tr>`;
+    if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td><td>${d.foto ? `<div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="${d.foto}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div>` : '<span style="font-size:11px;color:#aaa;">-</span>'}</td>${acts}</tr>`;
     if (col==='polling')    return `<tr><td><strong>${(d.pertanyaan||'').slice(0,60)}...</strong></td><td>${d.status||'-'}</td>${acts}</tr>`;
     return `<tr><td colspan="10">${JSON.stringify(d)}</td></tr>`;
   }
