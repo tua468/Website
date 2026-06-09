@@ -732,7 +732,15 @@
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Perubahan berhasil disimpan!</span></div>
 
-<script>
+<script type="module">
+  import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import {
+    getFirestore, collection, doc,
+    getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc,
+    serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
 <script>
 
   // ── Panel switching
@@ -889,8 +897,7 @@
   }
 
   function saveModal() {
-    // Dipanggil dari tombol Save — kalau Firebase module sudah init, pakai saveModal dari sana
-    if (window._saveModalFirebase) { window._saveModalFirebase(); return; }
+    if (window._fbSaveModal) { window._fbSaveModal(); return; }
     closeModalDirect();
     showToast('Data berhasil disimpan!');
   }
@@ -919,16 +926,8 @@
       });
     }
   }
-</script>
 
-<script type="module">
-  import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, onAuthStateChanged, signOut }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import {
-    getFirestore, collection, doc,
-    getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc,
-    onSnapshot, serverTimestamp, query, orderBy
-  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
 
   const firebaseConfig = {
     apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
@@ -942,6 +941,19 @@
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+
+
+  // ── Expose semua fungsi ke window agar onclick HTML bisa akses
+  window.showPanel        = showPanel;
+  window.filterTable      = filterTable;
+  window.openModal        = openModal;
+  window.closeModal       = closeModal;
+  window.closeModalDirect = closeModalDirect;
+  window.saveModal        = saveModal;
+  window.showToast        = showToast;
+  window.saveToast        = saveToast;
+  window.confirmDelete    = confirmDelete;
+  window.logout           = () => window.logoutFirebase && window.logoutFirebase();
 
   // ── Auth guard
   onAuthStateChanged(auth, user => {
@@ -1112,7 +1124,7 @@
   }
 
   // ── Save modal → Firestore
-  window.saveModal = async () => {
+  const fbSaveModal = async () => {
     const form = document.getElementById('modalBody');
     const inputs = form.querySelectorAll('input,textarea,select');
     const data = {};
@@ -1135,7 +1147,9 @@
     }
   };
   // backward compat
-  window._saveModalFirebase = window.saveModal;
+  window._fbSaveModal  = fbSaveModal;
+  window._saveModalFirebase = fbSaveModal;
+  window.saveModal     = fbSaveModal;
 
   // ── Delete item
   window.deleteItem = async (col, id, name) => {
@@ -1152,6 +1166,7 @@
 
   // expose ke window agar onclick HTML bisa akses
   window.initDashboard = initDashboard;
+
 </script>
 </body>
 </html>
