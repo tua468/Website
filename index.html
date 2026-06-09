@@ -1352,7 +1352,7 @@
         <h2 class="s-title">Berita <em>Terbaru</em></h2>
         <p class="s-desc" style="max-width:440px;">Informasi kegiatan, prestasi, dan perkembangan terkini di SMK Negeri 2 Sragen.</p>
       </div>
-      <a href="#" class="btn-navy" style="margin-top:0;">Semua Berita <i class="fas fa-arrow-right"></i></a>
+      <a href="berita.html" class="btn-navy" style="margin-top:0;">Semua Berita <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="berita-grid" id="berita-grid">
       <!-- Berita utama -->
@@ -2128,11 +2128,13 @@
     if (btnAll) btnAll.style.display = sorted.length > 9 ? 'inline-flex' : 'none';
   });
 
-  // ── BERITA
+  // ── BERITA — sort terbaru, tampil 1 utama + 4 list = 5 total, tanpa badge kategori di foto
   watchCol('berita', data => {
     const grid = document.getElementById('berita-grid');
     if (!grid) return;
-    const pub = data.filter(d => d.status === 'Publish');
+    const pub = data
+      .filter(d => d.status === 'Publish')
+      .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
     if (!pub.length) return;
     const [utama, ...rest] = pub;
     grid.innerHTML = `
@@ -2140,7 +2142,6 @@
         <div class="berita-main-img" style="background:var(--navy-dk);padding:0;">
           <img src="${utama.foto||''}" alt="${utama.judul||''}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy" onerror="this.style.display='none'" />
           <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(18,36,72,.5) 100%);"></div>
-          <span class="berita-main-cat" style="position:relative;z-index:1;">${utama.kategori||'Berita'}</span>
         </div>
         <div class="berita-main-body">
           <div class="berita-main-date"><i class="fas fa-calendar-alt"></i> ${utama.tanggal||''}</div>

@@ -1107,6 +1107,8 @@ function goBack() {
   if (pos) sessionStorage.setItem('doRestore', '1');
   if (from === 'prestasi') {
     window.location.href = 'prestasi.html';
+  } else if (from === 'berita') {
+    window.location.href = 'berita.html';
   } else if (section === 'berita') {
     window.location.href = 'index.html#berita';
   } else {
