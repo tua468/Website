@@ -2017,20 +2017,54 @@
   }
   renderCalendar();
 
-  // ── Poll
-  function submitPoll() {
+  // ── Poll — submit & simpan ke Firebase
+  async function submitPoll() {
     const selected = document.querySelector('input[name="poll"]:checked');
     if (!selected) { alert('Pilih salah satu jawaban terlebih dahulu!'); return; }
-    document.getElementById('pollOptions').style.display = 'none';
-    document.querySelector('.poll-submit').style.display = 'none';
-    const results = document.getElementById('pollResults');
-    results.classList.add('show');
-    // Animate bars
-    setTimeout(() => {
-      results.querySelectorAll('.poll-bar-fill').forEach(bar => {
-        bar.style.width = bar.dataset.width;
+    if (!_pollId) { alert('Polling belum dimuat, coba refresh.'); return; }
+
+    const idx = parseInt(selected.value);
+    const btn = document.querySelector('.poll-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan...'; }
+
+    try {
+      // Import Firestore functions yg dibutuhkan
+      const { getFirestore, doc, updateDoc, increment, getDoc }
+        = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const { initializeApp, getApps }
+        = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+
+      // Ambil app yang sudah ada
+      const apps = getApps();
+      const app  = apps.length ? apps[0] : initializeApp({
+        apiKey:"AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+        authDomain:"smkn2sragen-e487b.firebaseapp.com",
+        projectId:"smkn2sragen-e487b",
+        storageBucket:"smkn2sragen-e487b.firebasestorage.app",
+        messagingSenderId:"602192129071",
+        appId:"1:602192129071:web:884e02ba2bd6766df22ada"
       });
-    }, 100);
+      const db = getFirestore(app);
+
+      // Increment vote pilihan yang dipilih
+      await updateDoc(doc(db, 'polling', _pollId), {
+        ['votes' + idx]: increment(1)
+      });
+
+      // Tandai sudah vote di localStorage (per polling ID)
+      localStorage.setItem('voted_' + _pollId, idx.toString());
+
+      // Sembunyikan form, tampilkan hasil
+      const oEl = document.getElementById('pollOptions');
+      if (oEl) oEl.style.display = 'none';
+      if (btn) btn.style.display = 'none';
+      const res = document.getElementById('pollResults');
+      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 100); }
+
+    } catch(e) {
+      alert('Gagal menyimpan jawaban: ' + e.message);
+      if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
+    }
   }
 
 
@@ -2230,22 +2264,69 @@
       </div>`;
   });
 
-  // ── POLLING
+  // ── POLLING — realtime dari Firebase, simpan jawaban, cegah vote ulang
+  let _pollId      = null;
+  let _pilihanList = [];
+
   watchCol('polling', data => {
     const aktif = data.filter(d => d.status === 'Aktif');
     if (!aktif.length) return;
     const p = aktif[0];
+    _pollId      = p.id;
+    _pilihanList = [p.pilihan1, p.pilihan2, p.pilihan3, p.pilihan4].filter(Boolean);
+
     const qEl = document.getElementById('pollQuestion');
     const oEl = document.getElementById('pollOptions');
     if (qEl) qEl.textContent = p.pertanyaan || '';
-    if (oEl && p.pilihan1) {
-      oEl.innerHTML = [p.pilihan1, p.pilihan2, p.pilihan3, p.pilihan4].filter(Boolean).map((opt, i) => `
+
+    const sudahVote = localStorage.getItem('voted_' + _pollId);
+
+    if (oEl) {
+      oEl.innerHTML = _pilihanList.map((opt, i) => `
         <label class="poll-option">
-          <input type="radio" name="poll" value="${i}">
+          <input type="radio" name="poll" value="${i}" ${sudahVote ? 'disabled' : ''}>
           <label>${opt}</label>
         </label>`).join('');
     }
+
+    // Hitung votes dari field votes0, votes1, dst
+    const votes = _pilihanList.map((_, i) => parseInt(p['votes' + i] || 0));
+    const total = votes.reduce((a, b) => a + b, 0);
+    _renderPollResults(votes, total, _pilihanList);
+
+    // Kalau sudah vote — langsung tampilkan hasil, sembunyikan form
+    if (sudahVote) {
+      if (oEl) oEl.style.display = 'none';
+      const btn = document.querySelector('.poll-submit');
+      if (btn) btn.style.display = 'none';
+      const res = document.getElementById('pollResults');
+      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 100); }
+    }
+
+    // Update stat total responden
+    const statEls = document.querySelectorAll('.poll-info-stat-num');
+    if (statEls[0]) statEls[0].textContent = total;
   });
+
+  function _renderPollResults(votes, total, labels) {
+    const res = document.getElementById('pollResults');
+    if (!res) return;
+    res.innerHTML = `<div style="height:1px;background:var(--gray-2);margin:20px 0;"></div>` +
+      labels.map((lbl, i) => {
+        const pct = total > 0 ? Math.round(votes[i] / total * 100) : 0;
+        return `<div class="poll-result-item">
+          <div class="poll-result-label"><span>${lbl}</span><strong>${pct}%</strong></div>
+          <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="${pct}%"></div></div>
+        </div>`;
+      }).join('') +
+      `<div class="poll-total">Total responden: <strong>${total} orang</strong></div>`;
+  }
+
+  function _animateBars() {
+    document.querySelectorAll('.poll-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }
 </script>
 
 </body>
