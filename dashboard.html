@@ -420,7 +420,7 @@
     <!-- ══ JURUSAN ══ -->
     <div class="panel" id="panel-jurusan">
       <div class="sec-header">
-        <div><h3>Program Keahlian / Jurusan</h3><p>Kelola daftar jurusan yang ditampilkan di website</p></div>
+        <div><h3>Program Keahlian / Jurusan</h3></div>
         <button class="btn-primary" onclick="openModal('jurusan')"><i class="fas fa-plus"></i> Tambah Jurusan</button>
       </div>
       <div class="table-wrap">
@@ -444,7 +444,7 @@
     <!-- ══ FASILITAS ══ -->
     <div class="panel" id="panel-fasilitas">
       <div class="sec-header">
-        <div><h3>Fasilitas Sekolah</h3><p>Kelola daftar fasilitas yang ditampilkan</p></div>
+        <div><h3>Fasilitas Sekolah</h3></div>
         <button class="btn-primary" onclick="openModal('fasilitas')"><i class="fas fa-plus"></i> Tambah Fasilitas</button>
       </div>
       <div class="table-wrap">
@@ -468,7 +468,7 @@
     <!-- ══ PRESTASI ══ -->
     <div class="panel" id="panel-prestasi">
       <div class="sec-header">
-        <div><h3>Data Prestasi Siswa</h3><p>Kelola catatan prestasi siswa SMKN 2 Sragen</p></div>
+        <div><h3>Data Prestasi Siswa</h3></div>
         <button class="btn-primary" onclick="openModal('prestasi')"><i class="fas fa-plus"></i> Tambah Prestasi</button>
       </div>
       <div class="table-wrap">
@@ -492,7 +492,7 @@
     <!-- ══ BKK ══ -->
     <div class="panel" id="panel-bkk">
       <div class="sec-header">
-        <div><h3>BKK — Bursa Kerja Khusus</h3><p>Kelola lowongan kerja untuk alumni</p></div>
+        <div><h3>BKK — Bursa Kerja Khusus</h3></div>
         <button class="btn-primary" onclick="openModal('bkk')"><i class="fas fa-plus"></i> Tambah Lowongan</button>
       </div>
       <div class="table-wrap">
@@ -513,7 +513,7 @@
     <!-- ══ BERITA ══ -->
     <div class="panel" id="panel-berita">
       <div class="sec-header">
-        <div><h3>Berita &amp; Artikel</h3><p>Kelola konten berita sekolah</p></div>
+        <div><h3>Berita &amp; Artikel</h3></div>
         <button class="btn-primary" onclick="openModal('berita')"><i class="fas fa-plus"></i> Tambah Berita</button>
       </div>
       <div class="table-wrap">
@@ -535,7 +535,7 @@
     <!-- ══ GALERI ══ -->
     <div class="panel" id="panel-galeri">
       <div class="sec-header">
-        <div><h3>Galeri Foto &amp; Momen Kegiatan</h3><p>Kelola foto dan dokumentasi kegiatan sekolah</p></div>
+        <div><h3>Galeri Foto &amp; Momen Kegiatan</h3></div>
         <button class="btn-primary" onclick="openModal('galeri')"><i class="fas fa-plus"></i> Upload Foto</button>
       </div>
       <div class="table-wrap">
@@ -556,7 +556,7 @@
     <!-- ══ PROGRAM UNGGULAN ══ -->
     <div class="panel" id="panel-program">
       <div class="sec-header">
-        <div><h3>Program Unggulan</h3><p>Kelola konten "Apa yang Kami Tawarkan"</p></div>
+        <div><h3>Program Unggulan</h3></div>
         <button class="btn-primary" onclick="openModal('program')"><i class="fas fa-plus"></i> Tambah Program</button>
       </div>
       <div class="table-wrap">
@@ -574,7 +574,7 @@
     <!-- ══ PENGUMUMAN ══ -->
     <div class="panel" id="panel-pengumuman">
       <div class="sec-header">
-        <div><h3>Info &amp; Pengumuman</h3><p>Kelola pengumuman resmi sekolah</p></div>
+        <div><h3>Info &amp; Pengumuman</h3></div>
         <button class="btn-primary" onclick="openModal('pengumuman')"><i class="fas fa-plus"></i> Tambah Pengumuman</button>
       </div>
       <div class="table-wrap">
@@ -592,7 +592,7 @@
     <!-- ══ POLLING ══ -->
     <div class="panel" id="panel-polling">
       <div class="sec-header">
-        <div><h3>Polling &amp; Jajak Pendapat</h3><p>Kelola pertanyaan polling untuk pengunjung website</p></div>
+        <div><h3>Polling &amp; Jajak Pendapat</h3></div>
         <button class="btn-primary" onclick="openModal('polling')"><i class="fas fa-plus"></i> Buat Polling</button>
       </div>
       <div class="edit-card">
@@ -635,7 +635,7 @@
     <!-- ══ PROFIL SEKOLAH ══ -->
     <div class="panel" id="panel-profil">
       <div class="sec-header">
-        <div><h3>Profil Sekolah</h3><p>Edit informasi dasar sekolah</p></div>
+        <div><h3>Profil Sekolah</h3></div>
       </div>
       <div class="edit-card">
         <div class="edit-card-header"><h4>Data Sekolah</h4></div>
@@ -663,7 +663,7 @@
     <!-- ══ HERO & BANNER ══ -->
     <div class="panel" id="panel-hero">
       <div class="sec-header">
-        <div><h3>Hero &amp; Banner</h3><p>Edit teks dan gambar hero di halaman utama</p></div>
+        <div><h3>Hero &amp; Banner</h3></div>
       </div>
       <div class="edit-card">
         <div class="edit-card-header"><h4>Hero Section</h4></div>
@@ -793,31 +793,6 @@
     serverTimestamp
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-
-  // ── Panel switching
-  const panels = {
-    overview:    { title: 'Dashboard Overview',         sub: 'Ringkasan konten website SMKN 2 Sragen' },
-    jurusan:     { title: 'Program Keahlian / Jurusan', sub: 'Kelola data jurusan' },
-    fasilitas:   { title: 'Fasilitas Sekolah',          sub: 'Kelola sarana dan prasarana' },
-    prestasi:    { title: 'Prestasi Siswa',             sub: 'Kelola catatan prestasi' },
-    bkk:         { title: 'BKK — Bursa Kerja Khusus',  sub: 'Kelola lowongan kerja alumni' },
-    berita:      { title: 'Berita & Artikel',           sub: 'Kelola konten berita sekolah' },
-    galeri:      { title: 'Galeri Foto & Momen',        sub: 'Kelola dokumentasi kegiatan' },
-    program:     { title: 'Program Unggulan',           sub: 'Kelola "Apa yang Kami Tawarkan"' },
-    pengumuman:  { title: 'Info & Pengumuman',          sub: 'Kelola pengumuman resmi sekolah' },
-    polling:     { title: 'Polling & Jajak Pendapat',   sub: 'Kelola polling pengunjung' },
-    profil:      { title: 'Profil Sekolah',             sub: 'Edit informasi dasar sekolah' },
-    hero:        { title: 'Hero & Banner',              sub: 'Edit tampilan hero halaman utama' },
-  };
-
-  function showPanel(id) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('panel-' + id).classList.add('active');
-    document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`).classList.add('active');
-    document.getElementById('topbarTitle').textContent = panels[id].title;
-    document.getElementById('topbarSub').textContent   = panels[id].sub;
-  }
 
   // ── Table filter
   function filterTable(input, tableId) {
