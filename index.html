@@ -433,62 +433,43 @@
     }
     .prestasi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
     .prcard {
-      border-radius: var(--r-lg);
-      position: relative; overflow: hidden;
-      height: 260px;
-      box-shadow: 0 4px 16px rgba(26,53,102,.12);
-      transition: transform .3s, box-shadow .3s;
-      cursor: pointer;
-      background: var(--navy-dk);
+      background: var(--white); border: 1px solid var(--gray-2);
+      border-radius: var(--r-lg); overflow: hidden;
+      box-shadow: 0 2px 8px rgba(26,53,102,.06);
+      transition: transform .28s, box-shadow .28s;
+      cursor: pointer; display: flex; flex-direction: column;
     }
-    .prcard:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(26,53,102,.22); }
-    /* foto background */
-    .prcard-bg {
-      position: absolute; inset: 0;
-      background-size: cover; background-position: center;
-      transition: transform .45s ease;
+    .prcard:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(26,53,102,.13); }
+    /* slot foto atas */
+    .prcard-photo {
+      width: 100%; height: 148px; overflow: hidden; flex-shrink: 0;
+      background: var(--gray-2);
+      position: relative;
     }
-    .prcard:hover .prcard-bg { transform: scale(1.07); }
-    /* overlay gelap dari bawah */
-    .prcard-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(10,20,50,.85) 0%, rgba(10,20,50,.35) 55%, rgba(10,20,50,.05) 100%);
-      transition: background .3s;
+    .prcard-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .38s;
     }
-    .prcard:hover .prcard-overlay {
-      background: linear-gradient(to top, rgba(10,20,50,.92) 0%, rgba(10,20,50,.45) 60%, rgba(10,20,50,.1) 100%);
+    .prcard:hover .prcard-photo img { transform: scale(1.06); }
+    /* placeholder kalau belum ada foto */
+    .prcard-photo-empty {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #eef0f8 0%, #dde3f0 100%);
+      font-size: 2.8rem; color: var(--gray-3);
     }
-    /* badge tingkat di pojok atas */
+    /* konten teks di bawah foto */
+    .prcard-body { padding: 16px 18px 20px; display: flex; flex-direction: column; flex: 1; }
+    .prcard-medal { font-size: 1.6rem; margin-bottom: 8px; display: block; line-height: 1; }
     .prcard-lvl {
-      position: absolute; top: 14px; left: 14px;
-      font-size: 9px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase;
-      color: #fff; background: rgba(255,255,255,.18); backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,.25);
-      padding: 4px 10px; border-radius: 100px;
-    }
-    /* medal di pojok atas kanan */
-    .prcard-medal {
-      position: absolute; top: 10px; right: 14px;
-      font-size: 1.6rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
-    }
-    /* konten bawah */
-    .prcard-body {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 18px 18px 20px;
+      font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--navy); margin-bottom: 7px; display: block;
     }
     .prcard h4 {
-      font-size: 13.5px; font-weight: 700; color: #fff;
-      margin-bottom: 5px; line-height: 1.45;
-      text-shadow: 0 1px 4px rgba(0,0,0,.5);
+      font-size: 13.5px; font-weight: 700; color: var(--text-1);
+      margin-bottom: 6px; line-height: 1.45;
     }
-    .prcard p {
-      font-size: 11.5px; color: rgba(255,255,255,.72);
-      text-shadow: 0 1px 3px rgba(0,0,0,.4);
-    }
-    /* kalau tidak ada foto — placeholder dengan warna navy */
-    .prcard-no-photo .prcard-bg {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dk) 100%);
-    }
+    .prcard p { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-top: auto; }
 
     /* ── STATS (NAVY SECTION) ── */
     .stats-section {
@@ -2114,12 +2095,16 @@
     if (!grid || !data.length) return;
     const delays = ['d1','d2','d3'];
     grid.innerHTML = data.map((d,i) => `
-      <div class="prcard rv on ${delays[i%3]}${d.foto ? '' : ' prcard-no-photo'}">
-        <div class="prcard-bg" ${d.foto ? `style="background-image:url('${d.foto}')"` : ''}></div>
-        <div class="prcard-overlay"></div>
-        <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
-        <span class="prcard-medal">${d.medal||'🏆'}</span>
+      <div class="prcard rv on ${delays[i%3]}">
+        <div class="prcard-photo">
+          ${d.foto
+            ? `<img src="${d.foto}" alt="${d.nama||''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'prcard-photo-empty\\'>🏆</div>'" />`
+            : `<div class="prcard-photo-empty">🏆</div>`
+          }
+        </div>
         <div class="prcard-body">
+          <span class="prcard-medal">${d.medal||'🏆'}</span>
+          <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
           <h4>${d.nama||''}</h4>
           <p>${d.keterangan||''}</p>
         </div>
