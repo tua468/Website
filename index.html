@@ -1069,49 +1069,8 @@
       <h2 class="s-title">6 Jurusan <em>Unggulan</em></h2>
       <p class="s-desc">Dirancang sesuai standar SKKNI dan kebutuhan industri, membekali siswa dengan kompetensi teknis terukur.</p>
     </div>
-    <div class="jurusan-grid">
-      <div class="jcard rv d1" onclick="goToDetail('jurusan','tpm','jurusan')">
-        <span class="jcard-num">01</span>
-        <div class="jcard-ico"><i class="fas fa-cog"></i></div>
-        <h3>Teknik Pemesinan</h3>
-        <p>Pengoperasian mesin bubut, frais, CNC, dan peralatan pemesinan presisi untuk produksi komponen industri.</p>
-        <span class="jcard-tag">Teknik Mesin</span>
-      </div>
-      <div class="jcard rv d2" onclick="goToDetail('jurusan','tkro','jurusan')">
-        <span class="jcard-num">02</span>
-        <div class="jcard-ico"><i class="fas fa-car"></i></div>
-        <h3>Teknik Kendaraan Ringan Otomotif</h3>
-        <p>Perawatan, perbaikan, dan teknologi kendaraan ringan bermotor sesuai standar industri otomotif modern.</p>
-        <span class="jcard-tag">Teknik Otomotif</span>
-      </div>
-      <div class="jcard rv d3" onclick="goToDetail('jurusan','dpib','jurusan')">
-        <span class="jcard-num">03</span>
-        <div class="jcard-ico"><i class="fas fa-drafting-compass"></i></div>
-        <h3>Desain Pemodelan &amp; Informasi Bangunan</h3>
-        <p>Perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.</p>
-        <span class="jcard-tag">Teknik Bangunan</span>
-      </div>
-      <div class="jcard rv d1" onclick="goToDetail('jurusan','tkp','jurusan')">
-        <span class="jcard-num">04</span>
-        <div class="jcard-ico"><i class="fas fa-home"></i></div>
-        <h3>Teknik Konstruksi &amp; Perumahan</h3>
-        <p>Perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis dan keselamatan kerja.</p>
-        <span class="jcard-tag">Teknik Konstruksi</span>
-      </div>
-      <div class="jcard rv d2" onclick="goToDetail('jurusan','titl','jurusan')">
-        <span class="jcard-num">05</span>
-        <div class="jcard-ico"><i class="fas fa-bolt"></i></div>
-        <h3>Teknik Instalasi Tenaga Listrik</h3>
-        <p>Instalasi, pemeliharaan, dan perbaikan sistem kelistrikan skala industri maupun residensial.</p>
-        <span class="jcard-tag">Teknik Ketenagalistrikan</span>
-      </div>
-      <div class="jcard rv d3" onclick="goToDetail('jurusan','tkj','jurusan')">
-        <span class="jcard-num">06</span>
-        <div class="jcard-ico"><i class="fas fa-laptop-code"></i></div>
-        <h3>Teknik Komputer &amp; Jaringan</h3>
-        <p>Instalasi jaringan, keamanan siber, administrasi server, cloud computing, dan infrastruktur IT.</p>
-        <span class="jcard-tag">Teknologi Informasi</span>
-      </div>
+    <div class="jurusan-grid" id="jurusan-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat jurusan...</div>
     </div>
   </div>
 </section>
@@ -1124,23 +1083,8 @@
       <h2 class="s-title">Fasilitas <em>Berstandar Industri</em></h2>
       <p class="s-desc">Infrastruktur lengkap dan modern yang mendukung proses pembelajaran praktik secara optimal.</p>
     </div>
-    <div class="fasil-grid">
-      <!-- Umum -->
-      <div class="fcard rv d1"><i class="fas fa-chalkboard-teacher"></i><h4>Ruang Kelas</h4></div>
-      <div class="fcard rv d2"><i class="fas fa-book-reader"></i><h4>Perpustakaan</h4></div>
-      <div class="fcard rv d3"><i class="fas fa-futbol"></i><h4>Lapangan Olahraga</h4></div>
-      <div class="fcard rv d4"><i class="fas fa-mosque"></i><h4>Masjid &amp; Mushola</h4></div>
-      <div class="fcard rv d1"><i class="fas fa-utensils"></i><h4>Kantin Sehat</h4></div>
-      <div class="fcard rv d2"><i class="fas fa-shield-alt"></i><h4>UKS</h4></div>
-      <div class="fcard rv d3"><i class="fas fa-store"></i><h4>Koperasi Sekolah</h4></div>
-      <div class="fcard rv d4"><i class="fas fa-restroom"></i><h4>Kamar Mandi</h4></div>
-      <!-- Khusus Kejuruan (urutan: Mesin, Otomotif, Desain Bangunan, Konstruksi, Listrik, Komputer) -->
-      <div class="fcard rv d1"><i class="fas fa-industry"></i><h4>Bengkel CNC</h4></div>
-      <div class="fcard rv d2"><i class="fas fa-tools"></i><h4>Bengkel Otomotif</h4></div>
-      <div class="fcard rv d3"><i class="fas fa-hard-hat"></i><h4>Workshop Bangunan</h4></div>
-      <div class="fcard rv d4"><i class="fas fa-hammer"></i><h4>Workshop Konstruksi</h4></div>
-      <div class="fcard rv d1"><i class="fas fa-bolt"></i><h4>Lab Instalasi Listrik</h4></div>
-      <div class="fcard rv d2"><i class="fas fa-wifi"></i><h4>Lab Jaringan &amp; Server</h4></div>
+    <div class="fasil-grid" id="fasil-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat fasilitas...</div>
     </div>
   </div>
 </section>
@@ -1157,41 +1101,8 @@
       </div>
       <div class="prestasi-banner-right">🏆</div>
     </div>
-    <div class="prestasi-grid">
-      <!-- Diisi otomatis dari _data/prestasi/*.json -->
-      <div class="prcard rv d1" onclick="goToDetail('prestasi','lks_tkro','prestasi')">
-        <p>Lomba Kompetensi Siswa Bidang Otomotif — Jawa Tengah</p>
-      </div>
-      <div class="prcard rv d2">
-        <span class="prcard-medal">🏆</span>
-        <span class="prcard-lvl">Tingkat Nasional</span>
-        <h4>Finalis LKS Nasional Teknik Instalasi Listrik</h4>
-        <p>Lomba Kompetensi Siswa Tingkat Nasional — Jakarta</p>
-      </div>
-      <div class="prcard rv d3">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Kabupaten</span>
-        <h4>Juara Umum Olimpiade Sains Terapan</h4>
-        <p>Olimpiade Sains Terapan Kabupaten Sragen</p>
-      </div>
-      <div class="prcard rv d1">
-        <span class="prcard-medal">🥈</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 2 LKS Desain Pemodelan Bangunan</h4>
-        <p>Lomba Kompetensi Siswa Bidang Teknik Bangunan</p>
-      </div>
-      <div class="prcard rv d2">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 1 LKS Teknik Komputer &amp; Jaringan</h4>
-        <p>Lomba Kompetensi Siswa Bidang TKJ — Jawa Tengah</p>
-      </div>
-      <div class="prcard rv d3">
-        <span class="prcard-medal">🌿</span>
-        <span class="prcard-lvl">Penghargaan Lingkungan</span>
-        <h4>Sekolah Adiwiyata Kabupaten Sragen</h4>
-        <p>Penghargaan lingkungan hidup dari Pemkab Sragen</p>
-      </div>
+        <div class="prestasi-grid" id="prestasi-grid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat prestasi...</div>
     </div>
   </div>
 </section>
@@ -1220,73 +1131,8 @@
         </div>
       </div>
     </div>
-    <div class="bkk-grid">
-      <div class="bkk-card rv d1">
-        <div class="bkk-card-top">
-          <div style="display:flex;gap:12px;align-items:center;">
-            <div class="bkk-company"><i class="fas fa-industry"></i></div>
-            <div>
-              <div class="bkk-company-name">PT Sinar Mas Agribusiness</div>
-              <div style="font-size:11px;color:var(--text-3);">Sragen, Jawa Tengah</div>
-            </div>
-          </div>
-          <span class="bkk-badge-new">Baru</span>
-        </div>
-        <div class="bkk-posisi">Teknisi Mesin Industri</div>
-        <div class="bkk-tags">
-          <span class="bkk-tag">Teknik Mesin</span>
-          <span class="bkk-tag">Full Time</span>
-          <span class="bkk-tag">D3/SMK</span>
-        </div>
-        <div class="bkk-card-foot">
-          <div class="bkk-deadline"><i class="fas fa-calendar-alt"></i> Tutup 30 Jun 2026</div>
-          <a href="#" class="bkk-apply">Lamar Sekarang</a>
-        </div>
-      </div>
-      <div class="bkk-card rv d2">
-        <div class="bkk-card-top">
-          <div style="display:flex;gap:12px;align-items:center;">
-            <div class="bkk-company"><i class="fas fa-network-wired"></i></div>
-            <div>
-              <div class="bkk-company-name">PT Telkom Indonesia</div>
-              <div style="font-size:11px;color:var(--text-3);">Solo, Jawa Tengah</div>
-            </div>
-          </div>
-          <span class="bkk-badge-hot">🔥 Hot</span>
-        </div>
-        <div class="bkk-posisi">Network Technician & IT Support</div>
-        <div class="bkk-tags">
-          <span class="bkk-tag">TKJ</span>
-          <span class="bkk-tag">Full Time</span>
-          <span class="bkk-tag">Pengalaman 1 Thn</span>
-        </div>
-        <div class="bkk-card-foot">
-          <div class="bkk-deadline"><i class="fas fa-calendar-alt"></i> Tutup 15 Jul 2026</div>
-          <a href="#" class="bkk-apply">Lamar Sekarang</a>
-        </div>
-      </div>
-      <div class="bkk-card rv d3">
-        <div class="bkk-card-top">
-          <div style="display:flex;gap:12px;align-items:center;">
-            <div class="bkk-company"><i class="fas fa-bolt"></i></div>
-            <div>
-              <div class="bkk-company-name">PT PLN (Persero) ULP Sragen</div>
-              <div style="font-size:11px;color:var(--text-3);">Sragen, Jawa Tengah</div>
-            </div>
-          </div>
-          <span class="bkk-badge-new">Baru</span>
-        </div>
-        <div class="bkk-posisi">Teknisi Instalasi Listrik</div>
-        <div class="bkk-tags">
-          <span class="bkk-tag">TITL</span>
-          <span class="bkk-tag">Kontrak</span>
-          <span class="bkk-tag">Fresh Graduate</span>
-        </div>
-        <div class="bkk-card-foot">
-          <div class="bkk-deadline"><i class="fas fa-calendar-alt"></i> Tutup 25 Jun 2026</div>
-          <a href="#" class="bkk-apply">Lamar Sekarang</a>
-        </div>
-      </div>
+        <div class="bkk-grid" id="bkk-grid">
+      <div style="text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat lowongan...</div>
     </div>
 
   </div>
@@ -1303,64 +1149,8 @@
       </div>
       <a href="#" class="btn-navy" style="margin-top:0;">Semua Berita <i class="fas fa-arrow-right"></i></a>
     </div>
-    <div class="berita-grid">
-      <!-- Berita utama -->
-      <div class="berita-main rv d1" onclick="goToDetail('berita','mapsi','berita')">
-        <div class="berita-main-img" style="background:var(--navy-dk);padding:0;">
-          <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/59450345_371680263555244_5513103156207457382_n.jpg" alt="Berita SMKN 2 Sragen" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy" />
-          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(18,36,72,.5) 100%);"></div>
-          <span class="berita-main-cat" style="position:relative;z-index:1;">Prestasi</span>
-        </div>
-        <div class="berita-main-body">
-          <div class="berita-main-date"><i class="fas fa-calendar-alt"></i> 25 November 2025</div>
-          <div class="berita-main-title">Elsa Mutia Hafid Raih Juara 3 Khitobah Putri Lomba MAPSI SMK Provinsi Jawa Tengah 2025</div>
-          <div class="berita-main-snippet">Sragen, Ajang bergengsi Mata Pelajaran Pendidikan Agama Islam dan Seni Islami (MAPSI) tingkat SMK se-Provinsi Jawa Tengah 2025 resmi digelar. Prestasi ini membuktikan bahwa SMKN 2 Sragen bukan hanya unggul di bidang teknik, tetapi juga...</div>
-          <a href="#" class="berita-main-read">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
-        </div>
-      </div>
-      <!-- Berita list -->
-      <div class="berita-list rv d2">
-        <div class="berita-item">
-          <div class="berita-item-img" style="overflow:hidden;padding:0;">
-            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=160&q=80" alt="Fiber Optic" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
-          </div>
-          <div class="berita-item-body">
-            <div class="berita-item-cat">Teknologi</div>
-            <div class="berita-item-title">SMKN 2 Sragen Terima Bantuan Laboratorium Fiber Optic dari Kementerian Kominfo</div>
-            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> 5 November 2025</div>
-          </div>
-        </div>
-        <div class="berita-item" onclick="goToDetail('berita','lkbb','berita')">
-          <div class="berita-item-img" style="overflow:hidden;padding:0;">
-            <img src="https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=160&q=80" alt="LKBB" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
-          </div>
-          <div class="berita-item-body">
-            <div class="berita-item-cat">Kesiswaan</div>
-            <div class="berita-item-title">SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1</div>
-            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> 20 November 2025</div>
-          </div>
-        </div>
-        <div class="berita-item">
-          <div class="berita-item-img" style="overflow:hidden;padding:0;">
-            <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=160&q=80" alt="Penghijauan" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
-          </div>
-          <div class="berita-item-body">
-            <div class="berita-item-cat">Lingkungan</div>
-            <div class="berita-item-title">SMK N 2 Sragen Rayakan HUT ke-23 dengan Penanaman 2.300 Pohon</div>
-            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> 5 Maret 2025</div>
-          </div>
-        </div>
-        <div class="berita-item">
-          <div class="berita-item-img" style="overflow:hidden;padding:0;">
-            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=160&q=80" alt="Wisuda" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
-          </div>
-          <div class="berita-item-body">
-            <div class="berita-item-cat">Akademik</div>
-            <div class="berita-item-title">Peringatan Hari Guru Nasional 2025 — "Guru Hebat Indonesia Kuat"</div>
-            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> 25 November 2025</div>
-          </div>
-        </div>
-      </div>
+        <div class="berita-grid" id="berita-grid">
+      <div style="text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat berita...</div>
     </div>
   </div>
 </section>
@@ -1512,64 +1302,8 @@
         <p class="s-desc" style="max-width:480px;">Pengumuman resmi, PPDB, dan informasi penting langsung dari SMK Negeri 2 Sragen.</p>
       </div>
     </div>
-    <div class="pengumuman-grid">
-      <div>
-        <!-- Highlight utama -->
-        <div class="info-alert rv d1">
-          <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
-          <div class="info-alert-body">
-            <div class="info-alert-tag">🔥 Terbaru</div>
-            <div class="info-alert-title">Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2025/2026 resmi dibuka!</div>
-            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> 01 Juni 2026 · Daftar sekarang sebelum kuota penuh</div>
-          </div>
-          <i class="fas fa-chevron-right info-alert-arrow"></i>
-        </div>
-        <!-- List pengumuman -->
-        <div class="info-card rv d2">
-          <div class="info-card-dot new"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Pengambilan Ijazah Alumni Angkatan 2025 — Mulai 5 Juni 2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 2 hari lalu &nbsp;·&nbsp; Administrasi</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot info"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Info Parkir PPDB — Lokasi dan Alur Pendaftaran Offline</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 4 hari lalu &nbsp;·&nbsp; PPDB 2026</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Pelantikan Taruna OSIS Angkatan XIII — Sabtu, 7 Juni 2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 5 hari lalu &nbsp;·&nbsp; Kesiswaan</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Jadwal Ujian Akhir Semester Genap TA 2025/2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 1 minggu lalu &nbsp;·&nbsp; Akademik</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot info"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Beasiswa Prestasi Siswa — Syarat dan Cara Pendaftaran</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 2 minggu lalu &nbsp;·&nbsp; Akademik</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div style="text-align:center;margin-top:20px;" class="rv">
-          <a href="#" class="btn-navy" style="margin-top:0;display:inline-flex;"><i class="fas fa-list"></i> Lihat Semua Pengumuman</a>
-        </div>
-      </div>
-
+        <div class="pengumuman-grid" id="pengumuman-grid">
+      <div style="text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat pengumuman...</div>
     </div>
   </div>
 </section>
@@ -2017,5 +1751,198 @@
 
 
 </script>
+<!-- ══ FIREBASE FIRESTORE — load konten realtime ══ -->
+<script type="module">
+  import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, getDocs, orderBy, query }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+    authDomain: "smkn2sragen-e487b.firebaseapp.com",
+    projectId: "smkn2sragen-e487b",
+    storageBucket: "smkn2sragen-e487b.firebasestorage.app",
+    messagingSenderId: "602192129071",
+    appId: "1:602192129071:web:884e02ba2bd6766df22ada"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  async function getAll(col) {
+    try {
+      const snap = await getDocs(collection(db, col));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) { console.error(col, e); return []; }
+  }
+
+  // ── Jurusan
+  async function loadJurusan() {
+    const data = await getAll('jurusan');
+    const grid = document.getElementById('jurusan-grid');
+    if (!grid) return;
+    if (!data.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada data jurusan.</p>'; return; }
+    const sorted = data.sort((a,b) => (a.urutan||99)-(b.urutan||99));
+    const delays = ['d1','d2','d3'];
+    grid.innerHTML = sorted.map((d,i) => `
+      <div class="jcard rv ${delays[i%3]}" onclick="goToDetail('jurusan','${d.id}','jurusan')">
+        <span class="jcard-num">${d.no||String(i+1).padStart(2,'0')}</span>
+        <div class="jcard-ico"><i class="${d.icon||'fas fa-graduation-cap'}"></i></div>
+        <h3>${d.nama||'Nama Jurusan'}</h3>
+        <p>${d.deskripsi||''}</p>
+        <span class="jcard-tag">${d.tag||d.bidang||''}</span>
+      </div>`).join('');
+    // re-observe untuk reveal animation
+    document.querySelectorAll('#jurusan-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── Fasilitas
+  async function loadFasilitas() {
+    const data = await getAll('fasilitas');
+    const grid = document.getElementById('fasil-grid');
+    if (!grid) return;
+    if (!data.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada data fasilitas.</p>'; return; }
+    const delays = ['d1','d2','d3','d4'];
+    grid.innerHTML = data.map((d,i) => `
+      <div class="fcard rv ${delays[i%4]}">
+        <i class="${d.icon||'fas fa-building'}"></i>
+        <h4>${d.nama||''}</h4>
+      </div>`).join('');
+    document.querySelectorAll('#fasil-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── Prestasi
+  async function loadPrestasi() {
+    const data = await getAll('prestasi');
+    const grid = document.getElementById('prestasi-grid');
+    if (!grid) return;
+    if (!data.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada data prestasi.</p>'; return; }
+    const delays = ['d1','d2','d3'];
+    grid.innerHTML = data.map((d,i) => `
+      <div class="prcard rv ${delays[i%3]}">
+        <span class="prcard-medal">${d.medal||'🏆'}</span>
+        <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
+        <h4>${d.nama||''}</h4>
+        <p>${d.keterangan||''}</p>
+      </div>`).join('');
+    document.querySelectorAll('#prestasi-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── BKK
+  async function loadBKK() {
+    const data = await getAll('bkk');
+    const grid = document.getElementById('bkk-grid');
+    if (!grid) return;
+    if (!data.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada lowongan.</p>'; return; }
+    const delays = ['d1','d2','d3'];
+    grid.innerHTML = data.filter(d=>d.status==='Aktif').slice(0,3).map((d,i) => `
+      <div class="bkk-card rv ${delays[i%3]}">
+        <div class="bkk-card-top">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div class="bkk-company"><i class="fas fa-industry"></i></div>
+            <div>
+              <div class="bkk-company-name">${d.perusahaan||''}</div>
+              <div style="font-size:11px;color:var(--text-3);">${d.lokasi||''}</div>
+            </div>
+          </div>
+          <span class="bkk-badge-new">Baru</span>
+        </div>
+        <div class="bkk-posisi">${d.posisi||''}</div>
+        <div class="bkk-tags">
+          <span class="bkk-tag">${d.jurusan||''}</span>
+          <span class="bkk-tag">${d.jenis||''}</span>
+        </div>
+        <div class="bkk-card-foot">
+          <div class="bkk-deadline"><i class="fas fa-calendar-alt"></i> Tutup ${d.batas||''}</div>
+          <a href="#kontak" class="bkk-apply">Lamar Sekarang</a>
+        </div>
+      </div>`).join('');
+    document.querySelectorAll('#bkk-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── Berita
+  async function loadBerita() {
+    const data = await getAll('berita');
+    const grid = document.getElementById('berita-grid');
+    if (!grid) return;
+    const pub = data.filter(d => d.status==='Publish');
+    if (!pub.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada berita.</p>'; return; }
+    const [utama, ...rest] = pub;
+    grid.innerHTML = `
+      <div class="berita-main rv d1" onclick="goToDetail('berita','${utama.id}','berita')">
+        <div class="berita-main-img" style="background:var(--navy-dk);padding:0;">
+          <img src="${utama.foto||''}" alt="${utama.judul}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy" onerror="this.style.display='none'" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(18,36,72,.5) 100%);"></div>
+          <span class="berita-main-cat" style="position:relative;z-index:1;">${utama.kategori||'Berita'}</span>
+        </div>
+        <div class="berita-main-body">
+          <div class="berita-main-date"><i class="fas fa-calendar-alt"></i> ${utama.tanggal||''}</div>
+          <div class="berita-main-title">${utama.judul||''}</div>
+          <div class="berita-main-snippet">${utama.ringkasan||''}</div>
+          <a href="#" class="berita-main-read">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="berita-list rv d2">
+        ${rest.slice(0,4).map(d => `
+        <div class="berita-item" onclick="goToDetail('berita','${d.id}','berita')">
+          <div class="berita-item-img" style="overflow:hidden;padding:0;background:var(--navy);">
+            <img src="${d.foto||''}" alt="${d.judul}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.style.display='none'" />
+          </div>
+          <div class="berita-item-body">
+            <div class="berita-item-cat">${d.kategori||''}</div>
+            <div class="berita-item-title">${d.judul||''}</div>
+            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> ${d.tanggal||''}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+    document.querySelectorAll('#berita-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── Pengumuman
+  async function loadPengumuman() {
+    const data = await getAll('pengumuman');
+    const grid = document.getElementById('pengumuman-grid');
+    if (!grid) return;
+    const aktif = data.filter(d => d.status==='Aktif');
+    if (!aktif.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-3);padding:40px;">Belum ada pengumuman.</p>'; return; }
+    const [top, ...rest] = aktif;
+    grid.innerHTML = `
+      <div>
+        <div class="info-alert rv d1">
+          <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
+          <div class="info-alert-body">
+            <div class="info-alert-tag">🔥 Terbaru</div>
+            <div class="info-alert-title">${top.judul||''}</div>
+            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> ${top.tanggal||''} · ${top.kategori||''}</div>
+          </div>
+          <i class="fas fa-chevron-right info-alert-arrow"></i>
+        </div>
+        ${rest.slice(0,5).map(d => `
+        <div class="info-card rv d2">
+          <div class="info-card-dot ${d.kategori==='PPDB'?'new':''}"></div>
+          <div class="info-card-body">
+            <div class="info-card-title">${d.judul||''}</div>
+            <div class="info-card-meta"><i class="fas fa-clock"></i> ${d.tanggal||''} &nbsp;·&nbsp; ${d.kategori||''}</div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
+        </div>`).join('')}
+        <div style="text-align:center;margin-top:20px;" class="rv">
+          <a href="#" class="btn-navy" style="margin-top:0;display:inline-flex;"><i class="fas fa-list"></i> Lihat Semua Pengumuman</a>
+        </div>
+      </div>`;
+    document.querySelectorAll('#pengumuman-grid .rv').forEach(el => rvObs.observe(el));
+  }
+
+  // ── Load semua
+  Promise.all([
+    loadJurusan(),
+    loadFasilitas(),
+    loadPrestasi(),
+    loadBKK(),
+    loadBerita(),
+    loadPengumuman(),
+  ]).then(() => console.log('✅ Semua konten dimuat dari Firebase'));
+</script>
+
 </body>
 </html>

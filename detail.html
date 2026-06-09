@@ -730,5 +730,241 @@ function renderDefault() {
 
 render();
 </script>
+
+<!-- ══ FIREBASE — baca data dari Firestore ══ -->
+<script type="module">
+  import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, doc, getDoc, collection, getDocs }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+    authDomain: "smkn2sragen-e487b.firebaseapp.com",
+    projectId: "smkn2sragen-e487b",
+    storageBucket: "smkn2sragen-e487b.firebasestorage.app",
+    messagingSenderId: "602192129071",
+    appId: "1:602192129071:web:884e02ba2bd6766df22ada"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // Map Firestore collection per section
+  const COL_MAP = {
+    jurusan:   'jurusan',
+    prestasi:  'prestasi',
+    berita:    'berita',
+    fasilitas: 'fasilitas',
+  };
+
+  // Ambil params
+  const params  = new URLSearchParams(window.location.search);
+  const section = params.get('section');
+  const id      = params.get('id');
+
+  if (section && id && COL_MAP[section]) {
+    // Coba ambil dari Firestore dulu
+    getDoc(doc(db, COL_MAP[section], id)).then(snap => {
+      if (snap.exists()) {
+        renderFromFirestore(section, id, snap.data());
+      }
+      // Kalau tidak ada di Firestore, fallback ke DATA lokal (sudah di-render sebelumnya)
+    }).catch(err => {
+      console.warn('Firestore error, pakai data lokal:', err);
+    });
+
+    // Juga load related dari Firestore
+    getDocs(collection(db, COL_MAP[section])).then(snap => {
+      const all = snap.docs
+        .filter(d => d.id !== id)
+        .map(d => ({ id: d.id, ...d.data() }));
+      renderRelatedFirestore(section, all);
+    }).catch(() => {});
+  }
+
+  // ── Render halaman dari data Firestore
+  function renderFromFirestore(section, id, d) {
+    if (section === 'jurusan') renderJurusan(id, d);
+    else if (section === 'berita') renderBerita(id, d);
+    else if (section === 'prestasi') renderPrestasi(id, d);
+    else if (section === 'fasilitas') renderFasilitas(id, d);
+  }
+
+  function setHero(cat, catIcon, title, desc, heroImg, meta=[]) {
+    document.title = title + ' — SMK Negeri 2 Sragen';
+    document.getElementById('heroBgImg').src = heroImg || '';
+    document.getElementById('heroCatText').textContent = cat;
+    document.querySelector('#heroCat i').className = catIcon;
+    document.getElementById('heroTitle').innerHTML = title;
+    document.getElementById('heroDesc').textContent = desc;
+    document.getElementById('heroMeta').innerHTML = meta.map(m =>
+      `<div class="detail-meta-item"><i class="${m.icon}"></i> ${m.text}</div>`).join('');
+    document.getElementById('bcSection').textContent = cat;
+    document.getElementById('bcTitle').textContent = title.length > 50 ? title.slice(0,50)+'…' : title;
+  }
+
+  const SPMB_SIDEBAR = `
+    <h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
+    <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:14px;">
+      Pendaftaran siswa baru SMKN 2 Sragen dilakukan melalui <strong>website resmi SPMB Jawa Tengah</strong>.
+    </p>
+    <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer" class="btn-cta">
+      <i class="fas fa-external-link-alt"></i> Daftar via SPMB Resmi
+    </a>
+    <div style="margin-top:12px;background:var(--gray-1);border-radius:10px;padding:12px 14px;font-size:11.5px;color:var(--text-3);line-height:1.6;">
+      <i class="fas fa-info-circle" style="color:var(--navy);margin-right:4px;"></i>
+      Pendaftaran resmi hanya melalui situs pemerintah.
+    </div>`;
+
+  function renderJurusan(id, d) {
+    setHero(
+      'Program Keahlian', d.icon || 'fas fa-graduation-cap',
+      d.nama || 'Program Keahlian',
+      d.deskripsi || '',
+      d.heroImg || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80',
+      [
+        { icon:'fas fa-users', text:'±72 Siswa/Angkatan' },
+        { icon:'fas fa-certificate', text:'Akreditasi A' },
+      ]
+    );
+    document.getElementById('detailMain').innerHTML = `
+      <div class="highlight-box">
+        <h3><i class="${d.icon||'fas fa-graduation-cap'}"></i> ${d.nama||''}</h3>
+        <p>${d.deskripsi||''}</p>
+        <a href="https://spmb.jatengprov.go.id" target="_blank" rel="noopener noreferrer"
+           class="btn-cta gold-btn" style="display:inline-flex;width:auto;padding:10px 22px;font-size:13px;margin-top:8px;">
+          <i class="fas fa-external-link-alt"></i> Info SPMB Resmi
+        </a>
+      </div>
+      ${d.kompetensi ? `
+      <div class="detail-section">
+        <h2><i class="fas fa-book"></i> Kompetensi yang Dipelajari</h2>
+        <ul>${d.kompetensi.split('\n').filter(k=>k.trim()).map(k=>`<li>${k.trim()}</li>`).join('')}</ul>
+      </div>` : ''}
+      ${d.karir ? `
+      <div class="detail-section">
+        <h2><i class="fas fa-industry"></i> Peluang Karir</h2>
+        <p>${d.karir}</p>
+      </div>` : ''}
+      <div class="tag-wrap">
+        ${(d.tag||d.bidang||'').split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}
+      </div>`;
+    document.getElementById('sidebarInfo').innerHTML = SPMB_SIDEBAR;
+  }
+
+  function renderBerita(id, d) {
+    setHero(
+      'Berita Sekolah', 'fas fa-newspaper',
+      d.judul || 'Berita',
+      d.ringkasan || '',
+      d.foto || '',
+      [
+        { icon:'fas fa-calendar', text: d.tanggal||'' },
+        { icon:'fas fa-tag', text: d.kategori||'' },
+      ]
+    );
+    document.getElementById('detailMain').innerHTML = `
+      <div class="detail-section">
+        <h2><i class="fas fa-newspaper"></i> Isi Berita</h2>
+        <p>${(d.isi||'').replace(/\n/g,'</p><p>')}</p>
+      </div>
+      <div class="tag-wrap"><span class="tag">${d.kategori||''}</span></div>`;
+    document.getElementById('sidebarInfo').innerHTML = `
+      <h4><i class="fas fa-info-circle"></i> Info Berita</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);">
+          <span style="color:var(--text-3);">Tanggal</span><strong>${d.tanggal||'-'}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;">
+          <span style="color:var(--text-3);">Kategori</span><strong>${d.kategori||'-'}</strong>
+        </div>
+      </div>`;
+  }
+
+  function renderPrestasi(id, d) {
+    setHero(
+      'Prestasi Siswa', 'fas fa-trophy',
+      d.nama || 'Prestasi',
+      d.keterangan || '',
+      'https://images.unsplash.com/photo-1567443024551-f3e3cc2be870?w=1200&q=80',
+      [
+        { icon:'fas fa-medal', text: d.medal||'🏆' },
+        { icon:'fas fa-map-marker-alt', text:'Tingkat '+( d.tingkat||'') },
+        { icon:'fas fa-calendar', text:'Tahun '+(d.tahun||'') },
+      ]
+    );
+    document.getElementById('detailMain').innerHTML = `
+      <div class="highlight-box">
+        <h3>${d.medal||'🏆'} ${d.nama||''}</h3>
+        <p>${d.keterangan||''}</p>
+      </div>
+      <div class="detail-section">
+        <h2><i class="fas fa-info-circle"></i> Detail Prestasi</h2>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Tingkat</div><div class="info-item-value">${d.tingkat||'-'}</div></div>
+          <div class="info-item"><div class="info-item-label">Tahun</div><div class="info-item-value">${d.tahun||'-'}</div></div>
+        </div>
+      </div>`;
+    document.getElementById('sidebarInfo').innerHTML = `
+      <h4><i class="fas fa-trophy"></i> Detail</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);">
+          <span style="color:var(--text-3);">Medali</span><strong>${d.medal||'-'}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;">
+          <span style="color:var(--text-3);">Tahun</span><strong>${d.tahun||'-'}</strong>
+        </div>
+      </div>`;
+  }
+
+  function renderFasilitas(id, d) {
+    setHero(
+      'Fasilitas Sekolah', d.icon||'fas fa-building',
+      d.nama || 'Fasilitas',
+      d.keterangan || '',
+      'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
+      [{ icon:'fas fa-industry', text:'Berstandar Industri' }]
+    );
+    document.getElementById('detailMain').innerHTML = `
+      <div class="detail-section">
+        <h2><i class="${d.icon||'fas fa-building'}"></i> Tentang Fasilitas</h2>
+        <p>${d.keterangan||''}</p>
+      </div>`;
+    document.getElementById('sidebarInfo').innerHTML = `
+      <h4><i class="fas fa-info-circle"></i> Info Fasilitas</h4>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;">
+        <span style="color:var(--text-3);">Kategori</span><strong>${d.kategori||'-'}</strong>
+      </div>`;
+  }
+
+  // ── Render konten terkait dari Firestore
+  function renderRelatedFirestore(section, items) {
+    const container = document.getElementById('relatedContent');
+    if (!container || !items.length) return;
+
+    // Untuk jurusan: urutan tetap
+    let ordered = items;
+    if (section === 'jurusan') {
+      const ORDER = ['tpm','tkro','dpib','tkp','titl','tkj'];
+      ordered = ORDER.filter(k => items.find(i => i.id === k))
+                     .map(k => items.find(i => i.id === k));
+    }
+
+    container.innerHTML = ordered.map(item => {
+      const title = item.nama || item.judul || item.posisi || '';
+      const cat   = item.bidang || item.kategori || 'Program Keahlian';
+      const img   = item.heroImg || item.foto || '';
+      return `<a class="related-card" onclick="goDetail('${section}','${item.id}')">
+        <div class="related-thumb" style="background:linear-gradient(135deg,var(--navy-dk),var(--navy-lt));display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <img src="${img}" alt="${title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'" />
+        </div>
+        <div>
+          <div class="related-title">${title}</div>
+          <div class="related-meta">${cat}</div>
+        </div>
+      </a>`;
+    }).join('');
+  }
+</script>
 </body>
 </html>

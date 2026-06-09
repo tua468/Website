@@ -225,10 +225,7 @@
         <p>Kelola konten website SMKN 2 Sragen</p>
       </div>
 
-      <!-- Credential hint -->
-      <div class="cred-hint">
-        <strong>Demo:</strong> admin@smkn2sragen.sch.id &nbsp;/&nbsp; smktwosra
-      </div>
+
 
       <!-- Error message -->
       <div class="form-error" id="formError">
@@ -281,12 +278,29 @@
     </div>
   </div>
 
-  <script>
-    // ── Credentials
-    const ADMIN_EMAIL    = 'admin@smkn2sragen.sch.id';
-    const ADMIN_PASSWORD = 'smktwosra';
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-    function togglePassword() {
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+      authDomain: "smkn2sragen-e487b.firebaseapp.com",
+      projectId: "smkn2sragen-e487b",
+      storageBucket: "smkn2sragen-e487b.firebasestorage.app",
+      messagingSenderId: "602192129071",
+      appId: "1:602192129071:web:884e02ba2bd6766df22ada"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Kalau sudah login → langsung ke dashboard
+    onAuthStateChanged(auth, user => {
+      if (user) window.location.href = 'dashboard.html';
+    });
+
+    // Toggle password
+    window.togglePassword = function() {
       const input = document.getElementById('password');
       const icon  = document.getElementById('eyeIcon');
       if (input.type === 'password') {
@@ -296,15 +310,14 @@
         input.type = 'password';
         icon.className = 'fas fa-eye';
       }
-    }
+    };
 
     function showError(msg) {
       const el = document.getElementById('formError');
       document.getElementById('errorMsg').textContent = msg;
       el.classList.add('show');
-      // Shake animation
       el.style.animation = 'none';
-      el.offsetHeight; // reflow
+      el.offsetHeight;
       el.style.animation = 'shake .4s ease';
     }
 
@@ -312,7 +325,13 @@
       document.getElementById('formError').classList.remove('show');
     }
 
-    function handleLogin(e) {
+    // Reset border on input
+    ['email','password'].forEach(id => {
+      document.getElementById(id).addEventListener('input', hideError);
+    });
+
+    // Handle login pakai Firebase Auth
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       hideError();
 
@@ -320,44 +339,28 @@
       const password = document.getElementById('password').value;
       const btn      = document.getElementById('loginBtn');
 
-      // Validasi kosong
-      if (!email) { showError('Email tidak boleh kosong.'); return; }
+      if (!email)    { showError('Email tidak boleh kosong.'); return; }
       if (!password) { showError('Password tidak boleh kosong.'); return; }
 
-      // Loading state
       btn.classList.add('loading');
 
-      // Simulasi pengecekan (500ms)
-      setTimeout(() => {
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-          // Simpan session
-          sessionStorage.setItem('adminLoggedIn', 'true');
-          sessionStorage.setItem('adminEmail', email);
-          // Redirect ke dashboard
-          window.location.href = 'dashboard.html';
-        } else {
-          btn.classList.remove('loading');
-          showError('Email atau password salah. Periksa kembali.');
-          // Shake input
-          document.getElementById('email').style.borderColor   = '#e53e3e';
-          document.getElementById('password').style.borderColor = '#e53e3e';
-          setTimeout(() => {
-            document.getElementById('email').style.borderColor   = '';
-            document.getElementById('password').style.borderColor = '';
-          }, 1500);
-        }
-      }, 600);
-    }
-
-    // Reset border on input
-    ['email','password'].forEach(id => {
-      document.getElementById(id).addEventListener('input', hideError);
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged akan otomatis redirect ke dashboard
+      } catch (err) {
+        btn.classList.remove('loading');
+        let msg = 'Email atau password salah. Periksa kembali.';
+        if (err.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan. Coba lagi nanti.';
+        if (err.code === 'auth/invalid-email')     msg = 'Format email tidak valid.';
+        showError(msg);
+        document.getElementById('email').style.borderColor    = '#e53e3e';
+        document.getElementById('password').style.borderColor = '#e53e3e';
+        setTimeout(() => {
+          document.getElementById('email').style.borderColor    = '';
+          document.getElementById('password').style.borderColor = '';
+        }, 1500);
+      }
     });
-
-    // Sudah login? langsung ke dashboard
-    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-      window.location.href = 'dashboard.html';
-    }
   </script>
 
   <style>

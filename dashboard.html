@@ -366,7 +366,7 @@
         <div class="admin-role" id="sidebarEmail">admin@smkn2sragen.sch.id</div>
       </div>
     </div>
-    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+    <button class="btn-logout" onclick="logoutFirebase()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
   </div>
 </aside>
 
@@ -733,13 +733,7 @@
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Perubahan berhasil disimpan!</span></div>
 
 <script>
-  // ── Auth check
-  if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
-    window.location.href = 'admin.html';
-  }
-  // Set email
-  const email = sessionStorage.getItem('adminEmail') || 'admin@smkn2sragen.sch.id';
-  document.getElementById('sidebarEmail').textContent = email;
+<script>
 
   // ── Panel switching
   const panels = {
@@ -918,11 +912,242 @@
   // ── Logout
   function logout() {
     if (confirm('Yakin ingin keluar dari panel admin?')) {
-      sessionStorage.removeItem('adminLoggedIn');
-      sessionStorage.removeItem('adminEmail');
-      window.location.href = 'admin.html';
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js').then(({ getAuth, signOut }) => {
+        signOut(getAuth()).then(() => { window.location.href = 'admin.html'; });
+      });
     }
   }
+</script>
+
+<script type="module">
+  import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import {
+    getFirestore, collection, doc,
+    getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc,
+    onSnapshot, serverTimestamp, query, orderBy
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+    authDomain: "smkn2sragen-e487b.firebaseapp.com",
+    projectId: "smkn2sragen-e487b",
+    storageBucket: "smkn2sragen-e487b.firebasestorage.app",
+    messagingSenderId: "602192129071",
+    appId: "1:602192129071:web:884e02ba2bd6766df22ada"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── Auth guard
+  onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = 'admin.html'; return; }
+    document.getElementById('sidebarEmail').textContent = user.email;
+    initDashboard();
+  });
+
+  // ── Expose logout ke window
+  window.logoutFirebase = () => {
+    if (confirm('Yakin ingin keluar dari panel admin?')) {
+      signOut(auth).then(() => { window.location.href = 'admin.html'; });
+    }
+  };
+
+  // ── Seed data awal (hanya jika koleksi masih kosong)
+  const SEED = {
+    jurusan: [
+      { id:'tpm',  no:'01', nama:'Teknik Pemesinan', bidang:'Teknik Mesin', icon:'fas fa-cog', deskripsi:'Pengoperasian mesin bubut, frais, CNC, dan peralatan pemesinan presisi untuk produksi komponen industri.', tag:'Teknik Mesin', status:'Aktif', urutan:1 },
+      { id:'tkro', no:'02', nama:'Teknik Kendaraan Ringan Otomotif', bidang:'Teknik Otomotif', icon:'fas fa-car', deskripsi:'Perawatan, perbaikan, dan teknologi kendaraan ringan bermotor sesuai standar industri otomotif modern.', tag:'Teknik Otomotif', status:'Aktif', urutan:2 },
+      { id:'dpib', no:'03', nama:'Desain Pemodelan & Informasi Bangunan', bidang:'Teknik Bangunan', icon:'fas fa-drafting-compass', deskripsi:'Perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.', tag:'Teknik Bangunan', status:'Aktif', urutan:3 },
+      { id:'tkp',  no:'04', nama:'Teknik Konstruksi & Perumahan', bidang:'Teknik Konstruksi', icon:'fas fa-home', deskripsi:'Perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis.', tag:'Teknik Konstruksi', status:'Aktif', urutan:4 },
+      { id:'titl', no:'05', nama:'Teknik Instalasi Tenaga Listrik', bidang:'Ketenagalistrikan', icon:'fas fa-bolt', deskripsi:'Instalasi, pemeliharaan, dan perbaikan sistem kelistrikan skala industri maupun residensial.', tag:'Teknik Ketenagalistrikan', status:'Aktif', urutan:5 },
+      { id:'tkj',  no:'06', nama:'Teknik Komputer & Jaringan', bidang:'Teknologi Informasi', icon:'fas fa-laptop-code', deskripsi:'Instalasi jaringan, keamanan siber, administrasi server, cloud computing, dan infrastruktur IT.', tag:'Teknologi Informasi', status:'Aktif', urutan:6 },
+    ],
+    prestasi: [
+      { medal:'🥇', nama:'Juara 1 LKS Teknik Kendaraan Ringan', tingkat:'Provinsi', keterangan:'LKS Bidang Otomotif — Jawa Tengah', tahun:'2025', status:'Aktif' },
+      { medal:'🏆', nama:'Finalis LKS Nasional Teknik Instalasi Listrik', tingkat:'Nasional', keterangan:'LKS Tingkat Nasional — Jakarta', tahun:'2025', status:'Aktif' },
+      { medal:'🥇', nama:'Juara Umum Olimpiade Sains Terapan', tingkat:'Kabupaten', keterangan:'OST Kabupaten Sragen', tahun:'2025', status:'Aktif' },
+      { medal:'🥇', nama:'Juara 3 Khitobah Putri MAPSI SMK', tingkat:'Provinsi', keterangan:'MAPSI Jawa Tengah 2025', tahun:'2025', status:'Aktif' },
+      { medal:'🥈', nama:'Juara 2 LKS Desain Pemodelan Bangunan', tingkat:'Provinsi', keterangan:'LKS Bidang Teknik Bangunan', tahun:'2024', status:'Aktif' },
+      { medal:'🎖️', nama:'Piala Bergilir LKBB Garuda Muda Season 1', tingkat:'Kabupaten', keterangan:'Paskibra SMKN 2 Sragen', tahun:'2025', status:'Aktif' },
+    ],
+    berita: [
+      { judul:'Elsa Mutia Hafid Raih Juara 3 Khitobah Putri MAPSI SMK Jawa Tengah 2025', kategori:'Prestasi', tanggal:'2025-11-25', ringkasan:'Ajang bergengsi MAPSI tingkat SMK se-Provinsi Jawa Tengah 2025 mengharumkan nama SMKN 2 Sragen.', isi:'Sragen — Siswi SMKN 2 Sragen, Elsa Mutia Hafid, berhasil meraih Juara 3 cabang Khitobah Putri MAPSI SMK Provinsi Jawa Tengah 2025.', foto:'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=80', status:'Publish' },
+      { judul:'SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1', kategori:'Kesiswaan', tanggal:'2025-11-20', ringkasan:'Tim Paskibra SMKN 2 Sragen berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', isi:'Sragen — Tim Paskibra SMK Negeri 2 Sragen berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', foto:'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=80', status:'Publish' },
+      { judul:'SMKN 2 Sragen Terima Bantuan Lab Fiber Optic dari Kominfo', kategori:'Teknologi', tanggal:'2025-11-05', ringkasan:'SMKN 2 Sragen menerima bantuan laboratorium Fiber Optic dari Kementerian Kominfo.', isi:'Sragen — SMKN 2 Sragen resmi menerima bantuan laboratorium fiber optic dari Kementerian Kominfo.', foto:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80', status:'Publish' },
+    ],
+    bkk: [
+      { perusahaan:'PT Sinar Mas Agribusiness', posisi:'Teknisi Mesin Industri', lokasi:'Sragen, Jawa Tengah', jurusan:'Teknik Mesin', jenis:'Full Time', batas:'2026-06-30', deskripsi:'Merawat dan mengoperasikan mesin industri di lingkungan pabrik.', status:'Aktif' },
+      { perusahaan:'PT Telkom Indonesia', posisi:'Network Technician & IT Support', lokasi:'Solo, Jawa Tengah', jurusan:'TKJ', jenis:'Full Time', batas:'2026-07-15', deskripsi:'Instalasi dan pemeliharaan jaringan telekomunikasi.', status:'Aktif' },
+      { perusahaan:'PT PLN (Persero) ULP Sragen', posisi:'Teknisi Instalasi Listrik', lokasi:'Sragen, Jawa Tengah', jurusan:'TITL', jenis:'Kontrak', batas:'2026-06-25', deskripsi:'Instalasi dan pemeliharaan sistem kelistrikan PLN.', status:'Aktif' },
+    ],
+    fasilitas: [
+      { nama:'Ruang Kelas', kategori:'Umum', keterangan:'30 ruang kelas ber-AC', icon:'fas fa-chalkboard-teacher', status:'Aktif' },
+      { nama:'Bengkel CNC', kategori:'Kejuruan', keterangan:'Mesin CNC, bubut, frais modern', icon:'fas fa-industry', status:'Aktif' },
+      { nama:'Bengkel Otomotif', kategori:'Kejuruan', keterangan:'Engine stand, scanner modern', icon:'fas fa-tools', status:'Aktif' },
+      { nama:'Lab Jaringan & Server', kategori:'Kejuruan', keterangan:'Fiber optic, server rack, cisco', icon:'fas fa-wifi', status:'Aktif' },
+      { nama:'Perpustakaan', kategori:'Umum', keterangan:'Koleksi buku teknik dan digital', icon:'fas fa-book-reader', status:'Aktif' },
+      { nama:'Lapangan Olahraga', kategori:'Umum', keterangan:'Basket, voli, futsal', icon:'fas fa-futbol', status:'Aktif' },
+    ],
+    pengumuman: [
+      { judul:'Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2025/2026 resmi dibuka!', kategori:'PPDB', tanggal:'2026-06-01', isi:'PPDB TA 2025/2026 resmi dibuka. Pendaftaran dilakukan melalui website resmi SPMB Jawa Tengah.', status:'Aktif' },
+      { judul:'Pengambilan Ijazah Alumni Angkatan 2025 — Mulai 5 Juni 2026', kategori:'Administrasi', tanggal:'2026-06-05', isi:'Alumni angkatan 2025 dapat mengambil ijazah mulai 5 Juni 2026 di Aula Sekolah.', status:'Aktif' },
+      { judul:'Pelantikan Taruna OSIS Angkatan XIII — Sabtu, 7 Juni 2026', kategori:'Kesiswaan', tanggal:'2026-06-07', isi:'Pelantikan Pengurus OSIS Angkatan XIII dilaksanakan Sabtu 7 Juni 2026 pukul 07.30 WIB.', status:'Aktif' },
+    ],
+  };
+
+  async function seedIfEmpty(colName, items) {
+    const snap = await getDocs(collection(db, colName));
+    if (!snap.empty) return; // sudah ada data, skip
+    for (const item of items) {
+      if (item.id) {
+        await setDoc(doc(db, colName, item.id), { ...item, createdAt: serverTimestamp() });
+      } else {
+        await addDoc(collection(db, colName), { ...item, createdAt: serverTimestamp() });
+      }
+    }
+    console.log(`✅ Seeded: ${colName}`);
+  }
+
+  // ── Init dashboard
+  async function initDashboard() {
+    // Seed semua koleksi jika masih kosong
+    await Promise.all([
+      seedIfEmpty('jurusan',    SEED.jurusan),
+      seedIfEmpty('prestasi',   SEED.prestasi),
+      seedIfEmpty('berita',     SEED.berita),
+      seedIfEmpty('bkk',        SEED.bkk),
+      seedIfEmpty('fasilitas',  SEED.fasilitas),
+      seedIfEmpty('pengumuman', SEED.pengumuman),
+    ]);
+    // Load semua tabel
+    loadTable('jurusan');
+    loadTable('prestasi');
+    loadTable('berita');
+    loadTable('bkk');
+    loadTable('fasilitas');
+    loadTable('pengumuman');
+    updateOverview();
+  }
+
+  // ── Load tabel dari Firestore
+  async function loadTable(colName) {
+    const tbody = document.querySelector(`#tbl-${colName} tbody`);
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>`;
+    try {
+      const snap = await getDocs(collection(db, colName));
+      if (snap.empty) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text-3);">Belum ada data.</td></tr>`; return; }
+      tbody.innerHTML = snap.docs.map(d => renderRow(colName, d.id, d.data())).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--red);">Gagal memuat: ${e.message}</td></tr>`;
+    }
+  }
+
+  function renderRow(col, id, d) {
+    const actions = `<td class="td-actions">
+      <button class="btn-edit btn-sm" onclick="openEdit('${col}','${id}')"><i class="fas fa-edit"></i> Edit</button>
+      <button class="btn-danger btn-sm" onclick="deleteItem('${col}','${id}','${(d.nama||d.judul||d.posisi||'').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+    </td>`;
+    if (col==='jurusan')    return `<tr><td>${d.no||'-'}</td><td><strong>${d.nama}</strong></td><td>${d.bidang||'-'}</td><td>${d.deskripsi||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
+    if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td>${actions}</tr>`;
+    if (col==='berita')     return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul}</strong></td><td>${d.kategori||'-'}</td><td><span class="status ${d.status==='Publish'?'aktif':'draft'}">${d.status||'Draft'}</span></td>${actions}</tr>`;
+    if (col==='bkk')        return `<tr><td><strong>${d.perusahaan}</strong></td><td>${d.posisi||'-'}</td><td>${d.lokasi||'-'}</td><td>${d.jurusan||'-'}</td><td>${d.batas||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
+    if (col==='fasilitas')  return `<tr><td>1</td><td><strong>${d.nama}</strong></td><td>${d.kategori||'-'}</td><td>${d.keterangan||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
+    if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
+    return `<tr><td colspan="10">${JSON.stringify(d)}</td></tr>`;
+  }
+
+  // ── Update overview counts
+  async function updateOverview() {
+    const cols = ['jurusan','prestasi','bkk','berita'];
+    const counts = await Promise.all(cols.map(c => getDocs(collection(db,c)).then(s=>s.size)));
+    const nums = document.querySelectorAll('.ov-num');
+    if (nums[0]) nums[0].textContent = counts[0];
+    if (nums[1]) nums[1].textContent = counts[1];
+    if (nums[2]) nums[2].textContent = counts[2];
+    if (nums[3]) nums[3].textContent = counts[3];
+  }
+
+  // ── currentEdit state
+  let _editCol = null, _editId = null;
+
+  // ── Open edit modal (load data dari Firestore)
+  window.openEdit = async (col, id) => {
+    _editCol = col; _editId = id;
+    const d = (await getDoc(doc(db, col, id))).data() || {};
+    document.getElementById('modalTitle').textContent = 'Edit ' + col.charAt(0).toUpperCase() + col.slice(1);
+    document.getElementById('modalBody').innerHTML = buildForm(col, d);
+    document.getElementById('modalOverlay').classList.add('open');
+  };
+
+  // ── Open add modal
+  window.openModal = (col) => {
+    _editCol = col; _editId = null;
+    document.getElementById('modalTitle').textContent = 'Tambah ' + col.charAt(0).toUpperCase() + col.slice(1);
+    document.getElementById('modalBody').innerHTML = buildForm(col, {});
+    document.getElementById('modalOverlay').classList.add('open');
+  };
+
+  // ── Build form fields
+  function buildForm(col, d) {
+    const f = (label, name, val='', type='text') =>
+      `<div class="field"><label>${label}</label><input type="${type}" name="${name}" value="${val||''}" /></div>`;
+    const ta = (label, name, val='') =>
+      `<div class="field"><label>${label}</label><textarea name="${name}">${val||''}</textarea></div>`;
+    const sel = (label, name, opts, val='') =>
+      `<div class="field"><label>${label}</label><select name="${name}">${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></div>`;
+
+    if (col==='jurusan')    return f('Nama Jurusan','nama',d.nama)+f('Bidang Keahlian','bidang',d.bidang)+ta('Deskripsi','deskripsi',d.deskripsi)+f('Icon (FA class)','icon',d.icon)+f('Tag','tag',d.tag)+sel('Status','status',['Aktif','Non-aktif'],d.status);
+    if (col==='prestasi')   return sel('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sel('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number');
+    if (col==='berita')     return f('Judul Berita','judul',d.judul)+sel('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sel('Status','status',['Publish','Draft'],d.status);
+    if (col==='bkk')        return f('Perusahaan','perusahaan',d.perusahaan)+f('Posisi','posisi',d.posisi)+f('Lokasi','lokasi',d.lokasi)+f('Jurusan','jurusan',d.jurusan)+sel('Jenis','jenis',['Full Time','Part Time','Kontrak','Magang'],d.jenis)+f('Batas Lamaran','batas',d.batas,'date')+ta('Deskripsi','deskripsi',d.deskripsi)+sel('Status','status',['Aktif','Tutup'],d.status);
+    if (col==='fasilitas')  return f('Nama Fasilitas','nama',d.nama)+sel('Kategori','kategori',['Umum','Kejuruan','Olahraga','Ibadah'],d.kategori)+ta('Keterangan','keterangan',d.keterangan)+f('Icon (FA class)','icon',d.icon)+sel('Status','status',['Aktif','Perbaikan','Non-aktif'],d.status);
+    if (col==='pengumuman') return f('Judul','judul',d.judul)+sel('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+sel('Status','status',['Aktif','Arsip'],d.status);
+    return '<p>Form tidak tersedia.</p>';
+  }
+
+  // ── Save modal → Firestore
+  window.saveModal = async () => {
+    const form = document.getElementById('modalBody');
+    const inputs = form.querySelectorAll('input,textarea,select');
+    const data = {};
+    inputs.forEach(el => { if (el.name) data[el.name] = el.value; });
+    data.updatedAt = serverTimestamp();
+
+    try {
+      if (_editId) {
+        await updateDoc(doc(db, _editCol, _editId), data);
+      } else {
+        data.createdAt = serverTimestamp();
+        await addDoc(collection(db, _editCol), data);
+      }
+      closeModalDirect();
+      showToast('✅ Data berhasil disimpan ke Firebase!');
+      loadTable(_editCol);
+      updateOverview();
+    } catch(e) {
+      showToast('❌ Gagal menyimpan: ' + e.message);
+    }
+  };
+
+  // ── Delete item
+  window.deleteItem = async (col, id, name) => {
+    if (!confirm(`Hapus "${name}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+    try {
+      await deleteDoc(doc(db, col, id));
+      showToast(`🗑️ "${name}" berhasil dihapus.`);
+      loadTable(col);
+      updateOverview();
+    } catch(e) {
+      showToast('❌ Gagal menghapus: ' + e.message);
+    }
+  };
+
+  // expose ke window agar onclick HTML bisa akses
+  window.initDashboard = initDashboard;
 </script>
 </body>
 </html>
