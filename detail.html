@@ -299,7 +299,7 @@
         <div class="sidebar-card" id="sidebarInfo">
           <!-- Diisi dinamis -->
         </div>
-        <div class="sidebar-card">
+        <div class="sidebar-card" id="sidebarNavCepat">
           <h4><i class="fas fa-compass"></i> Navigasi Cepat</h4>
           <a class="sidebar-link" onclick="goDetail('jurusan','tpm')"><i class="fas fa-cog"></i> Teknik Pemesinan (TP)</a>
           <a class="sidebar-link" onclick="goDetail('jurusan','tkro')"><i class="fas fa-car"></i> Teknik Kendaraan Ringan (TKR)</a>
@@ -1078,6 +1078,10 @@ function render() {
 
   // Sidebar
   document.getElementById('sidebarInfo').innerHTML = d.sidebar;
+
+  // Sembunyikan navigasi cepat kalau bukan section jurusan
+  const navCepat = document.getElementById('sidebarNavCepat');
+  if (navCepat) navCepat.style.display = section === 'jurusan' ? '' : 'none';
 
   // Related content
   renderRelated(section, id);
