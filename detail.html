@@ -708,32 +708,314 @@ const DATA = {
 
   // ── FASILITAS ──
   fasilitas: {
+    ruang_kelas: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-chalkboard-teacher',
+      title:'Ruang Kelas', desc:'Ruang kelas SMKN 2 Sragen dirancang nyaman dan kondusif untuk proses belajar mengajar dengan fasilitas modern.',
+      heroImg:'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80',
+      meta:[{icon:'fas fa-door-open',text:'30 Ruang'},{icon:'fas fa-snowflake',text:'Ber-AC'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Ruang Kelas</h2>
+        <p>SMKN 2 Sragen memiliki 30 ruang kelas yang nyaman dan representatif. Setiap ruang dilengkapi proyektor, papan tulis interaktif, dan AC untuk mendukung proses pembelajaran yang optimal.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Jumlah Ruang</div><div class="info-item-value">30 Kelas</div></div>
+          <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">36 Siswa/Kelas</div></div>
+          <div class="info-item"><div class="info-item-label">Fasilitas</div><div class="info-item-value">Proyektor + AC</div></div>
+          <div class="info-item"><div class="info-item-label">Kondisi</div><div class="info-item-value">Baik & Terawat</div></div>
+        </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&q=80" alt="Ruang Kelas"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1606761568499-6d2451b23c66?w=400&q=80" alt="Kelas Modern"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80" alt="Belajar"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-chalkboard-teacher"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Umum</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Jumlah</span><strong>30 Ruang</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kondisi</span><strong>Baik</strong></div>
+        </div>`,
+    },
+    perpustakaan: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-book-reader',
+      title:'Perpustakaan', desc:'Perpustakaan SMKN 2 Sragen menyediakan koleksi buku teknik, umum, dan akses digital untuk mendukung literasi siswa.',
+      heroImg:'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=80',
+      meta:[{icon:'fas fa-book',text:'5.000+ Koleksi'},{icon:'fas fa-wifi',text:'Akses Digital'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Perpustakaan</h2>
+        <p>Perpustakaan SMKN 2 Sragen memiliki koleksi lebih dari 5.000 judul buku yang mencakup buku teknik kejuruan, buku umum, dan referensi ilmiah. Dilengkapi area baca yang nyaman dan akses internet.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Koleksi Buku</div><div class="info-item-value">5.000+ Judul</div></div>
+          <div class="info-item"><div class="info-item-label">Kapasitas Baca</div><div class="info-item-value">50 Orang</div></div>
+          <div class="info-item"><div class="info-item-label">Akses Internet</div><div class="info-item-value">Tersedia</div></div>
+          <div class="info-item"><div class="info-item-label">Jam Buka</div><div class="info-item-value">07.00–15.00</div></div>
+        </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&q=80" alt="Perpustakaan"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80" alt="Koleksi Buku"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&q=80" alt="Area Baca"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-book-reader"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Umum</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Koleksi</span><strong>5.000+ Judul</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Jam Buka</span><strong>07.00–15.00</strong></div>
+        </div>`,
+    },
+    lapangan: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-futbol',
+      title:'Lapangan Olahraga', desc:'Lapangan olahraga SMKN 2 Sragen dilengkapi fasilitas lengkap untuk basket, voli, futsal, dan upacara bendera.',
+      heroImg:'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80',
+      meta:[{icon:'fas fa-futbol',text:'Basket & Voli'},{icon:'fas fa-running',text:'Futsal'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Lapangan Olahraga</h2>
+        <p>SMKN 2 Sragen memiliki lapangan olahraga multifungsi yang digunakan untuk kegiatan pembelajaran Pendidikan Jasmani, upacara bendera, dan berbagai kegiatan ekstrakurikuler olahraga.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Lapangan Basket</div><div class="info-item-value">1 Lapangan</div></div>
+          <div class="info-item"><div class="info-item-label">Lapangan Voli</div><div class="info-item-value">2 Lapangan</div></div>
+          <div class="info-item"><div class="info-item-label">Lapangan Futsal</div><div class="info-item-value">1 Lapangan</div></div>
+          <div class="info-item"><div class="info-item-label">Area Upacara</div><div class="info-item-value">Tersedia</div></div>
+        </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80" alt="Lapangan"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&q=80" alt="Basket"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&q=80" alt="Voli"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-futbol"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Olahraga</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Fasilitas</span><strong>Basket, Voli, Futsal</strong></div>
+        </div>`,
+    },
+    masjid: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-mosque',
+      title:'Masjid & Mushola', desc:'Masjid dan mushola SMKN 2 Sragen tersedia untuk kegiatan ibadah siswa, guru, dan karyawan sehari-hari.',
+      heroImg:'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=1200&q=80',
+      meta:[{icon:'fas fa-mosque',text:'Masjid & Mushola'},{icon:'fas fa-users',text:'Kapasitas 200 Orang'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Masjid & Mushola</h2>
+        <p>SMKN 2 Sragen menyediakan fasilitas ibadah berupa masjid sekolah yang representatif dan mushola yang dapat digunakan oleh seluruh warga sekolah. Fasilitas ini mendukung pembentukan karakter religius siswa.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Kapasitas Masjid</div><div class="info-item-value">200 Jamaah</div></div>
+          <div class="info-item"><div class="info-item-label">Mushola</div><div class="info-item-value">3 Unit</div></div>
+          <div class="info-item"><div class="info-item-label">Tempat Wudhu</div><div class="info-item-value">Tersedia</div></div>
+          <div class="info-item"><div class="info-item-label">Kondisi</div><div class="info-item-value">Baik & Terawat</div></div>
+        </div></div>`,
+      sidebar:`<h4><i class="fas fa-mosque"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Ibadah</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kapasitas</span><strong>200 Jamaah</strong></div>
+        </div>`,
+    },
+    kantin: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-utensils',
+      title:'Kantin Sehat', desc:'Kantin SMKN 2 Sragen menyediakan makanan dan minuman sehat, terjangkau, dan higienis untuk seluruh warga sekolah.',
+      heroImg:'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=1200&q=80',
+      meta:[{icon:'fas fa-utensils',text:'Menu Sehat'},{icon:'fas fa-leaf',text:'Higienis'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Kantin Sehat</h2>
+        <p>Kantin SMKN 2 Sragen dikelola secara profesional dengan memperhatikan higienitas dan nilai gizi makanan. Tersedia berbagai pilihan menu yang terjangkau dan menyehatkan bagi siswa.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Jumlah Stand</div><div class="info-item-value">8 Stand</div></div>
+          <div class="info-item"><div class="info-item-label">Kapasitas Duduk</div><div class="info-item-value">150 Orang</div></div>
+          <div class="info-item"><div class="info-item-label">Jam Operasional</div><div class="info-item-value">07.00–16.00</div></div>
+          <div class="info-item"><div class="info-item-label">Standar</div><div class="info-item-value">Kantin Sehat Sekolah</div></div>
+        </div></div>`,
+      sidebar:`<h4><i class="fas fa-utensils"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Umum</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Jam Buka</span><strong>07.00–16.00</strong></div>
+        </div>`,
+    },
+    uks: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-shield-alt',
+      title:'UKS (Unit Kesehatan Sekolah)', desc:'UKS SMKN 2 Sragen siap memberikan pertolongan pertama dan layanan kesehatan dasar bagi seluruh warga sekolah.',
+      heroImg:'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&q=80',
+      meta:[{icon:'fas fa-heartbeat',text:'Layanan Kesehatan'},{icon:'fas fa-user-md',text:'Tenaga Medis'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang UKS</h2>
+        <p>Unit Kesehatan Sekolah (UKS) SMKN 2 Sragen dilengkapi dengan peralatan P3K lengkap, tempat tidur pasien, dan obat-obatan dasar. Didukung oleh tenaga medis yang siap membantu saat siswa membutuhkan pertolongan pertama.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Tempat Tidur</div><div class="info-item-value">4 Unit</div></div>
+          <div class="info-item"><div class="info-item-label">Peralatan P3K</div><div class="info-item-value">Lengkap</div></div>
+          <div class="info-item"><div class="info-item-label">Tenaga Medis</div><div class="info-item-value">1 Perawat</div></div>
+          <div class="info-item"><div class="info-item-label">Jam Operasional</div><div class="info-item-value">07.00–15.00</div></div>
+        </div></div>`,
+      sidebar:`<h4><i class="fas fa-shield-alt"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Kesehatan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Jam Buka</span><strong>07.00–15.00</strong></div>
+        </div>`,
+    },
+    koperasi: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-store',
+      title:'Koperasi Sekolah', desc:'Koperasi SMKN 2 Sragen menyediakan kebutuhan alat tulis, seragam, dan kebutuhan belajar siswa dengan harga terjangkau.',
+      heroImg:'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1200&q=80',
+      meta:[{icon:'fas fa-store',text:'Koperasi Aktif'},{icon:'fas fa-tag',text:'Harga Terjangkau'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Koperasi Sekolah</h2>
+        <p>Koperasi SMKN 2 Sragen dikelola secara mandiri oleh warga sekolah dan menyediakan berbagai kebutuhan belajar siswa mulai dari alat tulis, buku, seragam, hingga makanan ringan.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Produk Tersedia</div><div class="info-item-value">200+ Item</div></div>
+          <div class="info-item"><div class="info-item-label">Jam Buka</div><div class="info-item-value">07.00–15.00</div></div>
+          <div class="info-item"><div class="info-item-label">Jenis</div><div class="info-item-value">Koperasi Siswa</div></div>
+          <div class="info-item"><div class="info-item-label">Pembayaran</div><div class="info-item-value">Tunai & Transfer</div></div>
+        </div></div>`,
+      sidebar:`<h4><i class="fas fa-store"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Umum</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Jam Buka</span><strong>07.00–15.00</strong></div>
+        </div>`,
+    },
+    kamar_mandi: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-restroom',
+      title:'Kamar Mandi', desc:'SMKN 2 Sragen menyediakan kamar mandi bersih dan representatif yang terpisah untuk putra dan putri.',
+      heroImg:'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&q=80',
+      meta:[{icon:'fas fa-restroom',text:'Putra & Putri'},{icon:'fas fa-star',text:'Bersih & Terawat'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Kamar Mandi</h2>
+        <p>SMKN 2 Sragen menyediakan fasilitas kamar mandi yang bersih, terpisah antara putra dan putri, tersebar di berbagai gedung sekolah untuk kemudahan akses seluruh warga sekolah.</p>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Jumlah Total</div><div class="info-item-value">24 Unit</div></div>
+          <div class="info-item"><div class="info-item-label">Kamar Mandi Putra</div><div class="info-item-value">12 Unit</div></div>
+          <div class="info-item"><div class="info-item-label">Kamar Mandi Putri</div><div class="info-item-value">12 Unit</div></div>
+          <div class="info-item"><div class="info-item-label">Kondisi</div><div class="info-item-value">Bersih & Terawat</div></div>
+        </div></div>`,
+      sidebar:`<h4><i class="fas fa-restroom"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Umum</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Jumlah</span><strong>24 Unit</strong></div>
+        </div>`,
+    },
     bengkel_cnc: {
-      cat: 'Fasilitas Sekolah', catIcon: 'fas fa-industry',
-      title: 'Bengkel CNC — Teknik Pemesinan',
-      desc: 'Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling berstandar industri untuk praktik siswa Teknik Pemesinan.',
-      heroImg: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
-      meta: [{ icon: 'fas fa-industry', text: 'Berstandar Industri' }, { icon: 'fas fa-tools', text: 'CNC Turning & Milling' }],
-      main: `
-        <div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Bengkel CNC</h2>
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-industry',
+      title:'Bengkel CNC — Teknik Pemesinan',
+      desc:'Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling berstandar industri untuk praktik siswa Teknik Pemesinan.',
+      heroImg:'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
+      meta:[{icon:'fas fa-industry',text:'Berstandar Industri'},{icon:'fas fa-tools',text:'CNC Turning & Milling'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Bengkel CNC</h2>
           <p>Bengkel CNC SMKN 2 Sragen merupakan salah satu bengkel kejuruan paling lengkap di Kabupaten Sragen. Dilengkapi dengan mesin CNC turning, CNC milling, mesin bubut konvensional, dan mesin frais.</p>
           <div class="info-grid">
             <div class="info-item"><div class="info-item-label">Jumlah Mesin CNC</div><div class="info-item-value">4 Unit</div></div>
             <div class="info-item"><div class="info-item-label">Mesin Bubut</div><div class="info-item-value">8 Unit</div></div>
             <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">32 Siswa</div></div>
             <div class="info-item"><div class="info-item-label">Standar</div><div class="info-item-value">Industri / SKKNI</div></div>
-          </div>
-        </div>
+          </div></div>
         <div class="photo-grid">
-          <div class="photo-item"><img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&q=80" alt="CNC" /></div>
-          <div class="photo-item"><img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80" alt="Mesin Bubut" /></div>
-          <div class="photo-item"><img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=80" alt="Workshop" /></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&q=80" alt="CNC"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80" alt="Mesin Bubut"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=400&q=80" alt="Workshop"/></div>
         </div>`,
-      sidebar: `<h4><i class="fas fa-industry"></i> Info Fasilitas</h4>
+      sidebar:`<h4><i class="fas fa-industry"></i> Info Fasilitas</h4>
         <div style="display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Bengkel Kejuruan</strong></div>
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kapasitas</span><strong>32 Siswa</strong></div>
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Standar</span><strong>Industri</strong></div>
+        </div>`,
+    },
+    bengkel_otomotif: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-tools',
+      title:'Bengkel Otomotif — Teknik Kendaraan Ringan',
+      desc:'Bengkel otomotif SMKN 2 Sragen dilengkapi kendaraan praktik, engine stand EFI, dan scan tool modern berstandar bengkel resmi.',
+      heroImg:'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=1200&q=80',
+      meta:[{icon:'fas fa-car',text:'6 Kendaraan Praktik'},{icon:'fas fa-tools',text:'Scan Tool Modern'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Bengkel Otomotif</h2>
+          <p>Bengkel otomotif SMKN 2 Sragen dilengkapi dengan kendaraan praktik terbaru, engine stand EFI, transmisi otomatis, dan peralatan scan tool berstandar bengkel resmi untuk mendukung kompetensi siswa TKR.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Kendaraan Praktik</div><div class="info-item-value">6 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Engine Stand EFI</div><div class="info-item-value">4 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Scan Tool</div><div class="info-item-value">8 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">36 Siswa</div></div>
+          </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=400&q=80" alt="Bengkel Otomotif"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" alt="Engine Stand"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&q=80" alt="Scan Tool"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-tools"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Bengkel Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kapasitas</span><strong>36 Siswa</strong></div>
+        </div>`,
+    },
+    workshop_bangunan: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-hard-hat',
+      title:'Workshop Bangunan — DPIB',
+      desc:'Workshop bangunan SMKN 2 Sragen untuk praktik menggambar teknik, pemodelan 3D, dan perancangan bangunan siswa DPIB.',
+      heroImg:'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
+      meta:[{icon:'fas fa-drafting-compass',text:'Lab Desain'},{icon:'fas fa-laptop',text:'32 Komputer'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Workshop Bangunan</h2>
+          <p>Workshop Bangunan DPIB SMKN 2 Sragen dilengkapi komputer berlisensi AutoCAD dan Revit untuk mendukung praktik menggambar teknik dan pemodelan bangunan berbasis BIM.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Komputer</div><div class="info-item-value">32 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Software AutoCAD</div><div class="info-item-value">Berlisensi</div></div>
+            <div class="info-item"><div class="info-item-label">Printer A0/A1</div><div class="info-item-value">2 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">32 Siswa</div></div>
+          </div></div>`,
+      sidebar:`<h4><i class="fas fa-hard-hat"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kapasitas</span><strong>32 Siswa</strong></div>
+        </div>`,
+    },
+    workshop_konstruksi: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-hammer',
+      title:'Workshop Konstruksi — TKP',
+      desc:'Workshop konstruksi SMKN 2 Sragen dengan area luas untuk praktik pekerjaan bata, beton, keramik, dan konstruksi bangunan.',
+      heroImg:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80',
+      meta:[{icon:'fas fa-hammer',text:'Area 500 m²'},{icon:'fas fa-hard-hat',text:'K3 Lengkap'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Workshop Konstruksi</h2>
+          <p>Workshop Konstruksi TKP SMKN 2 Sragen memiliki area seluas 500 m² yang digunakan untuk praktik pekerjaan konstruksi bangunan mulai dari pasangan bata, beton bertulang, hingga pekerjaan finising.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Luas Area</div><div class="info-item-value">500 m²</div></div>
+            <div class="info-item"><div class="info-item-label">Alat Ukur</div><div class="info-item-value">Lengkap</div></div>
+            <div class="info-item"><div class="info-item-label">Peralatan K3</div><div class="info-item-value">Tersedia</div></div>
+            <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">36 Siswa</div></div>
+          </div></div>`,
+      sidebar:`<h4><i class="fas fa-hammer"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Luas</span><strong>500 m²</strong></div>
+        </div>`,
+    },
+    lab_listrik: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-bolt',
+      title:'Lab Instalasi Listrik — TITL',
+      desc:'Lab instalasi listrik SMKN 2 Sragen berstandar PLN, dilengkapi panel distribusi, trainer PLC, dan modul panel surya.',
+      heroImg:'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80',
+      meta:[{icon:'fas fa-bolt',text:'Standar PLN'},{icon:'fas fa-solar-panel',text:'PLTS'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Lab Instalasi Listrik</h2>
+          <p>Lab Instalasi Listrik SMKN 2 Sragen dilengkapi panel distribusi, trainer PLC, modul panel surya (PLTS), dan berbagai peralatan ukur listrik berstandar industri dan PLN.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Panel Distribusi</div><div class="info-item-value">8 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Trainer PLC</div><div class="info-item-value">6 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Modul PLTS</div><div class="info-item-value">2 Set</div></div>
+            <div class="info-item"><div class="info-item-label">Kapasitas</div><div class="info-item-value">32 Siswa</div></div>
+          </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&q=80" alt="Lab Listrik"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&q=80" alt="Panel Surya"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&q=80" alt="Panel Distribusi"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-bolt"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Lab Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kapasitas</span><strong>32 Siswa</strong></div>
+        </div>`,
+    },
+    lab_jaringan: {
+      cat:'Fasilitas Sekolah', catIcon:'fas fa-wifi',
+      title:'Lab Jaringan & Server — TKJ',
+      desc:'Lab jaringan SMKN 2 Sragen dilengkapi server rack, perangkat Cisco, fiber optic, dan cloud computing untuk praktik TKJ.',
+      heroImg:'https://images.unsplash.com/photo-1562813733-b31f71025d54?w=1200&q=80',
+      meta:[{icon:'fas fa-server',text:'Server Rack'},{icon:'fas fa-network-wired',text:'Cisco & Fiber Optic'}],
+      main:`<div class="detail-section"><h2><i class="fas fa-info-circle"></i> Tentang Lab Jaringan & Server</h2>
+          <p>Lab Jaringan & Server SMKN 2 Sragen merupakan salah satu lab TKJ terlengkap di Jawa Tengah. Dilengkapi server rack profesional, perangkat jaringan Cisco berlisensi, instalasi fiber optic, dan akses cloud computing.</p>
+          <div class="info-grid">
+            <div class="info-item"><div class="info-item-label">Server Rack</div><div class="info-item-value">4 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Komputer Klien</div><div class="info-item-value">36 Unit</div></div>
+            <div class="info-item"><div class="info-item-label">Perangkat Cisco</div><div class="info-item-value">Router & Switch</div></div>
+            <div class="info-item"><div class="info-item-label">Fiber Optic</div><div class="info-item-value">Tersedia</div></div>
+          </div></div>
+        <div class="photo-grid">
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1562813733-b31f71025d54?w=400&q=80" alt="Server Rack"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80" alt="Fiber Optic"/></div>
+          <div class="photo-item"><img src="https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=400&q=80" alt="Lab Jaringan"/></div>
+        </div>`,
+      sidebar:`<h4><i class="fas fa-wifi"></i> Info Fasilitas</h4>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray-2);"><span style="color:var(--text-3);">Kategori</span><strong>Lab Kejuruan</strong></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;"><span style="color:var(--text-3);">Kapasitas</span><strong>36 Siswa</strong></div>
         </div>`,
     },
   },
