@@ -1101,12 +1101,14 @@ function goDetail(section, id) {
 }
 
 function goBack() {
-  const pos  = sessionStorage.getItem('scrollPos');
-  const from = getParam('from');
+  const pos     = sessionStorage.getItem('scrollPos');
+  const from    = getParam('from');
+  const section = getParam('section');
   if (pos) sessionStorage.setItem('doRestore', '1');
-  // Kalau masuk dari halaman prestasi.html, balik ke sana
   if (from === 'prestasi') {
     window.location.href = 'prestasi.html';
+  } else if (section === 'berita') {
+    window.location.href = 'index.html#berita';
   } else {
     window.location.href = 'index.html';
   }
@@ -1328,6 +1330,12 @@ window._DATA = DATA;
   }
 
   function renderBerita(id, d) {
+    // Sembunyikan navigasi cepat & konten terkait
+    const navEl = document.getElementById('sidebarNavCepat');
+    if (navEl) navEl.style.display = 'none';
+    const relEl = document.getElementById('relatedContent');
+    if (relEl) { const card = relEl.closest('.sidebar-card'); if (card) card.style.display = 'none'; }
+
     setHero(
       'Berita Sekolah', 'fas fa-newspaper',
       d.judul || 'Berita',
