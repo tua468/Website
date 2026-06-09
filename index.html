@@ -2101,7 +2101,7 @@
   }
   function renderPrcard(d, i, delays) {
     return `
-      <div class="prcard rv on ${delays[i % 3]}">
+      <div class="prcard rv on ${delays[i % 3]}" onclick="goToDetail('prestasi','${d.id}','prestasi')" style="cursor:pointer;">
         <div class="prcard-photo">
           ${d.foto
             ? `<img src="${d.foto}" alt="${d.nama||''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'prcard-photo-empty\\'>🏆</div>'" />`

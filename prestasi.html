@@ -283,7 +283,7 @@
 
   function cardHTML(d) {
     return `
-      <div class="prcard">
+      <div class="prcard" onclick="window.location.href='detail.html?section=prestasi&id=${d.id}&from=prestasi'" style="cursor:pointer;">
         <div class="prcard-photo">
           ${d.foto
             ? `<img src="${d.foto}" alt="${(d.nama||'').replace(/"/g,'&quot;')}" loading="lazy"
