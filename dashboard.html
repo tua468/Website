@@ -560,6 +560,7 @@
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Perubahan berhasil disimpan!</span></div>
 
 <!-- Script UI — tidak butuh Firebase, langsung tersedia -->
+<!-- ── Script UI (global, tidak butuh Firebase) ── -->
 <script>
   const panels = {
     overview:   { title:'Dashboard Overview' },
@@ -575,13 +576,10 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const panel = document.getElementById('panel-' + id);
     if (panel) panel.classList.add('active');
-    const navEl = document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`);
+    const navEl = document.querySelector('.nav-item[onclick="showPanel(\'' + id + '\')"]');
     if (navEl) navEl.classList.add('active');
-    if (panels[id]) {
-      const el = document.getElementById('topbarTitle');
-      if (el) el.textContent = panels[id].title;
-    }
-    // Load tabel dari Firebase kalau tersedia
+    const el = document.getElementById('topbarTitle');
+    if (el && panels[id]) el.textContent = panels[id].title;
     if (window._loadTable) window._loadTable(id);
   }
 
@@ -600,16 +598,31 @@
   }
 
   function saveModal() {
-    if (window._fbSaveModal) { window._fbSaveModal(); return; }
+    if (window._fbSave) { window._fbSave(); return; }
     closeModalDirect();
     showToast('Tersimpan!');
   }
 
   function openModal(col, dataOrNull) {
-    if (window._fbOpenModal) { window._fbOpenModal(col, dataOrNull); return; }
+    if (window._fbOpenModal) { window._fbOpenModal(col, dataOrNull || null); return; }
     document.getElementById('modalTitle').textContent = 'Tambah ' + col;
-    document.getElementById('modalBody').innerHTML = '<p style="color:var(--text-3);padding:20px;">Menunggu koneksi Firebase...</p>';
+    document.getElementById('modalBody').innerHTML = '<p style="padding:20px;color:#8a94b8;">Menunggu Firebase...</p>';
     document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function openEdit(col, id) {
+    if (window._fbEdit) { window._fbEdit(col, id); return; }
+  }
+
+  function deleteItem(col, id, name) {
+    if (window._fbDelete) { window._fbDelete(col, id, name); return; }
+    if (confirm('Hapus "' + name + '"?')) showToast('Dihapus!');
+  }
+
+  function confirmDelete(col, id, name) {
+    if (arguments.length === 1) { name = col; col = null; id = null; }
+    if (window._fbDelete && col && id) { window._fbDelete(col, id, name); return; }
+    if (confirm('Hapus "' + name + '"?')) showToast('"' + name + '" berhasil dihapus!');
   }
 
   function showToast(msg) {
@@ -618,191 +631,21 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
   function saveToast() { showToast('Perubahan berhasil disimpan!'); }
 
-  function confirmDelete(col, id, name) {
-    // Support 1 argumen (dari HTML static lama) atau 3 argumen (dari Firebase renderRow)
-    if (arguments.length === 1) { name = col; col = null; id = null; }
-    if (window._fbDelete && col && id) { window._fbDelete(col, id, name); return; }
-    if (confirm('Hapus "' + name + '"?')) showToast('"' + name + '" berhasil dihapus!');
-  }
-
   function logout() {
-    if (window.logoutFirebase) { window.logoutFirebase(); return; }
+    if (window._fbLogout) { window._fbLogout(); return; }
     window.location.href = 'admin.html';
   }
 </script>
 
+<!-- ── Firebase Module ── -->
 <script type="module">
-  import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import {
-    getFirestore, collection, doc,
-    getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc,
-    serverTimestamp
-  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-
-  // ── Table filter
-  function filterTable(input, tableId) {
-    const q = input.value.toLowerCase();
-    document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
-  }
-
-  // ── Modal forms per section
-  const modalForms = {
-    jurusan: `
-      <div class="field"><label>Nama Jurusan</label><input type="text" placeholder="cth: Teknik Pemesinan" /></div>
-      <div class="field-row">
-        <div class="field"><label>Bidang Keahlian</label><input type="text" placeholder="cth: Teknik Mesin" /></div>
-        <div class="field"><label>Singkatan</label><input type="text" placeholder="cth: TPM" /></div>
-      </div>
-      <div class="field"><label>Deskripsi</label><textarea placeholder="Deskripsi singkat jurusan..."></textarea></div>
-      <div class="field"><label>Ikon (Font Awesome class)</label><input type="text" placeholder="cth: fas fa-cog" /></div>
-      <div class="field-row">
-        <div class="field"><label>Status</label><select><option>Aktif</option><option>Non-aktif</option></select></div>
-        <div class="field"><label>Urutan Tampil</label><input type="number" placeholder="1" /></div>
-      </div>`,
-
-    fasilitas: `
-      <div class="field"><label>Nama Fasilitas</label><input type="text" placeholder="cth: Bengkel CNC" /></div>
-      <div class="field-row">
-        <div class="field"><label>Kategori</label><select><option>Umum</option><option>Kejuruan</option><option>Olahraga</option><option>Ibadah</option></select></div>
-        <div class="field"><label>Jumlah / Kapasitas</label><input type="text" placeholder="cth: 2 unit, 30 kursi" /></div>
-      </div>
-      <div class="field"><label>Keterangan</label><textarea placeholder="Keterangan detail fasilitas..."></textarea></div>
-      <div class="field"><label>URL Foto</label><input type="text" placeholder="https://..." /></div>
-      <div class="field"><label>Status</label><select><option>Aktif</option><option>Perbaikan</option><option>Non-aktif</option></select></div>`,
-
-    prestasi: `
-      <div class="field"><label>Nama / Judul Prestasi</label><input type="text" placeholder="cth: Juara 1 LKS TKJ" /></div>
-      <div class="field-row">
-        <div class="field"><label>Tingkat</label><select><option>Kabupaten</option><option>Provinsi</option><option>Nasional</option><option>Internasional</option></select></div>
-        <div class="field"><label>Medali</label><select><option>🥇 Emas / Juara 1</option><option>🥈 Perak / Juara 2</option><option>🥉 Perunggu / Juara 3</option><option>🏆 Piala/Finalis</option><option>🎖️ Penghargaan</option></select></div>
-      </div>
-      <div class="field"><label>Keterangan Lomba</label><textarea placeholder="Nama lomba, penyelenggara, lokasi..."></textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Nama Siswa</label><input type="text" placeholder="Nama peserta" /></div>
-        <div class="field"><label>Tahun</label><input type="number" value="2026" /></div>
-      </div>`,
-
-    bkk: `
-      <div class="field"><label>Nama Perusahaan</label><input type="text" placeholder="cth: PT Telkom Indonesia" /></div>
-      <div class="field"><label>Posisi / Jabatan</label><input type="text" placeholder="cth: Network Technician" /></div>
-      <div class="field-row">
-        <div class="field"><label>Lokasi</label><input type="text" placeholder="cth: Sragen, Jawa Tengah" /></div>
-        <div class="field"><label>Jurusan yang Dibutuhkan</label><input type="text" placeholder="cth: TKJ, TITL" /></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Jenis Pekerjaan</label><select><option>Full Time</option><option>Part Time</option><option>Kontrak</option><option>Magang</option></select></div>
-        <div class="field"><label>Batas Lamaran</label><input type="date" /></div>
-      </div>
-      <div class="field"><label>Deskripsi Pekerjaan</label><textarea placeholder="Tugas, syarat, benefit..."></textarea></div>
-      <div class="field"><label>Status</label><select><option>Aktif</option><option>Tutup</option></select></div>`,
-
-    berita: `
-      <div class="field"><label>Judul Berita</label><input type="text" placeholder="Judul berita yang menarik..." /></div>
-      <div class="field-row">
-        <div class="field"><label>Kategori</label><select><option>Prestasi</option><option>Teknologi</option><option>Kesiswaan</option><option>Akademik</option><option>Lingkungan</option><option>Umum</option></select></div>
-        <div class="field"><label>Tanggal Publikasi</label><input type="date" /></div>
-      </div>
-      <div class="field"><label>Ringkasan / Snippet</label><textarea placeholder="Ringkasan singkat isi berita (2-3 kalimat)..."></textarea></div>
-      <div class="field"><label>Isi Berita Lengkap</label><textarea style="min-height:140px;" placeholder="Tulis isi berita selengkapnya di sini..."></textarea></div>
-      <div class="field"><label>URL Foto / Thumbnail</label><input type="text" placeholder="https://..." /></div>
-      <div class="field"><label>Status</label><select><option>Publish</option><option>Draft</option></select></div>`,
-
-    galeri: `
-      <div class="field"><label>Judul / Caption Foto</label><input type="text" placeholder="cth: Upacara Hari Pahlawan 2025" /></div>
-      <div class="field"><label>URL Foto</label><input type="text" placeholder="https://..." /></div>
-      <div class="field-row">
-        <div class="field"><label>Kategori</label><select><option>Gedung</option><option>Kegiatan</option><option>Prestasi</option><option>Praktik</option><option>Wisuda</option><option>Lainnya</option></select></div>
-        <div class="field"><label>Ukuran Tampil</label><select><option>Normal</option><option>Besar (2x2)</option><option>Lebar (2x1)</option></select></div>
-      </div>
-      <div class="field"><label>Status</label><select><option>Tampil</option><option>Sembunyikan</option></select></div>`,
-
-    program: `
-      <div class="field"><label>Nama Program</label><input type="text" placeholder="cth: Ekstrakurikuler" /></div>
-      <div class="field"><label>Ikon (Font Awesome)</label><input type="text" placeholder="cth: fas fa-futbol" /></div>
-      <div class="field"><label>Deskripsi</label><textarea placeholder="Deskripsi singkat program..."></textarea></div>
-      <div class="field"><label>Status</label><select><option>Aktif</option><option>Non-aktif</option></select></div>`,
-
-    pengumuman: `
-      <div class="field"><label>Judul Pengumuman</label><input type="text" placeholder="Judul pengumuman..." /></div>
-      <div class="field-row">
-        <div class="field"><label>Kategori</label><select><option>PPDB</option><option>Akademik</option><option>Kesiswaan</option><option>Administrasi</option><option>Umum</option></select></div>
-        <div class="field"><label>Tanggal</label><input type="date" /></div>
-      </div>
-      <div class="field"><label>Isi Pengumuman</label><textarea style="min-height:120px;" placeholder="Isi lengkap pengumuman..."></textarea></div>
-      <div class="field"><label>Status</label><select><option>Aktif</option><option>Arsip</option></select></div>`,
-
-    polling: `
-      <div class="field"><label>Pertanyaan Polling</label><textarea placeholder="Tulis pertanyaan polling di sini..."></textarea></div>
-      <div class="field"><label>Pilihan 1</label><input type="text" placeholder="Opsi jawaban pertama" /></div>
-      <div class="field"><label>Pilihan 2</label><input type="text" placeholder="Opsi jawaban kedua" /></div>
-      <div class="field"><label>Pilihan 3</label><input type="text" placeholder="Opsi jawaban ketiga" /></div>
-      <div class="field"><label>Pilihan 4</label><input type="text" placeholder="Opsi jawaban keempat" /></div>
-      <div class="field"><label>Status</label><select><option>Aktif</option><option>Tutup</option></select></div>`,
-  };
-
-  const modalTitles = {
-    jurusan: 'Tambah / Edit Jurusan',
-    fasilitas: 'Tambah / Edit Fasilitas',
-    prestasi: 'Tambah / Edit Prestasi',
-    bkk: 'Tambah / Edit Lowongan BKK',
-    berita: 'Tambah / Edit Berita',
-    galeri: 'Upload / Edit Foto Galeri',
-    program: 'Tambah / Edit Program Unggulan',
-    pengumuman: 'Tambah / Edit Pengumuman',
-    polling: 'Buat / Edit Polling',
-  };
-
-  function openModal(type, data) {
-    document.getElementById('modalTitle').textContent = modalTitles[type] || 'Edit Data';
-    document.getElementById('modalBody').innerHTML = modalForms[type] || '<p>Form tidak tersedia.</p>';
-    document.getElementById('modalOverlay').classList.add('open');
-  }
-
-  function closeModal(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
-  }
-  function closeModalDirect() {
-    document.getElementById('modalOverlay').classList.remove('open');
-  }
-
-  function saveModal() {
-    if (window._fbSaveModal) { window._fbSaveModal(); return; }
-    closeModalDirect();
-    showToast('Data berhasil disimpan!');
-  }
-
-  // ── Toast
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg || 'Perubahan berhasil disimpan!';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-  function saveToast() { showToast('Perubahan berhasil disimpan!'); }
-
-  // ── Delete confirm
-  function confirmDelete(name) {
-    if (confirm(`Hapus "${name}"? Tindakan ini tidak bisa dibatalkan.`)) {
-      showToast(`"${name}" berhasil dihapus.`);
-    }
-  }
-
-  // ── Logout
-  function logout() {
-    if (confirm('Yakin ingin keluar dari panel admin?')) {
-      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js').then(({ getAuth, signOut }) => {
-        signOut(getAuth()).then(() => { window.location.href = 'admin.html'; });
-      });
-    }
-  }
-
-
+  import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
@@ -817,7 +660,6 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-
   // ── Auth guard
   onAuthStateChanged(auth, user => {
     if (!user) { window.location.href = 'admin.html'; return; }
@@ -825,23 +667,14 @@
     initDashboard();
   });
 
-  // ── Expose logout ke window
-  window.logoutFirebase = () => {
-    if (confirm('Yakin ingin keluar dari panel admin?')) {
-      signOut(auth).then(() => { window.location.href = 'admin.html'; });
-    }
+  // ── Logout
+  window._fbLogout = () => {
+    if (confirm('Yakin ingin keluar?')) signOut(auth).then(() => { window.location.href = 'admin.html'; });
   };
+  window.logoutFirebase = window._fbLogout;
 
-  // ── Seed data awal (hanya jika koleksi masih kosong)
+  // ── Seed data awal
   const SEED = {
-    jurusan: [
-      { id:'tpm',  no:'01', nama:'Teknik Pemesinan', bidang:'Teknik Mesin', icon:'fas fa-cog', deskripsi:'Pengoperasian mesin bubut, frais, CNC, dan peralatan pemesinan presisi untuk produksi komponen industri.', tag:'Teknik Mesin', status:'Aktif', urutan:1 },
-      { id:'tkro', no:'02', nama:'Teknik Kendaraan Ringan', bidang:'Teknik Otomotif', icon:'fas fa-car', deskripsi:'Perawatan, perbaikan, dan teknologi kendaraan ringan bermotor sesuai standar industri otomotif modern.', tag:'Teknik Otomotif', status:'Aktif', urutan:2 },
-      { id:'dpib', no:'03', nama:'Desain Pemodelan & Informasi Bangunan', bidang:'Teknik Bangunan', icon:'fas fa-drafting-compass', deskripsi:'Perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.', tag:'Teknik Bangunan', status:'Aktif', urutan:3 },
-      { id:'tkp',  no:'04', nama:'Teknik Konstruksi & Perumahan', bidang:'Teknik Konstruksi', icon:'fas fa-home', deskripsi:'Perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis.', tag:'Teknik Konstruksi', status:'Aktif', urutan:4 },
-      { id:'titl', no:'05', nama:'Teknik Instalasi Tenaga Listrik', bidang:'Ketenagalistrikan', icon:'fas fa-bolt', deskripsi:'Instalasi, pemeliharaan, dan perbaikan sistem kelistrikan skala industri maupun residensial.', tag:'Teknik Ketenagalistrikan', status:'Aktif', urutan:5 },
-      { id:'tkj',  no:'06', nama:'Teknik Komputer & Jaringan', bidang:'Teknologi Informasi', icon:'fas fa-laptop-code', deskripsi:'Instalasi jaringan, keamanan siber, administrasi server, cloud computing, dan infrastruktur IT.', tag:'Teknologi Informasi', status:'Aktif', urutan:6 },
-    ],
     prestasi: [
       { medal:'🥇', nama:'Juara 1 LKS Teknik Kendaraan Ringan', tingkat:'Provinsi', keterangan:'LKS Bidang Otomotif — Jawa Tengah', tahun:'2025', status:'Aktif' },
       { medal:'🏆', nama:'Finalis LKS Nasional Teknik Instalasi Listrik', tingkat:'Nasional', keterangan:'LKS Tingkat Nasional — Jakarta', tahun:'2025', status:'Aktif' },
@@ -852,184 +685,132 @@
     ],
     berita: [
       { judul:'Elsa Mutia Hafid Raih Juara 3 Khitobah Putri MAPSI SMK Jawa Tengah 2025', kategori:'Prestasi', tanggal:'2025-11-25', ringkasan:'Ajang bergengsi MAPSI tingkat SMK se-Provinsi Jawa Tengah 2025 mengharumkan nama SMKN 2 Sragen.', isi:'Sragen — Siswi SMKN 2 Sragen, Elsa Mutia Hafid, berhasil meraih Juara 3 cabang Khitobah Putri MAPSI SMK Provinsi Jawa Tengah 2025.', foto:'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=80', status:'Publish' },
-      { judul:'SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1', kategori:'Kesiswaan', tanggal:'2025-11-20', ringkasan:'Tim Paskibra SMKN 2 Sragen berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', isi:'Sragen — Tim Paskibra SMK Negeri 2 Sragen berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', foto:'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=80', status:'Publish' },
+      { judul:'SMKN 2 Sragen Rebut Piala Bergilir LKBB Garuda Muda Season 1', kategori:'Kesiswaan', tanggal:'2025-11-20', ringkasan:'Tim Paskibra SMKN 2 Sragen berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', isi:'Sragen — Tim Paskibra berhasil merebut Piala Bergilir LKBB Garuda Muda Season 1.', foto:'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=800&q=80', status:'Publish' },
       { judul:'SMKN 2 Sragen Terima Bantuan Lab Fiber Optic dari Kominfo', kategori:'Teknologi', tanggal:'2025-11-05', ringkasan:'SMKN 2 Sragen menerima bantuan laboratorium Fiber Optic dari Kementerian Kominfo.', isi:'Sragen — SMKN 2 Sragen resmi menerima bantuan laboratorium fiber optic dari Kementerian Kominfo.', foto:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80', status:'Publish' },
     ],
-    bkk: [
-      { perusahaan:'PT Sinar Mas Agribusiness', posisi:'Teknisi Mesin Industri', lokasi:'Sragen, Jawa Tengah', jurusan:'Teknik Mesin', jenis:'Full Time', batas:'2026-06-30', deskripsi:'Merawat dan mengoperasikan mesin industri di lingkungan pabrik.', status:'Aktif' },
-      { perusahaan:'PT Telkom Indonesia', posisi:'Network Technician & IT Support', lokasi:'Solo, Jawa Tengah', jurusan:'TKJ', jenis:'Full Time', batas:'2026-07-15', deskripsi:'Instalasi dan pemeliharaan jaringan telekomunikasi.', status:'Aktif' },
-      { perusahaan:'PT PLN (Persero) ULP Sragen', posisi:'Teknisi Instalasi Listrik', lokasi:'Sragen, Jawa Tengah', jurusan:'TITL', jenis:'Kontrak', batas:'2026-06-25', deskripsi:'Instalasi dan pemeliharaan sistem kelistrikan PLN.', status:'Aktif' },
-    ],
-    fasilitas: [
-      { nama:'Ruang Kelas', kategori:'Umum', keterangan:'30 ruang kelas ber-AC', icon:'fas fa-chalkboard-teacher', status:'Aktif' },
-      { nama:'Bengkel CNC', kategori:'Kejuruan', keterangan:'Mesin CNC, bubut, frais modern', icon:'fas fa-industry', status:'Aktif' },
-      { nama:'Bengkel Otomotif', kategori:'Kejuruan', keterangan:'Engine stand, scanner modern', icon:'fas fa-tools', status:'Aktif' },
-      { nama:'Lab Jaringan & Server', kategori:'Kejuruan', keterangan:'Fiber optic, server rack, cisco', icon:'fas fa-wifi', status:'Aktif' },
-      { nama:'Perpustakaan', kategori:'Umum', keterangan:'Koleksi buku teknik dan digital', icon:'fas fa-book-reader', status:'Aktif' },
-      { nama:'Lapangan Olahraga', kategori:'Umum', keterangan:'Basket, voli, futsal', icon:'fas fa-futbol', status:'Aktif' },
+    galeri: [
+      { judul:'Gerbang Utama SMKN 2 Sragen', foto:'https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg', kategori:'Gedung', status:'Tampil' },
+      { judul:'Kegiatan Siswa SMKN 2 Sragen', foto:'https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/42944920_1890171144435131_8386577090693483445_n(1).jpg', kategori:'Kegiatan', status:'Tampil' },
     ],
     pengumuman: [
-      { judul:'Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2025/2026 resmi dibuka!', kategori:'PPDB', tanggal:'2026-06-01', isi:'PPDB TA 2025/2026 resmi dibuka. Pendaftaran dilakukan melalui website resmi SPMB Jawa Tengah.', status:'Aktif' },
+      { judul:'Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2025/2026 resmi dibuka!', kategori:'PPDB', tanggal:'2026-06-01', isi:'PPDB TA 2025/2026 resmi dibuka. Pendaftaran melalui website resmi SPMB Jawa Tengah.', status:'Aktif' },
       { judul:'Pengambilan Ijazah Alumni Angkatan 2025 — Mulai 5 Juni 2026', kategori:'Administrasi', tanggal:'2026-06-05', isi:'Alumni angkatan 2025 dapat mengambil ijazah mulai 5 Juni 2026 di Aula Sekolah.', status:'Aktif' },
       { judul:'Pelantikan Taruna OSIS Angkatan XIII — Sabtu, 7 Juni 2026', kategori:'Kesiswaan', tanggal:'2026-06-07', isi:'Pelantikan Pengurus OSIS Angkatan XIII dilaksanakan Sabtu 7 Juni 2026 pukul 07.30 WIB.', status:'Aktif' },
+    ],
+    polling: [
+      { pertanyaan:'Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?', pilihan1:'Lab Komputer & Jaringan', pilihan2:'Bengkel Praktik', pilihan3:'Perpustakaan Digital', pilihan4:'Kantin & Area Istirahat', status:'Aktif' },
     ],
   };
 
   async function seedIfEmpty(colName, items) {
     const snap = await getDocs(collection(db, colName));
-    if (!snap.empty) return; // sudah ada data, skip
+    if (!snap.empty) return;
     for (const item of items) {
-      if (item.id) {
-        await setDoc(doc(db, colName, item.id), { ...item, createdAt: serverTimestamp() });
-      } else {
-        await addDoc(collection(db, colName), { ...item, createdAt: serverTimestamp() });
-      }
+      await addDoc(collection(db, colName), { ...item, createdAt: serverTimestamp() });
     }
-    console.log(`✅ Seeded: ${colName}`);
+    console.log('Seeded:', colName);
   }
 
   // ── Init dashboard
   async function initDashboard() {
-    // Seed semua koleksi jika masih kosong
     await Promise.all([
-      seedIfEmpty('jurusan',    SEED.jurusan),
       seedIfEmpty('prestasi',   SEED.prestasi),
       seedIfEmpty('berita',     SEED.berita),
-      seedIfEmpty('bkk',        SEED.bkk),
-      seedIfEmpty('fasilitas',  SEED.fasilitas),
+      seedIfEmpty('galeri',     SEED.galeri),
       seedIfEmpty('pengumuman', SEED.pengumuman),
+      seedIfEmpty('polling',    SEED.polling),
     ]);
-    // Load semua tabel
-    loadTable('jurusan');
     loadTable('prestasi');
     loadTable('berita');
-    loadTable('bkk');
-    loadTable('fasilitas');
+    loadTable('galeri');
     loadTable('pengumuman');
-    updateOverview();
+    loadTable('polling');
   }
 
   // ── Load tabel dari Firestore
   async function loadTable(colName) {
-    const tbody = document.querySelector(`#tbl-${colName} tbody`);
+    const tbody = document.querySelector('#tbl-' + colName + ' tbody');
     if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>`;
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#8a94b8;"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr>';
     try {
       const snap = await getDocs(collection(db, colName));
-      if (snap.empty) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--text-3);">Belum ada data.</td></tr>`; return; }
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#8a94b8;">Belum ada data.</td></tr>';
+        return;
+      }
       tbody.innerHTML = snap.docs.map(d => renderRow(colName, d.id, d.data())).join('');
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--red);">Gagal memuat: ${e.message}</td></tr>`;
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#e53e3e;">Error: ' + e.message + '</td></tr>';
     }
   }
+  window._loadTable = loadTable;
 
+  // ── Render baris tabel
   function renderRow(col, id, d) {
-    const actions = `<td class="td-actions">
+    const nm = (d.nama||d.judul||d.posisi||d.pertanyaan||'').replace(/'/g, "\\'");
+    const acts = `<td class="td-actions">
       <button class="btn-edit btn-sm" onclick="openEdit('${col}','${id}')"><i class="fas fa-edit"></i> Edit</button>
-      <button class="btn-danger btn-sm" onclick="deleteItem('${col}','${id}','${(d.nama||d.judul||d.posisi||'').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+      <button class="btn-danger btn-sm" onclick="deleteItem('${col}','${id}','${nm}')"><i class="fas fa-trash"></i></button>
     </td>`;
-    if (col==='jurusan')    return `<tr><td>${d.no||'-'}</td><td><strong>${d.nama}</strong></td><td>${d.bidang||'-'}</td><td>${d.deskripsi||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
-    if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td>${actions}</tr>`;
-    if (col==='berita')     return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul}</strong></td><td>${d.kategori||'-'}</td><td><span class="status ${d.status==='Publish'?'aktif':'draft'}">${d.status||'Draft'}</span></td>${actions}</tr>`;
-    if (col==='bkk')        return `<tr><td><strong>${d.perusahaan}</strong></td><td>${d.posisi||'-'}</td><td>${d.lokasi||'-'}</td><td>${d.jurusan||'-'}</td><td>${d.batas||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
-    if (col==='fasilitas')  return `<tr><td>1</td><td><strong>${d.nama}</strong></td><td>${d.kategori||'-'}</td><td>${d.keterangan||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
-    if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${actions}</tr>`;
+    if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama||'-'}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td>${acts}</tr>`;
+    if (col==='berita')     return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status ${d.status==='Publish'?'aktif':'draft'}">${d.status||'Draft'}</span></td>${acts}</tr>`;
+    if (col==='galeri')     return `<tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;background:#eef0f6;"><img src="${d.foto||''}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div></td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Tampil'}</span></td>${acts}</tr>`;
+    if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${acts}</tr>`;
+    if (col==='polling')    return `<tr><td><strong>${(d.pertanyaan||'').slice(0,60)}...</strong></td><td>${d.status||'-'}</td>${acts}</tr>`;
     return `<tr><td colspan="10">${JSON.stringify(d)}</td></tr>`;
   }
 
-  // ── Update overview counts
-  async function updateOverview() {
-    const cols = ['jurusan','prestasi','bkk','berita'];
-    const counts = await Promise.all(cols.map(c => getDocs(collection(db,c)).then(s=>s.size)));
-    const nums = document.querySelectorAll('.ov-num');
-    if (nums[0]) nums[0].textContent = counts[0];
-    if (nums[1]) nums[1].textContent = counts[1];
-    if (nums[2]) nums[2].textContent = counts[2];
-    if (nums[3]) nums[3].textContent = counts[3];
+  // ── Form builder
+  function buildForm(col, d) {
+    const f  = (lbl,name,val,type='text') => `<div class="field"><label>${lbl}</label><input type="${type}" name="${name}" value="${(val||'').toString().replace(/"/g,'&quot;')}" /></div>`;
+    const ta = (lbl,name,val) => `<div class="field"><label>${lbl}</label><textarea name="${name}">${val||''}</textarea></div>`;
+    const sl = (lbl,name,opts,val) => `<div class="field"><label>${lbl}</label><select name="${name}">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;
+    if (col==='prestasi')   return sl('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sl('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number');
+    if (col==='berita')     return f('Judul Berita','judul',d.judul)+sl('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sl('Status','status',['Publish','Draft'],d.status);
+    if (col==='galeri')     return f('Judul / Caption','judul',d.judul)+f('URL Foto','foto',d.foto)+sl('Kategori','kategori',['Gedung','Kegiatan','Prestasi','Praktik','Wisuda','Lainnya'],d.kategori)+sl('Status','status',['Tampil','Sembunyikan'],d.status);
+    if (col==='pengumuman') return f('Judul','judul',d.judul)+sl('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+sl('Status','status',['Aktif','Arsip'],d.status);
+    if (col==='polling')    return ta('Pertanyaan','pertanyaan',d.pertanyaan)+f('Pilihan 1','pilihan1',d.pilihan1)+f('Pilihan 2','pilihan2',d.pilihan2)+f('Pilihan 3','pilihan3',d.pilihan3)+f('Pilihan 4','pilihan4',d.pilihan4)+sl('Status','status',['Aktif','Tutup'],d.status);
+    return '<p>Form tidak tersedia.</p>';
   }
 
-  // ── currentEdit state
-  let _editCol = null, _editId = null;
-
-  // ── Open edit modal (load data dari Firestore)
-  const openEdit = async (col, id) => {
-    _editCol = col; _editId = id;
+  // ── Open edit
+  window._fbEdit = async (col, id) => {
     let d = {};
-    if (id) {
-      const snap = await getDoc(doc(db, col, id));
-      d = snap.data() || {};
-    }
+    if (id) { const snap = await getDoc(doc(db, col, id)); d = snap.data() || {}; }
+    window._curCol = col; window._curId = id;
     document.getElementById('modalTitle').textContent = (id ? 'Edit ' : 'Tambah ') + col.charAt(0).toUpperCase() + col.slice(1);
     document.getElementById('modalBody').innerHTML = buildForm(col, d);
     document.getElementById('modalOverlay').classList.add('open');
   };
+  window._fbOpenModal = (col, dataOrNull) => { window._fbEdit(col, dataOrNull ? dataOrNull.id : null); };
+  window.openEdit = window._fbEdit;
 
-  // ── Build form fields
-  function buildForm(col, d) {
-    const f = (label, name, val='', type='text') =>
-      `<div class="field"><label>${label}</label><input type="${type}" name="${name}" value="${val||''}" /></div>`;
-    const ta = (label, name, val='') =>
-      `<div class="field"><label>${label}</label><textarea name="${name}">${val||''}</textarea></div>`;
-    const sel = (label, name, opts, val='') =>
-      `<div class="field"><label>${label}</label><select name="${name}">${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></div>`;
-
-    if (col==='jurusan')    return f('Nama Jurusan','nama',d.nama)+f('Bidang Keahlian','bidang',d.bidang)+ta('Deskripsi','deskripsi',d.deskripsi)+f('Icon (FA class)','icon',d.icon)+f('Tag','tag',d.tag)+sel('Status','status',['Aktif','Non-aktif'],d.status);
-    if (col==='prestasi')   return sel('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sel('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number');
-    if (col==='berita')     return f('Judul Berita','judul',d.judul)+sel('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sel('Status','status',['Publish','Draft'],d.status);
-    if (col==='bkk')        return f('Perusahaan','perusahaan',d.perusahaan)+f('Posisi','posisi',d.posisi)+f('Lokasi','lokasi',d.lokasi)+f('Jurusan','jurusan',d.jurusan)+sel('Jenis','jenis',['Full Time','Part Time','Kontrak','Magang'],d.jenis)+f('Batas Lamaran','batas',d.batas,'date')+ta('Deskripsi','deskripsi',d.deskripsi)+sel('Status','status',['Aktif','Tutup'],d.status);
-    if (col==='fasilitas')  return f('Nama Fasilitas','nama',d.nama)+sel('Kategori','kategori',['Umum','Kejuruan','Olahraga','Ibadah'],d.kategori)+ta('Keterangan','keterangan',d.keterangan)+f('Icon (FA class)','icon',d.icon)+sel('Status','status',['Aktif','Perbaikan','Non-aktif'],d.status);
-    if (col==='pengumuman') return f('Judul','judul',d.judul)+sel('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+sel('Status','status',['Aktif','Arsip'],d.status);
-    return '<p>Form tidak tersedia.</p>';
-  }
-
-  // ── Save modal → Firestore
-  const fbSaveModal = async () => {
-    const form = document.getElementById('modalBody');
-    const inputs = form.querySelectorAll('input,textarea,select');
-    const data = {};
-    inputs.forEach(el => { if (el.name) data[el.name] = el.value; });
+  // ── Save
+  window._fbSave = async () => {
+    const inputs = document.getElementById('modalBody').querySelectorAll('input,textarea,select');
+    const data = {}; inputs.forEach(el => { if (el.name) data[el.name] = el.value; });
     data.updatedAt = serverTimestamp();
-
     try {
-      if (_editId) {
-        await updateDoc(doc(db, _editCol, _editId), data);
-      } else {
-        data.createdAt = serverTimestamp();
-        await addDoc(collection(db, _editCol), data);
-      }
+      if (window._curId) { await updateDoc(doc(db, window._curCol, window._curId), data); }
+      else { data.createdAt = serverTimestamp(); await addDoc(collection(db, window._curCol), data); }
       closeModalDirect();
-      showToast('✅ Data berhasil disimpan ke Firebase!');
-      loadTable(_editCol);
-      updateOverview();
-    } catch(e) {
-      showToast('❌ Gagal menyimpan: ' + e.message);
-    }
+      showToast('✅ Berhasil disimpan!');
+      loadTable(window._curCol);
+    } catch(e) { showToast('❌ Gagal: ' + e.message); }
   };
-  // backward compat
-  window._fbSaveModal  = fbSaveModal;
-  window._saveModalFirebase = fbSaveModal;
-  window.saveModal     = fbSaveModal;
-  window._loadTable       = loadTable;
-  window._fbOpenModal     = openEdit;
-  window._fbDelete        = deleteItem;
-  window.openEdit         = openEdit;
+  window.saveModal = window._fbSave;
 
-  // ── Delete item
-  window.deleteItem = async (col, id, name) => {
-    if (!confirm(`Hapus "${name}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+  // ── Delete
+  window._fbDelete = async (col, id, name) => {
+    if (!confirm('Hapus "' + name + '"?')) return;
     try {
       await deleteDoc(doc(db, col, id));
-      showToast(`🗑️ "${name}" berhasil dihapus.`);
+      showToast('🗑️ "' + name + '" berhasil dihapus.');
       loadTable(col);
-      updateOverview();
-    } catch(e) {
-      showToast('❌ Gagal menghapus: ' + e.message);
-    }
+    } catch(e) { showToast('❌ Gagal: ' + e.message); }
   };
-
-  // expose ke window agar onclick HTML bisa akses
-  window.initDashboard = initDashboard;
-
+  window.deleteItem = window._fbDelete;
 </script>
+
 </body>
 </html>
