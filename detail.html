@@ -301,12 +301,12 @@
         </div>
         <div class="sidebar-card">
           <h4><i class="fas fa-compass"></i> Navigasi Cepat</h4>
-          <a class="sidebar-link" onclick="goDetail('jurusan','tpm')"><i class="fas fa-cog"></i> Teknik Pemesinan</a>
-          <a class="sidebar-link" onclick="goDetail('jurusan','tkro')"><i class="fas fa-car"></i> Teknik Kendaraan Ringan</a>
-          <a class="sidebar-link" onclick="goDetail('jurusan','dpib')"><i class="fas fa-drafting-compass"></i> Desain Pemodelan &amp; Informasi Bangunan</a>
-          <a class="sidebar-link" onclick="goDetail('jurusan','tkp')"><i class="fas fa-home"></i> Teknik Konstruksi &amp; Perumahan</a>
-          <a class="sidebar-link" onclick="goDetail('jurusan','titl')"><i class="fas fa-bolt"></i> Teknik Instalasi Tenaga Listrik</a>
-          <a class="sidebar-link" onclick="goDetail('jurusan','tkj')"><i class="fas fa-laptop-code"></i> Teknik Komputer &amp; Jaringan</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tpm')"><i class="fas fa-cog"></i> Teknik Pemesinan (TP)</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkro')"><i class="fas fa-car"></i> Teknik Kendaraan Ringan (TKR)</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','dpib')"><i class="fas fa-drafting-compass"></i> Desain Pemodelan &amp; Informasi Bangunan (DPIB)</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkp')"><i class="fas fa-home"></i> Teknik Konstruksi &amp; Perumahan (TKP)</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','titl')"><i class="fas fa-bolt"></i> Teknik Instalasi Tenaga Listrik (TITL)</a>
+          <a class="sidebar-link" onclick="goDetail('jurusan','tkj')"><i class="fas fa-laptop-code"></i> Teknik Komputer &amp; Jaringan (TKJ)</a>
         </div>
         <div class="sidebar-card">
           <h4><i class="fas fa-link"></i> Konten Terkait</h4>
@@ -327,7 +327,7 @@ const DATA = {
   jurusan: {
     tkj: {
       cat: 'Program Keahlian', catIcon: 'fas fa-laptop-code',
-      title: 'Teknik Komputer & Jaringan',
+      title: 'Teknik Komputer & Jaringan (TKJ)',
       desc: 'Program keahlian yang mempersiapkan siswa menjadi profesional IT handal di bidang jaringan komputer, keamanan siber, dan infrastruktur teknologi informasi.',
       heroImg: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?w=1200&q=80',
       meta: [
@@ -337,7 +337,7 @@ const DATA = {
       ],
       main: `
         <div class="highlight-box">
-          <h3>Teknik Komputer &amp; Jaringan</h3>
+          <h3>Teknik Komputer &amp; Jaringan (TKJ)</h3>
           <p>Jurusan TKJ di SMKN 2 Sragen menjadi salah satu jurusan paling diminati. Didukung laboratorium jaringan modern dengan perangkat Cisco, fiber optic, dan server rack berstandar industri.</p>
         </div>
         <div class="detail-section">
@@ -388,13 +388,13 @@ const DATA = {
     },
     tkro: {
       cat: 'Program Keahlian', catIcon: 'fas fa-car',
-      title: 'Teknik Kendaraan Ringan',
+      title: 'Teknik Kendaraan Ringan (TKR)',
       desc: 'Program keahlian unggulan yang mempersiapkan teknisi otomotif profesional sesuai standar industri kendaraan modern.',
       heroImg: 'https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=1200&q=80',
       meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-trophy', text: 'Juara 1 LKS Provinsi 2025' }],
       main: `
         <div class="highlight-box">
-          <h3>Teknik Kendaraan Ringan</h3>
+          <h3>Teknik Kendaraan Ringan (TKR)</h3>
           <p>TKR SMKN 2 Sragen meraih Juara 1 LKS Tingkat Provinsi Jawa Tengah 2025. Bengkel dilengkapi dengan kendaraan praktik terbaru, engine stand EFI, dan peralatan scan tool berstandar bengkel resmi.</p>
         </div>
         <div class="detail-section">
@@ -432,7 +432,7 @@ const DATA = {
     },
     titl: {
       cat: 'Program Keahlian', catIcon: 'fas fa-bolt',
-      title: 'Teknik Instalasi Tenaga Listrik',
+      title: 'Teknik Instalasi Tenaga Listrik (TITL)',
       desc: 'Program keahlian yang mempersiapkan tenaga ahli instalasi, pemeliharaan, dan perbaikan sistem kelistrikan industri maupun residensial.',
       heroImg: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80',
       meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-trophy', text: 'Finalis LKS Nasional' }],
@@ -472,12 +472,12 @@ const DATA = {
     },
     tpm: {
       cat: 'Program Keahlian', catIcon: 'fas fa-cog',
-      title: 'Teknik Pemesinan',
+      title: 'Teknik Pemesinan (TP)',
       desc: 'Program keahlian yang membekali siswa dengan kemampuan pengoperasian mesin bubut, frais, CNC, dan pemesinan presisi standar industri.',
       heroImg: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&q=80',
       meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }, { icon: 'fas fa-industry', text: 'Berstandar Industri' }],
       main: `
-        <div class="highlight-box"><h3>Teknik Pemesinan</h3><p>Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling terbaru. Siswa langsung berlatih pada mesin industri sesungguhnya.</p></div>
+        <div class="highlight-box"><h3>Teknik Pemesinan (TP)</h3><p>Bengkel CNC SMKN 2 Sragen dilengkapi mesin CNC turning dan milling terbaru. Siswa langsung berlatih pada mesin industri sesungguhnya.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pengoperasian mesin bubut konvensional dan CNC</li><li>Pengoperasian mesin frais dan gerinda</li><li>Pemrograman CNC (G-code & M-code)</li><li>Gambar teknik mesin dengan AutoCAD</li><li>Pengukuran dan quality control produk</li><li>K3 bengkel permesinan</li></ul></div>
         <div class="tag-wrap"><span class="tag">CNC</span><span class="tag">Mesin Bubut</span><span class="tag">Frais</span><span class="tag">AutoCAD</span><span class="tag">Pemesinan Presisi</span></div>`,
       sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
@@ -487,12 +487,12 @@ const DATA = {
     },
     dpib: {
       cat: 'Program Keahlian', catIcon: 'fas fa-drafting-compass',
-      title: 'Desain Pemodelan & Informasi Bangunan',
+      title: 'Desain Pemodelan & Informasi Bangunan (DPIB)',
       desc: 'Program keahlian perancangan bangunan, gambar teknik, dan teknologi BIM berbasis perangkat lunak desain terkini.',
       heroImg: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
       meta: [{ icon: 'fas fa-trophy', text: 'Juara 2 LKS Provinsi' }, { icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }],
       main: `
-        <div class="highlight-box"><h3>Desain Pemodelan &amp; Informasi Bangunan</h3><p>Jurusan DPIB menjadi yang terdepan dalam penguasaan teknologi BIM (Building Information Modeling) di Jawa Tengah. Meraih Juara 2 LKS Provinsi 2024.</p></div>
+        <div class="highlight-box"><h3>Desain Pemodelan &amp; Informasi Bangunan (DPIB)</h3><p>Jurusan DPIB menjadi yang terdepan dalam penguasaan teknologi BIM (Building Information Modeling) di Jawa Tengah. Meraih Juara 2 LKS Provinsi 2024.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Menggambar teknik bangunan dengan AutoCAD 2D & 3D</li><li>Pemodelan bangunan dengan Revit (BIM)</li><li>Desain arsitektur dan interior bangunan</li><li>Estimasi biaya dan RAB konstruksi</li><li>Gambar kerja struktur dan arsitektur</li></ul></div>
         <div class="tag-wrap"><span class="tag">AutoCAD</span><span class="tag">Revit</span><span class="tag">BIM</span><span class="tag">Arsitektur</span><span class="tag">RAB</span></div>`,
       sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
@@ -502,12 +502,12 @@ const DATA = {
     },
     tkp: {
       cat: 'Program Keahlian', catIcon: 'fas fa-home',
-      title: 'Teknik Konstruksi & Perumahan',
+      title: 'Teknik Konstruksi & Perumahan (TKP)',
       desc: 'Program keahlian perencanaan, pelaksanaan, dan pengawasan konstruksi bangunan perumahan sesuai standar teknis dan keselamatan kerja.',
       heroImg: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80',
       meta: [{ icon: 'fas fa-users', text: '±72 Siswa/Angkatan' }],
       main: `
-        <div class="highlight-box"><h3>Teknik Konstruksi & Perumahan</h3><p>Jurusan TKP mempersiapkan tenaga terampil di bidang konstruksi bangunan yang siap bekerja di perusahaan kontraktor maupun wirausaha mandiri.</p></div>
+        <div class="highlight-box"><h3>Teknik Konstruksi &amp; Perumahan (TKP)</h3><p>Jurusan TKP mempersiapkan tenaga terampil di bidang konstruksi bangunan yang siap bekerja di perusahaan kontraktor maupun wirausaha mandiri.</p></div>
         <div class="detail-section"><h2><i class="fas fa-book"></i> Kompetensi</h2><ul><li>Pekerjaan pasangan bata, plester, dan acian</li><li>Pekerjaan konstruksi beton bertulang</li><li>Pemasangan keramik, kusen, dan pintu</li><li>Pekerjaan atap dan plafon</li><li>Pengawasan mutu dan K3 konstruksi</li></ul></div>
         <div class="tag-wrap"><span class="tag">Konstruksi</span><span class="tag">Beton</span><span class="tag">K3</span><span class="tag">Bangunan</span></div>`,
       sidebar: `<h4><i class="fas fa-graduation-cap"></i> Penerimaan Siswa Baru</h4>
