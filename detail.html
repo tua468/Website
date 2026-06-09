@@ -1036,8 +1036,12 @@ function goDetail(section, id) {
 
 function goBack() {
   const pos = sessionStorage.getItem('scrollPos');
-  if (pos) sessionStorage.setItem('doRestore', '1');
-  window.history.back();
+  if (pos) {
+    sessionStorage.setItem('doRestore', '1');
+  }
+  // Langsung kembali ke index.html tanpa history.back()
+  // supaya tidak perlu klik 2x saat sudah masuk ke detail dari detail
+  window.location.href = 'index.html';
 }
 
 function render() {
