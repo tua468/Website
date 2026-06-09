@@ -732,6 +732,86 @@
 <!-- ── TOAST ── -->
 <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Perubahan berhasil disimpan!</span></div>
 
+<!-- Script UI — tidak butuh Firebase, langsung tersedia -->
+<script>
+  const panels = {
+    overview:   { title:'Dashboard Overview',         sub:'Ringkasan konten website SMKN 2 Sragen' },
+    jurusan:    { title:'Program Keahlian / Jurusan', sub:'Kelola data jurusan' },
+    fasilitas:  { title:'Fasilitas Sekolah',          sub:'Kelola sarana dan prasarana' },
+    prestasi:   { title:'Prestasi Siswa',             sub:'Kelola catatan prestasi' },
+    bkk:        { title:'BKK — Bursa Kerja Khusus',  sub:'Kelola lowongan kerja alumni' },
+    berita:     { title:'Berita & Artikel',           sub:'Kelola konten berita sekolah' },
+    galeri:     { title:'Galeri Foto & Momen',        sub:'Kelola dokumentasi kegiatan' },
+    program:    { title:'Program Unggulan',           sub:'Kelola "Apa yang Kami Tawarkan"' },
+    pengumuman: { title:'Info & Pengumuman',          sub:'Kelola pengumuman resmi sekolah' },
+    polling:    { title:'Polling & Jajak Pendapat',   sub:'Kelola polling pengunjung' },
+    profil:     { title:'Profil Sekolah',             sub:'Edit informasi dasar sekolah' },
+    hero:       { title:'Hero & Banner',              sub:'Edit tampilan hero halaman utama' },
+  };
+
+  function showPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const panel = document.getElementById('panel-' + id);
+    if (panel) panel.classList.add('active');
+    const navEl = document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`);
+    if (navEl) navEl.classList.add('active');
+    if (panels[id]) {
+      document.getElementById('topbarTitle').textContent = panels[id].title;
+      document.getElementById('topbarSub').textContent   = panels[id].sub;
+    }
+    // Load tabel dari Firebase kalau tersedia
+    if (window._loadTable) window._loadTable(id);
+  }
+
+  function filterTable(input, tableId) {
+    const q = input.value.toLowerCase();
+    document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function saveModal() {
+    if (window._fbSaveModal) { window._fbSaveModal(); return; }
+    closeModalDirect();
+    showToast('Tersimpan!');
+  }
+
+  function openModal(col, dataOrNull) {
+    if (window._fbOpenModal) { window._fbOpenModal(col, dataOrNull); return; }
+    document.getElementById('modalTitle').textContent = 'Tambah ' + col;
+    document.getElementById('modalBody').innerHTML = '<p style="color:var(--text-3);padding:20px;">Menunggu koneksi Firebase...</p>';
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg || 'Berhasil!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+  function saveToast() { showToast('Perubahan berhasil disimpan!'); }
+
+  function confirmDelete(col, id, name) {
+    // Support 1 argumen (dari HTML static lama) atau 3 argumen (dari Firebase renderRow)
+    if (arguments.length === 1) { name = col; col = null; id = null; }
+    if (window._fbDelete && col && id) { window._fbDelete(col, id, name); return; }
+    if (confirm('Hapus "' + name + '"?')) showToast('"' + name + '" berhasil dihapus!');
+  }
+
+  function logout() {
+    if (window.logoutFirebase) { window.logoutFirebase(); return; }
+    window.location.href = 'admin.html';
+  }
+</script>
+
 <script type="module">
   import { initializeApp }     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
@@ -741,7 +821,6 @@
     serverTimestamp
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-<script>
 
   // ── Panel switching
   const panels = {
@@ -943,17 +1022,11 @@
   const db   = getFirestore(app);
 
 
-  // ── Expose semua fungsi ke window agar onclick HTML bisa akses
-  window.showPanel        = showPanel;
-  window.filterTable      = filterTable;
-  window.openModal        = openModal;
-  window.closeModal       = closeModal;
-  window.closeModalDirect = closeModalDirect;
-  window.saveModal        = saveModal;
-  window.showToast        = showToast;
-  window.saveToast        = saveToast;
-  window.confirmDelete    = confirmDelete;
-  window.logout           = () => window.logoutFirebase && window.logoutFirebase();
+  // ── Expose Firebase functions ke window
+  window._loadTable   = loadTable;
+  window._fbOpenModal = openEdit;
+  window._fbDelete    = deleteItem;
+  window._fbSaveModal = fbSaveModal;
 
   // ── Auth guard
   onAuthStateChanged(auth, user => {
@@ -1089,21 +1162,20 @@
   let _editCol = null, _editId = null;
 
   // ── Open edit modal (load data dari Firestore)
-  window.openEdit = async (col, id) => {
+  const openEdit = async (col, id) => {
     _editCol = col; _editId = id;
-    const d = (await getDoc(doc(db, col, id))).data() || {};
-    document.getElementById('modalTitle').textContent = 'Edit ' + col.charAt(0).toUpperCase() + col.slice(1);
+    let d = {};
+    if (id) {
+      const snap = await getDoc(doc(db, col, id));
+      d = snap.data() || {};
+    }
+    document.getElementById('modalTitle').textContent = (id ? 'Edit ' : 'Tambah ') + col.charAt(0).toUpperCase() + col.slice(1);
     document.getElementById('modalBody').innerHTML = buildForm(col, d);
     document.getElementById('modalOverlay').classList.add('open');
   };
 
-  // ── Open add modal
-  window.openModal = (col) => {
-    _editCol = col; _editId = null;
-    document.getElementById('modalTitle').textContent = 'Tambah ' + col.charAt(0).toUpperCase() + col.slice(1);
-    document.getElementById('modalBody').innerHTML = buildForm(col, {});
-    document.getElementById('modalOverlay').classList.add('open');
-  };
+  // expose ke window
+  window._fbOpenModal = openEdit;
 
   // ── Build form fields
   function buildForm(col, d) {
