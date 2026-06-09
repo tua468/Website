@@ -1562,57 +1562,8 @@
     </div>
         <div class="pengumuman-grid" id="pengumuman-grid">
       <div>
-        <div class="info-alert rv d1">
-          <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
-          <div class="info-alert-body">
-            <div class="info-alert-tag">🔥 Terbaru</div>
-            <div class="info-alert-title">Penerimaan Peserta Didik Baru (PPDB) Tahun Ajaran 2025/2026 resmi dibuka!</div>
-            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> 01 Juni 2026 · Daftar melalui website SPMB resmi</div>
-          </div>
-          <i class="fas fa-chevron-right info-alert-arrow"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot new"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Pengambilan Ijazah Alumni Angkatan 2025 — Mulai 5 Juni 2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 2 hari lalu &nbsp;·&nbsp; Administrasi</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot info"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Info Parkir PPDB — Lokasi dan Alur Pendaftaran Offline</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 4 hari lalu &nbsp;·&nbsp; PPDB 2026</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Pelantikan Taruna OSIS Angkatan XIII — Sabtu, 7 Juni 2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 5 hari lalu &nbsp;·&nbsp; Kesiswaan</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Jadwal Ujian Akhir Semester Genap TA 2025/2026</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 1 minggu lalu &nbsp;·&nbsp; Akademik</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div class="info-card rv d2">
-          <div class="info-card-dot info"></div>
-          <div class="info-card-body">
-            <div class="info-card-title">Beasiswa Prestasi Siswa — Syarat dan Cara Pendaftaran</div>
-            <div class="info-card-meta"><i class="fas fa-clock"></i> 2 minggu lalu &nbsp;·&nbsp; Akademik</div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
-        </div>
-        <div style="text-align:center;margin-top:20px;" class="rv">
-          <a href="#" class="btn-navy" style="margin-top:0;display:inline-flex;"><i class="fas fa-list"></i> Lihat Semua Pengumuman</a>
+        <div style="text-align:center;padding:40px;color:var(--text-3);">
+          <i class="fas fa-spinner fa-spin"></i> Memuat info...
         </div>
       </div>
     </div>
@@ -2215,12 +2166,14 @@
   watchCol('pengumuman', data => {
     const grid = document.getElementById('pengumuman-grid');
     if (!grid) return;
-    const aktif = data.filter(d => d.status === 'Aktif');
+    const aktif = data
+      .filter(d => d.status === 'Aktif')
+      .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
     if (!aktif.length) return;
     const [top, ...rest] = aktif;
     grid.innerHTML = `
       <div>
-        <div class="info-alert rv on d1">
+        <div class="info-alert rv on d1" onclick="goToDetail('pengumuman','${top.id}','pengumuman')" style="cursor:pointer;">
           <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
           <div class="info-alert-body">
             <div class="info-alert-tag">🔥 Terbaru</div>
@@ -2230,7 +2183,7 @@
           <i class="fas fa-chevron-right info-alert-arrow"></i>
         </div>
         ${rest.slice(0,5).map(d => `
-        <div class="info-card rv on d2">
+        <div class="info-card rv on d2" onclick="goToDetail('pengumuman','${d.id}','pengumuman')" style="cursor:pointer;">
           <div class="info-card-dot ${d.kategori==='PPDB'?'new':''}"></div>
           <div class="info-card-body">
             <div class="info-card-title">${d.judul||''}</div>
