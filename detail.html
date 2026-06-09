@@ -1092,9 +1092,21 @@ const JURUSAN_ORDER = ['tpm', 'tkro', 'dpib', 'tkp', 'titl', 'tkj'];
 
 function renderRelated(section, currentId) {
   const sectionData = DATA[section] || {};
-  // Pakai urutan JURUSAN_ORDER, skip yg sedang dibuka
-  const order = section === 'jurusan' ? JURUSAN_ORDER : Object.keys(sectionData);
-  const keys = order.filter(k => k !== currentId && sectionData.hasOwnProperty(k));
+  let keys;
+  if (section === 'jurusan') {
+    // Jurusan: urutan tetap
+    keys = JURUSAN_ORDER.filter(k => k !== currentId && sectionData.hasOwnProperty(k));
+  } else if (section === 'fasilitas') {
+    // Fasilitas: random shuffle, tampil semua kecuali yang sedang dibuka
+    keys = Object.keys(sectionData).filter(k => k !== currentId);
+    // Fisher-Yates shuffle
+    for (let i = keys.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [keys[i], keys[j]] = [keys[j], keys[i]];
+    }
+  } else {
+    keys = Object.keys(sectionData).filter(k => k !== currentId && sectionData.hasOwnProperty(k));
+  }
   const container = document.getElementById('relatedContent');
   if (keys.length === 0) {
     container.innerHTML = '<p style="font-size:12.5px;color:var(--text-3);">Tidak ada konten terkait.</p>';
