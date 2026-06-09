@@ -889,6 +889,8 @@
   }
 
   function saveModal() {
+    // Dipanggil dari tombol Save — kalau Firebase module sudah init, pakai saveModal dari sana
+    if (window._saveModalFirebase) { window._saveModalFirebase(); return; }
     closeModalDirect();
     showToast('Data berhasil disimpan!');
   }
@@ -1132,6 +1134,8 @@
       showToast('❌ Gagal menyimpan: ' + e.message);
     }
   };
+  // backward compat
+  window._saveModalFirebase = window.saveModal;
 
   // ── Delete item
   window.deleteItem = async (col, id, name) => {
