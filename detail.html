@@ -1515,7 +1515,7 @@ window._DATA = DATA;
 <!-- ══ FIREBASE — baca data dari Firestore ══ -->
 <script type="module">
   import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, doc, getDoc, collection, getDocs }
+  import { getFirestore, doc, getDoc, onSnapshot, collection, getDocs }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -1548,14 +1548,19 @@ window._DATA = DATA;
   if (section && id && COL_MAP[section]) {
     const hasLocal = window._DATA && window._DATA[section] && window._DATA[section][id];
 
-    // Hanya render dari Firestore kalau konten TIDAK ada di DATA lokal
-    // (konten baru yang ditambah admin — bukan fasilitas/jurusan yang sudah hardcode)
     if (!hasLocal) {
-      getDoc(doc(db, COL_MAP[section], id)).then(snap => {
-        if (snap.exists()) renderFromFirestore(section, id, snap.data());
-      }).catch(() => {});
+      // Gunakan onSnapshot untuk pengumuman, berita, prestasi → realtime update
+      const realtimeSections = ['pengumuman', 'berita', 'prestasi'];
+      if (realtimeSections.includes(section)) {
+        onSnapshot(doc(db, COL_MAP[section], id), snap => {
+          if (snap.exists()) renderFromFirestore(section, id, snap.data());
+        }, err => console.warn('onSnapshot error:', err));
+      } else {
+        getDoc(doc(db, COL_MAP[section], id)).then(snap => {
+          if (snap.exists()) renderFromFirestore(section, id, snap.data());
+        }).catch(() => {});
+      }
     }
-    // Jika konten lokal sudah ada → JANGAN timpa, biarkan saja
   }
 
   // ── Render halaman dari data Firestore
@@ -1749,59 +1754,59 @@ window._DATA = DATA;
   }
 
   function renderPengumuman(id, d) {
-    // Sembunyikan navigasi cepat & konten terkait
-    const navEl = document.getElementById('sidebarNavCepat');
-    if (navEl) navEl.style.display = 'none';
-    const relEl = document.getElementById('relatedContent');
-    if (relEl) { const card = relEl.closest('.sidebar-card'); if (card) card.style.display = 'none'; }
+    // Sembunyikan SEMUA sidebar — tidak relevan untuk pengumuman
+    document.querySelectorAll('.detail-sidebar .sidebar-card').forEach(el => el.style.display = 'none');
+    // Buat sidebar kosong (tidak ada sidebar kanan)
+    document.querySelector('.detail-sidebar').style.display = 'none';
+    // Buat main content full width
+    const grid = document.querySelector('.detail-grid');
+    if (grid) grid.style.gridTemplateColumns = '1fr';
 
-    // badge warna berdasarkan status/kategori
-    const badgeColor = d.kategori === 'PPDB' ? '#e8a020' : 'var(--navy-lt)';
+    const badgeColor = {
+      'PPDB': '#e8a020', 'Kesiswaan': 'var(--navy-lt)',
+      'Administrasi': '#2e7d32', 'Akademik': '#1565c0', 'Umum': '#8a94b8'
+    }[d.kategori] || 'var(--navy)';
 
     setHero(
       'Info & Pengumuman', 'fas fa-bullhorn',
       d.judul || 'Pengumuman',
-      d.isi ? d.isi.slice(0, 120) + (d.isi.length > 120 ? '...' : '') : '',
+      d.kategori ? `Kategori: ${d.kategori}` : '',
       'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=1200&q=80',
       [
-        { icon: 'fas fa-calendar-alt', text: d.tanggal || '' },
-        { icon: 'fas fa-tag',          text: d.kategori || '' },
-        { icon: 'fas fa-circle',       text: d.status || '' },
+        { icon: 'fas fa-calendar-alt', text: d.tanggal || '-' },
+        { icon: 'fas fa-tag',          text: d.kategori || '-' },
+        { icon: 'fas fa-check-circle', text: d.status || 'Aktif' },
       ]
     );
 
-    // Isi paragraf
+    // Isi paragraf — tiap baris jadi <p>
     const isiHTML = d.isi
       ? d.isi.split('\n').filter(l => l.trim()).map(l => `<p>${l.trim()}</p>`).join('')
       : '<p style="color:var(--text-3);font-style:italic;">Isi pengumuman belum tersedia.</p>';
 
     document.getElementById('detailMain').innerHTML = `
       <div class="highlight-box" style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));">
-        <h3><i class="fas fa-bullhorn" style="color:var(--gold-lt);margin-right:8px;"></i>${d.judul||''}</h3>
-        <p style="margin-top:8px;">${d.isi ? d.isi.slice(0,150)+(d.isi.length>150?'...':'') : ''}</p>
+        <h3 style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:10px;">
+          <i class="fas fa-bullhorn" style="color:var(--gold-lt);margin-right:8px;"></i>${d.judul||''}
+        </h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+          <span style="background:${badgeColor};color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:100px;">${d.kategori||''}</span>
+          <span style="background:rgba(255,255,255,.15);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:100px;"><i class="fas fa-calendar-alt" style="margin-right:4px;"></i>${d.tanggal||'-'}</span>
+          <span style="background:rgba(255,255,255,.15);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:100px;"><i class="fas fa-check-circle" style="margin-right:4px;"></i>${d.status||'Aktif'}</span>
+        </div>
       </div>
+
       <div class="detail-section">
         <h2><i class="fas fa-align-left"></i> Isi Pengumuman</h2>
         ${isiHTML}
-      </div>`;
-
-    document.getElementById('sidebarInfo').innerHTML = `
-      <h4><i class="fas fa-info-circle"></i> Info Pengumuman</h4>
-      <div style="display:flex;flex-direction:column;">
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:10px 0;border-bottom:1px solid var(--gray-2);">
-          <span style="color:var(--text-3);">Tanggal</span><strong>${d.tanggal||'-'}</strong>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:10px 0;border-bottom:1px solid var(--gray-2);">
-          <span style="color:var(--text-3);">Kategori</span>
-          <span style="background:${badgeColor};color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;">${d.kategori||'-'}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:10px 0;">
-          <span style="color:var(--text-3);">Status</span><strong style="color:var(--navy);">${d.status||'-'}</strong>
-        </div>
       </div>
-      <a href="index.html#pengumuman" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:var(--navy);color:#fff;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;margin-top:16px;transition:background .2s;" onmouseover="this.style.background='#2451a0'" onmouseout="this.style.background='var(--navy)'">
-        <i class="fas fa-list"></i> Semua Pengumuman
-      </a>`;
+
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gray-2);display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="index.html#pengumuman" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:var(--navy);color:#fff;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;transition:background .2s;" onmouseover="this.style.background='#2451a0'" onmouseout="this.style.background='var(--navy)'">
+          <i class="fas fa-arrow-left"></i> Kembali ke Info
+        </a>
+      </div>`;
+  }
 
   // ── Render konten terkait dari Firestore
   function renderRelatedFirestore(section, items) {
