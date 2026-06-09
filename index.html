@@ -1170,7 +1170,7 @@
         <div class="s-tag" style="background:rgba(255,255,255,.2);color:#fff;">Galeri Prestasi</div>
         <h2>Prestasi Siswa yang Membanggakan</h2>
         <p>Kami bangga dengan pencapaian siswa-siswi kami. Setiap tahun, siswa SMKN 2 Sragen aktif meraih puluhan prestasi di berbagai bidang.</p>
-        <a href="#" class="btn-white-sm"><i class="fas fa-trophy"></i> Lihat Semua Juara</a>
+        <a href="prestasi.html" id="btn-lihat-semua" class="btn-white-sm" style="display:none;"><i class="fas fa-trophy"></i> Lihat Semua Juara</a>
       </div>
       <div class="prestasi-banner-right">🏆</div>
     </div>
@@ -2089,13 +2089,19 @@
     }, err => console.warn(colName, err));
   }
 
-  // ── PRESTASI — selalu render dari Firebase sesuai input admin
-  watchCol('prestasi', data => {
-    const grid = document.getElementById('prestasi-grid');
-    if (!grid || !data.length) return;
-    const delays = ['d1','d2','d3'];
-    grid.innerHTML = data.map((d,i) => `
-      <div class="prcard rv on ${delays[i%3]}">
+  // ── PRESTASI — max 9, urut: bobot tingkat (Internasional > Nasional > Provinsi > Kabupaten) lalu tahun terbaru
+  const tingkatBobot = { 'Internasional': 4, 'Nasional': 3, 'Provinsi': 2, 'Kabupaten': 1 };
+  function sortPrestasi(data) {
+    return [...data].sort((a, b) => {
+      const bobotA = tingkatBobot[a.tingkat] || 0;
+      const bobotB = tingkatBobot[b.tingkat] || 0;
+      if (bobotB !== bobotA) return bobotB - bobotA;          // tingkat lebih tinggi duluan
+      return (parseInt(b.tahun) || 0) - (parseInt(a.tahun) || 0); // tahun terbaru duluan
+    });
+  }
+  function renderPrcard(d, i, delays) {
+    return `
+      <div class="prcard rv on ${delays[i % 3]}">
         <div class="prcard-photo">
           ${d.foto
             ? `<img src="${d.foto}" alt="${d.nama||''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'prcard-photo-empty\\'>🏆</div>'" />`
@@ -2108,7 +2114,18 @@
           <h4>${d.nama||''}</h4>
           <p>${d.keterangan||''}</p>
         </div>
-      </div>`).join('');
+      </div>`;
+  }
+  watchCol('prestasi', data => {
+    const grid   = document.getElementById('prestasi-grid');
+    const btnAll = document.getElementById('btn-lihat-semua');
+    if (!grid || !data.length) return;
+    const sorted  = sortPrestasi(data);
+    const tampil  = sorted.slice(0, 9);
+    const delays  = ['d1','d2','d3'];
+    grid.innerHTML = tampil.map((d, i) => renderPrcard(d, i, delays)).join('');
+    // tampilkan tombol hanya kalau data lebih dari 9
+    if (btnAll) btnAll.style.display = sorted.length > 9 ? 'inline-flex' : 'none';
   });
 
   // ── BERITA
