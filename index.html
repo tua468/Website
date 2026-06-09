@@ -302,26 +302,36 @@
     .testi-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
     .tcard {
       border-radius: var(--r-xl); overflow: hidden; position: relative;
-      min-height: 340px; display: flex; align-items: flex-end;
-      background: var(--gray-2);
+      min-height: 360px; display: flex; align-items: flex-end;
+      background: var(--navy-dk);
     }
+    /* foto background penuh */
+    .tcard-photo {
+      position: absolute; inset: 0;
+    }
+    .tcard-photo img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top;
+      transition: transform .45s;
+    }
+    .tcard:hover .tcard-photo img { transform: scale(1.04); }
+    /* overlay gradient gelap dari bawah */
     .tcard-bg {
       position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(26,53,102,.1) 0%, rgba(26,53,102,.85) 100%);
+      background: linear-gradient(to top, rgba(8,16,40,.92) 0%, rgba(8,16,40,.45) 50%, rgba(8,16,40,.08) 100%);
       z-index: 1;
     }
-    .tcard-img-placeholder {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      font-size: 5rem; color: var(--navy); opacity: .15;
+    .tcard-body { position: relative; z-index: 2; padding: 28px; width: 100%; }
+    .tcard-quote {
+      font-size: 13.5px; color: rgba(255,255,255,.93); line-height: 1.8;
+      margin-bottom: 18px; font-style: italic;
     }
-    .tcard-body { position: relative; z-index: 2; padding: 28px; }
-    .tcard-quote { font-size: 14.5px; color: rgba(255,255,255,.92); line-height: 1.75; margin-bottom: 16px; font-style: italic; }
     .tcard-person { display: flex; align-items: center; gap: 12px; }
     .tcard-avatar {
-      width: 40px; height: 40px; border-radius: 50%; background: var(--navy-dim);
-      border: 2px solid rgba(255,255,255,.4); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff;
+      width: 42px; height: 42px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.5);
     }
+    .tcard-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
     .tcard-name { font-size: 13.5px; font-weight: 700; color: #fff; }
     .tcard-role { font-size: 11.5px; color: rgba(255,255,255,.65); }
 
@@ -1476,47 +1486,63 @@
       <p class="s-desc">Beberapa siswa dan alumni memberikan feedback terkait proses pembinaan di SMKN 2 Sragen.</p>
     </div>
     <div class="testi-grid">
-      <div class="tcard rv d1" style="background: linear-gradient(135deg, #1a3566, #2451a0);">
+      <div class="tcard rv d1">
+        <div class="tcard-photo">
+          <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214515.jpg" alt="Annisa Rahma" />
+        </div>
         <div class="tcard-bg"></div>
-        <div class="tcard-img-placeholder"><i class="fas fa-user-graduate"></i></div>
         <div class="tcard-body">
           <p class="tcard-quote">"Melalui OSIS, saya belajar memimpin, mengelola acara besar dan berani berpendapat. Sekolah ini benar-benar mendukung kami untuk berkembang."</p>
           <div class="tcard-person">
-            <div class="tcard-avatar"><i class="fas fa-user"></i></div>
+            <div class="tcard-avatar">
+              <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214515.jpg" alt="Annisa Rahma" />
+            </div>
             <div><div class="tcard-name">Annisa Rahma</div><div class="tcard-role">Ketua OSIS</div></div>
           </div>
         </div>
       </div>
-      <div class="tcard rv d2" style="background: linear-gradient(135deg, #122448, #1a3566);">
+      <div class="tcard rv d2">
+        <div class="tcard-photo">
+          <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214542.jpg" alt="Ridwan" />
+        </div>
         <div class="tcard-bg"></div>
-        <div class="tcard-img-placeholder"><i class="fas fa-hard-hat"></i></div>
         <div class="tcard-body">
           <p class="tcard-quote">"Disiplin dan mental siap kerja yang saya dapatkan. Saya tidak kaget lagi saat memasuki dunia industri — semua sudah dipersiapkan di sini."</p>
           <div class="tcard-person">
-            <div class="tcard-avatar"><i class="fas fa-user"></i></div>
+            <div class="tcard-avatar">
+              <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214542.jpg" alt="Ridwan" />
+            </div>
             <div><div class="tcard-name">Ridwan</div><div class="tcard-role">Bekerja di Mitra Industri</div></div>
           </div>
         </div>
       </div>
-      <div class="tcard rv d1" style="background: linear-gradient(135deg, #1a3566, #122448);">
+      <div class="tcard rv d1">
+        <div class="tcard-photo">
+          <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214604.jpg" alt="Putri" />
+        </div>
         <div class="tcard-bg"></div>
-        <div class="tcard-img-placeholder"><i class="fas fa-heartbeat"></i></div>
         <div class="tcard-body">
           <p class="tcard-quote">"Masuk eskul PMR membuka wawasan saya tentang kemanusiaan dan kesehatan. Saya bangga bisa aktif berkegiatan sambil tetap berprestasi."</p>
           <div class="tcard-person">
-            <div class="tcard-avatar"><i class="fas fa-user"></i></div>
-            <div><div class="tcard-name">Rahma</div><div class="tcard-role">Anggota PMR</div></div>
+            <div class="tcard-avatar">
+              <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_214604.jpg" alt="Putri" />
+            </div>
+            <div><div class="tcard-name">Putri</div><div class="tcard-role">Anggota PMR</div></div>
           </div>
         </div>
       </div>
-      <div class="tcard rv d2" style="background: linear-gradient(135deg, #2451a0, #1a3566);">
+      <div class="tcard rv d2">
+        <div class="tcard-photo">
+          <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_220521.jpg" alt="Mentari" />
+        </div>
         <div class="tcard-bg"></div>
-        <div class="tcard-img-placeholder"><i class="fas fa-network-wired"></i></div>
         <div class="tcard-body">
           <p class="tcard-quote">"Program TKJ di sini luar biasa. Laboratorium jaringan yang lengkap dan guru yang berpengalaman membuat saya siap terjun ke dunia IT."</p>
           <div class="tcard-person">
-            <div class="tcard-avatar"><i class="fas fa-user"></i></div>
-            <div><div class="tcard-name">Dimas Pratama</div><div class="tcard-role">Alumni TKJ 2023</div></div>
+            <div class="tcard-avatar">
+              <img src="https://raw.githubusercontent.com/tua468/nn/refs/heads/main/IMG_20260609_220521.jpg" alt="Mentari" />
+            </div>
+            <div><div class="tcard-name">Mentari</div><div class="tcard-role">Alumni TKJ 2023</div></div>
           </div>
         </div>
       </div>
