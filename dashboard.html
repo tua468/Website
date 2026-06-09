@@ -581,6 +581,8 @@
     const el = document.getElementById('topbarTitle');
     if (el && panels[id]) el.textContent = panels[id].title;
     if (window._loadTable) window._loadTable(id);
+    // Simpan panel aktif biar tidak reset saat refresh
+    localStorage.setItem('dash_panel', id);
   }
 
   function filterTable(input, tableId) {
@@ -725,6 +727,12 @@
     loadTable('galeri');
     loadTable('pengumuman');
     loadTable('polling');
+
+    // Restore panel terakhir yang dibuka sebelum refresh
+    const lastPanel = localStorage.getItem('dash_panel');
+    if (lastPanel && document.getElementById('panel-' + lastPanel)) {
+      showPanel(lastPanel);
+    }
   }
 
   // ── Load tabel dari Firestore
