@@ -1650,7 +1650,7 @@ window._DATA = DATA;
     document.getElementById('detailMain').innerHTML = `
       <div class="detail-section">
         <h2><i class="fas fa-newspaper"></i> Isi Berita</h2>
-        <p>${(d.isi||'').replace(/\n/g,'</p><p>')}</p>
+        ${(d.isi||'').split(/\\n|\n/).filter(l=>l.trim()).map(l=>`<p>${l.trim()}</p>`).join('')}
       </div>
       <div class="tag-wrap"><span class="tag">${d.kategori||''}</span></div>`;
     document.getElementById('sidebarInfo').innerHTML = `
