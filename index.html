@@ -667,37 +667,47 @@
 
     /* ── GALERI FOTO ── */
     .galeri { padding: 96px 0; background: var(--gray-1); }
-    .galeri-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 200px);
-      gap: 12px;
+
+    /* ── Layout galeri: 2 baris, masing-masing punya pola berbeda ── */
+    .galeri-mosaic {
+      display: flex; flex-direction: column; gap: 10px;
     }
+    /* Baris 1: 1 besar kiri + 2 kecil kanan atas + 1 medium kanan bawah */
+    .galeri-row { display: grid; gap: 10px; }
+    .galeri-row-1 { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 220px 180px; }
+    .galeri-row-1 .gi-0 { grid-row: span 2; }             /* foto 1 — tinggi penuh */
+    .galeri-row-1 .gi-1 { }                                /* foto 2 — kanan atas kiri */
+    .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
+    .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
+
+    /* Baris 2: 2 kecil kiri + 1 besar tengah + 1 tinggi kanan */
+    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
+    .galeri-row-2 .gi-0 { }                                /* foto 5 */
+    .galeri-row-2 .gi-1 { }                                /* foto 6 */
+    .galeri-row-2 .gi-2 { grid-row: span 2; }              /* foto 7 — tengah tinggi */
+    .galeri-row-2 .gi-3 { grid-row: span 2; }              /* foto 8 — kanan tinggi */
+    .galeri-row-2 .gi-4 { grid-column: span 2; }           /* foto 9 — kiri bawah lebar */
+
     .galeri-item {
-      border-radius: var(--r-lg); overflow: hidden;
-      background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem; cursor: pointer; position: relative;
+      border-radius: var(--r-md); overflow: hidden;
+      background: var(--navy-dk);
+      cursor: pointer; position: relative;
       transition: transform .3s, box-shadow .3s;
     }
-    .galeri-item:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(26,53,102,.25); z-index: 1; }
-    .galeri-item.big { grid-column: span 2; grid-row: span 2; font-size: 5rem; }
-    .galeri-item.wide { grid-column: span 2; }
+    .galeri-item:hover { transform: scale(1.025); box-shadow: 0 12px 40px rgba(26,53,102,.28); z-index: 2; }
+    .galeri-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .galeri-item:hover img { transform: scale(1.07); }
     .galeri-overlay {
       position: absolute; inset: 0;
-      background: rgba(18,36,72,.0);
-      display: flex; align-items: flex-end;
-      padding: 16px;
-      transition: background .3s;
+      background: linear-gradient(to top, rgba(10,20,50,.7) 0%, transparent 55%);
+      opacity: 0; transition: opacity .3s;
+      display: flex; align-items: flex-end; padding: 14px;
     }
-    .galeri-item:hover .galeri-overlay { background: rgba(18,36,72,.55); }
+    .galeri-item:hover .galeri-overlay { opacity: 1; }
     .galeri-caption {
-      color: #fff; font-size: 12.5px; font-weight: 600;
-      opacity: 0; transform: translateY(8px);
-      transition: opacity .3s, transform .3s;
-      line-height: 1.4;
+      color: #fff; font-size: 12px; font-weight: 600; line-height: 1.4;
     }
-    .galeri-item:hover .galeri-caption { opacity: 1; transform: none; }
+    .galeri-item:hover .galeri-caption { opacity: 1; }
 
     /* Lightbox */
     .lightbox {
@@ -908,8 +918,13 @@
       .hero-stats { flex-direction: column; border-radius: var(--r-lg); }
       .hstat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.15); }
       .hstat:last-child { border-bottom: none; }
-      .galeri-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; }
-      .galeri-item.big, .galeri-item.wide { grid-column: span 1; grid-row: span 1; }
+      .galeri-row-1 { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .galeri-row-1 .gi-0 { grid-row: span 1; }
+      .galeri-row-1 .gi-3 { grid-column: span 1; }
+      .galeri-row-2 { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .galeri-row-2 .gi-2, .galeri-row-2 .gi-3 { grid-row: span 1; }
+      .galeri-row-2 .gi-4 { grid-column: span 1; }
+      .galeri-row .galeri-item { min-height: 150px; }
       .bkk-banner { flex-direction: column; }
       .bkk-header-row { flex-direction: column; align-items: flex-start; }
       .lightbox-img { min-width: 90vw; min-height: 250px; }
@@ -1371,32 +1386,11 @@
         <h2 class="s-title">Momen &amp; <em>Kegiatan</em></h2>
         <p class="s-desc" style="max-width:440px;">Abadikan setiap momen berharga kegiatan siswa dan sekolah di SMKN 2 Sragen.</p>
       </div>
-      <a href="#" class="btn-navy" style="margin-top:0;">Lihat Semua <i class="fas fa-images"></i></a>
+      <a href="galeri.html" class="btn-navy" style="margin-top:0;">Lihat Semua <i class="fas fa-images"></i></a>
     </div>
-    <div class="galeri-grid rv d1">
-      <div class="galeri-item big" onclick="openLightbox('Gedung dan Lingkungan SMKN 2 Sragen')">
-        <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg" alt="Gerbang SMKN 2 Sragen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Gerbang Utama SMKN 2 Sragen</span></div>
-      </div>
-      <div class="galeri-item" onclick="openLightbox('Kegiatan Siswa SMKN 2 Sragen')">
-        <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/42944920_1890171144435131_8386577090693483445_n(1).jpg" alt="Kegiatan SMKN 2 Sragen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Kegiatan Siswa SMKN 2 Sragen</span></div>
-      </div>
-      <div class="galeri-item" onclick="openLightbox('Prestasi dan Kompetisi Siswa SMKN 2 Sragen')">
-        <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/59450345_371680263555244_5513103156207457382_n.jpg" alt="Prestasi SMKN 2 Sragen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Prestasi &amp; Kompetisi Siswa</span></div>
-      </div>
-      <div class="galeri-item wide" onclick="openLightbox('Kunjungan dan Kegiatan Bersama SMKN 2 Sragen')">
-        <img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/ganjar-di-smk-sargen1.jpeg" alt="Kunjungan ke SMKN 2 Sragen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Kunjungan Tamu Istimewa ke SMKN 2 Sragen</span></div>
-      </div>
-      <div class="galeri-item" onclick="openLightbox('Praktik Bengkel CNC Teknik Pemesinan')">
-        <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600&q=80" alt="Bengkel CNC" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Praktik Bengkel CNC — Teknik Pemesinan</span></div>
-      </div>
-      <div class="galeri-item" onclick="openLightbox('Lab Jaringan dan Komputer TKJ SMKN 2 Sragen')">
-        <img src="https://images.unsplash.com/photo-1562813733-b31f71025d54?w=600&q=80" alt="Lab Jaringan TKJ" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" />
-        <div class="galeri-overlay"><span class="galeri-caption">Lab Jaringan &amp; Server — TKJ</span></div>
+    <div class="galeri-mosaic rv d1" id="galeri-mosaic">
+      <div style="text-align:center;padding:60px 0;color:var(--text-3);">
+        <i class="fas fa-spinner fa-spin"></i> Memuat galeri...
       </div>
     </div>
   </div>
@@ -1943,23 +1937,27 @@
   });
 
   // ── Lightbox
-  function openLightbox(caption) {
+  function openLightbox(caption, fotoUrl) {
     document.getElementById('lightbox').classList.add('open');
     document.getElementById('lightboxCaption').textContent = caption;
     document.body.style.overflow = 'hidden';
-    // Temukan item galeri yang diklik dan tampilkan gambarnya
     const lbImg = document.getElementById('lightboxImg');
-    lbImg.innerHTML = '📸'; // default
-    // Cari gambar dari item yang diklik
-    const allItems = document.querySelectorAll('.galeri-item');
-    allItems.forEach(item => {
-      if (item.querySelector('.galeri-caption') && item.querySelector('.galeri-caption').textContent === caption) {
-        const img = item.querySelector('img');
-        if (img) {
-          lbImg.innerHTML = `<img src="${img.src}" alt="${caption}" style="width:100%;max-height:80vh;object-fit:contain;border-radius:var(--r-lg);" />`;
+    if (fotoUrl) {
+      lbImg.innerHTML = `<img src="${fotoUrl}" alt="${caption}" style="max-width:100%;max-height:80vh;border-radius:12px;display:block;" />`;
+    } else {
+      // fallback: cari dari DOM
+      lbImg.innerHTML = '📸';
+      const allItems = document.querySelectorAll('.galeri-item');
+      allItems.forEach(item => {
+        const cap = item.querySelector('.galeri-caption');
+        if (cap && cap.textContent === caption) {
+          const img = item.querySelector('img');
+          if (img) {
+            lbImg.innerHTML = `<img src="${img.src}" alt="${caption}" style="width:100%;max-height:80vh;object-fit:contain;border-radius:var(--r-lg);" />`;
+          }
         }
-      }
-    });
+      });
+    }
   }
   function closeLightbox() {
     document.getElementById('lightbox').classList.remove('open');
@@ -2111,18 +2109,49 @@
       </div>`;
   });
 
-  // ── GALERI
+  // ── GALERI — mosaic 2 baris (9 foto), urut terbaru
   watchCol('galeri', data => {
-    const grid = document.querySelector('.galeri-grid');
-    if (!grid) return;
-    const tampil = data.filter(d => d.status !== 'Sembunyikan').slice(0, 6);
-    if (!tampil.length) return;
-    const sizes = ['big','','','wide','',''];
-    grid.innerHTML = tampil.map((d, i) => `
-      <div class="galeri-item ${sizes[i]||''} rv on" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}')">
-        <img src="${d.foto||''}" alt="${d.judul||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.style.display='none'" />
+    const wrap = document.getElementById('galeri-mosaic');
+    if (!wrap) return;
+    const sorted = data
+      .filter(d => d.status !== 'Sembunyikan')
+      .sort((a, b) => {
+        // Sort by createdAt desc, fallback by judul
+        const tA = a.createdAt?.seconds || 0;
+        const tB = b.createdAt?.seconds || 0;
+        return tB - tA;
+      });
+    if (!sorted.length) return;
+
+    const tampil = sorted.slice(0, 9);
+
+    // helper buat item
+    const gi = (d, cls='') => `
+      <div class="galeri-item ${cls}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${(d.foto||'')}')">
+        <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.style.display='none'" />
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
-      </div>`).join('');
+      </div>`;
+
+    // Baris 1: foto 0–3 (pola: besar kiri + 2 kecil + 1 lebar bawah)
+    const r1 = tampil.slice(0, 4);
+    // Baris 2: foto 4–8 (pola: 2 kecil + besar tengah + tinggi kanan + lebar bawah kiri)
+    const r2 = tampil.slice(4, 9);
+
+    wrap.innerHTML = `
+      <div class="galeri-row galeri-row-1">
+        ${r1[0] ? gi(r1[0], 'gi-0') : ''}
+        ${r1[1] ? gi(r1[1], 'gi-1') : ''}
+        ${r1[2] ? gi(r1[2], 'gi-2') : ''}
+        ${r1[3] ? gi(r1[3], 'gi-3') : ''}
+      </div>
+      ${r2.length ? `
+      <div class="galeri-row galeri-row-2">
+        ${r2[0] ? gi(r2[0], 'gi-0') : ''}
+        ${r2[1] ? gi(r2[1], 'gi-1') : ''}
+        ${r2[2] ? gi(r2[2], 'gi-2') : ''}
+        ${r2[3] ? gi(r2[3], 'gi-3') : ''}
+        ${r2[4] ? gi(r2[4], 'gi-4') : ''}
+      </div>` : ''}`;
   });
 
   // ── PENGUMUMAN
