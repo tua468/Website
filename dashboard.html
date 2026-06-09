@@ -818,12 +818,6 @@
   const db   = getFirestore(app);
 
 
-  // ── Expose Firebase functions ke window
-  window._loadTable   = loadTable;
-  window._fbOpenModal = openEdit;
-  window._fbDelete    = deleteItem;
-  window._fbSaveModal = fbSaveModal;
-
   // ── Auth guard
   onAuthStateChanged(auth, user => {
     if (!user) { window.location.href = 'admin.html'; return; }
@@ -970,9 +964,6 @@
     document.getElementById('modalOverlay').classList.add('open');
   };
 
-  // expose ke window
-  window._fbOpenModal = openEdit;
-
   // ── Build form fields
   function buildForm(col, d) {
     const f = (label, name, val='', type='text') =>
@@ -1018,6 +1009,10 @@
   window._fbSaveModal  = fbSaveModal;
   window._saveModalFirebase = fbSaveModal;
   window.saveModal     = fbSaveModal;
+  window._loadTable       = loadTable;
+  window._fbOpenModal     = openEdit;
+  window._fbDelete        = deleteItem;
+  window.openEdit         = openEdit;
 
   // ── Delete item
   window.deleteItem = async (col, id, name) => {
