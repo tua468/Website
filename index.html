@@ -2015,5 +2015,143 @@
 
 </script>
 
+<!-- ── Firebase: update 5 section dari Firestore ── -->
+<script type="module">
+  import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, getDocs, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const app = initializeApp({
+    apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
+    authDomain: "smkn2sragen-e487b.firebaseapp.com",
+    projectId: "smkn2sragen-e487b",
+    storageBucket: "smkn2sragen-e487b.firebasestorage.app",
+    messagingSenderId: "602192129071",
+    appId: "1:602192129071:web:884e02ba2bd6766df22ada"
+  });
+  const db = getFirestore(app);
+
+  // ── Helper: observe koleksi & update grid saat ada perubahan
+  function watchCol(colName, callback) {
+    onSnapshot(collection(db, colName), snap => {
+      if (!snap.empty) callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    }, err => console.warn(colName, err));
+  }
+
+  // ── PRESTASI
+  watchCol('prestasi', data => {
+    const grid = document.getElementById('prestasi-grid');
+    if (!grid) return;
+    const delays = ['d1','d2','d3'];
+    grid.innerHTML = data.map((d,i) => `
+      <div class="prcard rv on ${delays[i%3]}">
+        <span class="prcard-medal">${d.medal||'🏆'}</span>
+        <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
+        <h4>${d.nama||''}</h4>
+        <p>${d.keterangan||''}</p>
+      </div>`).join('');
+  });
+
+  // ── BERITA
+  watchCol('berita', data => {
+    const grid = document.getElementById('berita-grid');
+    if (!grid) return;
+    const pub = data.filter(d => d.status === 'Publish');
+    if (!pub.length) return;
+    const [utama, ...rest] = pub;
+    grid.innerHTML = `
+      <div class="berita-main rv on d1" onclick="goToDetail('berita','${utama.id}','berita')">
+        <div class="berita-main-img" style="background:var(--navy-dk);padding:0;">
+          <img src="${utama.foto||''}" alt="${utama.judul||''}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" loading="lazy" onerror="this.style.display='none'" />
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(18,36,72,.5) 100%);"></div>
+          <span class="berita-main-cat" style="position:relative;z-index:1;">${utama.kategori||'Berita'}</span>
+        </div>
+        <div class="berita-main-body">
+          <div class="berita-main-date"><i class="fas fa-calendar-alt"></i> ${utama.tanggal||''}</div>
+          <div class="berita-main-title">${utama.judul||''}</div>
+          <div class="berita-main-snippet">${utama.ringkasan||''}</div>
+          <a href="#" class="berita-main-read">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="berita-list rv on d2">
+        ${rest.slice(0,4).map(d => `
+        <div class="berita-item" onclick="goToDetail('berita','${d.id}','berita')">
+          <div class="berita-item-img" style="overflow:hidden;padding:0;background:var(--navy);">
+            <img src="${d.foto||''}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.style.display='none'" />
+          </div>
+          <div class="berita-item-body">
+            <div class="berita-item-cat">${d.kategori||''}</div>
+            <div class="berita-item-title">${d.judul||''}</div>
+            <div class="berita-item-date"><i class="fas fa-calendar-alt"></i> ${d.tanggal||''}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+  });
+
+  // ── GALERI
+  watchCol('galeri', data => {
+    const grid = document.querySelector('.galeri-grid');
+    if (!grid) return;
+    const tampil = data.filter(d => d.status !== 'Sembunyikan').slice(0, 6);
+    if (!tampil.length) return;
+    const sizes = ['big','','','wide','',''];
+    grid.innerHTML = tampil.map((d, i) => `
+      <div class="galeri-item ${sizes[i]||''} rv on" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}')">
+        <img src="${d.foto||''}" alt="${d.judul||''}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.style.display='none'" />
+        <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
+      </div>`).join('');
+  });
+
+  // ── PENGUMUMAN
+  watchCol('pengumuman', data => {
+    const grid = document.getElementById('pengumuman-grid');
+    if (!grid) return;
+    const aktif = data.filter(d => d.status === 'Aktif');
+    if (!aktif.length) return;
+    const [top, ...rest] = aktif;
+    grid.innerHTML = `
+      <div>
+        <div class="info-alert rv on d1">
+          <div class="info-alert-ico"><i class="fas fa-bullhorn"></i></div>
+          <div class="info-alert-body">
+            <div class="info-alert-tag">🔥 Terbaru</div>
+            <div class="info-alert-title">${top.judul||''}</div>
+            <div class="info-alert-date"><i class="fas fa-calendar-alt"></i> ${top.tanggal||''} · ${top.kategori||''}</div>
+          </div>
+          <i class="fas fa-chevron-right info-alert-arrow"></i>
+        </div>
+        ${rest.slice(0,5).map(d => `
+        <div class="info-card rv on d2">
+          <div class="info-card-dot ${d.kategori==='PPDB'?'new':''}"></div>
+          <div class="info-card-body">
+            <div class="info-card-title">${d.judul||''}</div>
+            <div class="info-card-meta"><i class="fas fa-clock"></i> ${d.tanggal||''} &nbsp;·&nbsp; ${d.kategori||''}</div>
+          </div>
+          <i class="fas fa-chevron-right" style="color:var(--text-3);font-size:12px;"></i>
+        </div>`).join('')}
+        <div style="text-align:center;margin-top:20px;">
+          <a href="#" class="btn-navy" style="margin-top:0;display:inline-flex;"><i class="fas fa-list"></i> Lihat Semua Pengumuman</a>
+        </div>
+      </div>`;
+  });
+
+  // ── POLLING
+  watchCol('polling', data => {
+    const aktif = data.filter(d => d.status === 'Aktif');
+    if (!aktif.length) return;
+    const p = aktif[0];
+    const qEl = document.getElementById('pollQuestion');
+    const oEl = document.getElementById('pollOptions');
+    if (qEl) qEl.textContent = p.pertanyaan || '';
+    if (oEl && p.pilihan1) {
+      oEl.innerHTML = [p.pilihan1, p.pilihan2, p.pilihan3, p.pilihan4].filter(Boolean).map((opt, i) => `
+        <label class="poll-option">
+          <input type="radio" name="poll" value="${i}">
+          <label>${opt}</label>
+        </label>`).join('');
+    }
+  });
+</script>
+
 </body>
 </html>
