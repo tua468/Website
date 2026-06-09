@@ -375,7 +375,7 @@
   <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-left">
-      <h2 id="topbarTitle">Dashboard Overview</h2>
+      <h2>SMK Negeri 2 Sragen</h2>
     </div>
     <div class="topbar-right">
       <a href="index.html" target="_blank" class="view-site-btn"><i class="fas fa-external-link-alt"></i> Lihat Website</a>
@@ -730,7 +730,8 @@
     const navEl = document.querySelector(`.nav-item[onclick="showPanel('${id}')"]`);
     if (navEl) navEl.classList.add('active');
     if (panels[id]) {
-      document.getElementById('topbarTitle').textContent = panels[id].title;
+      const el = document.getElementById('topbarTitle');
+      if (el) el.textContent = panels[id].title;
     }
     // Load tabel dari Firebase kalau tersedia
     if (window._loadTable) window._loadTable(id);
