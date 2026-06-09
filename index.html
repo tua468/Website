@@ -1156,41 +1156,8 @@
       <div class="prestasi-banner-right">🏆</div>
     </div>
     <div class="prestasi-grid" id="prestasi-grid">
-      <div class="prcard rv d1">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 1 LKS Teknik Kendaraan Ringan</h4>
-        <p>Lomba Kompetensi Siswa Bidang Otomotif — Jawa Tengah</p>
-      </div>
-      <div class="prcard rv d2">
-        <span class="prcard-medal">🏆</span>
-        <span class="prcard-lvl">Tingkat Nasional</span>
-        <h4>Finalis LKS Nasional Teknik Instalasi Listrik</h4>
-        <p>Lomba Kompetensi Siswa Tingkat Nasional — Jakarta</p>
-      </div>
-      <div class="prcard rv d3">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Kabupaten</span>
-        <h4>Juara Umum Olimpiade Sains Terapan</h4>
-        <p>Olimpiade Sains Terapan Kabupaten Sragen</p>
-      </div>
-      <div class="prcard rv d1">
-        <span class="prcard-medal">🥈</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 2 LKS Desain Pemodelan Bangunan</h4>
-        <p>Lomba Kompetensi Siswa Bidang Teknik Bangunan</p>
-      </div>
-      <div class="prcard rv d2">
-        <span class="prcard-medal">🥇</span>
-        <span class="prcard-lvl">Tingkat Provinsi</span>
-        <h4>Juara 1 LKS Teknik Komputer &amp; Jaringan</h4>
-        <p>Lomba Kompetensi Siswa Bidang TKJ — Jawa Tengah</p>
-      </div>
-      <div class="prcard rv d3">
-        <span class="prcard-medal">🌿</span>
-        <span class="prcard-lvl">Penghargaan Lingkungan</span>
-        <h4>Sekolah Adiwiyata Kabupaten Sragen</h4>
-        <p>Penghargaan lingkungan hidup dari Pemkab Sragen</p>
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-3);">
+        <i class="fas fa-spinner fa-spin"></i> Memuat prestasi...
       </div>
     </div>
   </div>
@@ -2103,31 +2070,18 @@
     }, err => console.warn(colName, err));
   }
 
-  // ── PRESTASI — hanya update jika ada data baru dari Firebase (bukan replace konten awal)
-  let _prestasiLoaded = false;
+  // ── PRESTASI — selalu render dari Firebase sesuai input admin
   watchCol('prestasi', data => {
     const grid = document.getElementById('prestasi-grid');
-    if (!grid) return;
-    // Jangan flash: update hanya setelah load pertama selesai
-    // atau jika jumlah data berbeda dari card yang ada
-    const existingCards = grid.querySelectorAll('.prcard');
-    if (!_prestasiLoaded) {
-      _prestasiLoaded = true;
-      // Jika sudah ada konten hardcode (6 card), skip update pertama
-      if (existingCards.length >= 6) return;
-    }
+    if (!grid || !data.length) return;
     const delays = ['d1','d2','d3'];
-    const newHTML = data.map((d,i) => `
+    grid.innerHTML = data.map((d,i) => `
       <div class="prcard rv on ${delays[i%3]}">
         <span class="prcard-medal">${d.medal||'🏆'}</span>
         <span class="prcard-lvl">Tingkat ${d.tingkat||''}</span>
         <h4>${d.nama||''}</h4>
         <p>${d.keterangan||''}</p>
       </div>`).join('');
-    // Hanya replace jika konten benar-benar berbeda
-    if (grid.innerHTML.trim() !== newHTML.trim()) {
-      grid.innerHTML = newHTML;
-    }
   });
 
   // ── BERITA
