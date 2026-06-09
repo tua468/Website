@@ -342,20 +342,13 @@
   </div>
 
   <div class="sidebar-nav">
-    <div class="sidebar-section-title">Menu Utama</div>
+    <div class="sidebar-section-title">Kelola Konten</div>
     <a class="nav-item active" onclick="showPanel('overview')"><i class="fas fa-th-large"></i> Overview</a>
-    <a class="nav-item" onclick="showPanel('jurusan')"><i class="fas fa-graduation-cap"></i> Jurusan / Program</a>
-    <a class="nav-item" onclick="showPanel('fasilitas')"><i class="fas fa-building"></i> Fasilitas</a>
     <a class="nav-item" onclick="showPanel('prestasi')"><i class="fas fa-trophy"></i> Prestasi</a>
-    <a class="nav-item" onclick="showPanel('bkk')"><i class="fas fa-briefcase"></i> BKK / Lowongan</a>
     <a class="nav-item" onclick="showPanel('berita')"><i class="fas fa-newspaper"></i> Berita</a>
     <a class="nav-item" onclick="showPanel('galeri')"><i class="fas fa-images"></i> Galeri / Momen</a>
-    <a class="nav-item" onclick="showPanel('program')"><i class="fas fa-star"></i> Program Unggulan</a>
     <a class="nav-item" onclick="showPanel('pengumuman')"><i class="fas fa-bullhorn"></i> Info &amp; Pengumuman</a>
     <a class="nav-item" onclick="showPanel('polling')"><i class="fas fa-poll"></i> Polling / Suara</a>
-    <div class="sidebar-section-title">Pengaturan</div>
-    <a class="nav-item" onclick="showPanel('profil')"><i class="fas fa-school"></i> Profil Sekolah</a>
-    <a class="nav-item" onclick="showPanel('hero')"><i class="fas fa-image"></i> Hero &amp; Banner</a>
   </div>
 
   <div class="sidebar-footer">
@@ -417,54 +410,6 @@
       </div>
     </div>
 
-    <!-- ══ JURUSAN ══ -->
-    <div class="panel" id="panel-jurusan">
-      <div class="sec-header">
-        <div><h3>Program Keahlian / Jurusan</h3></div>
-        <button class="btn-primary" onclick="openModal('jurusan')"><i class="fas fa-plus"></i> Tambah Jurusan</button>
-      </div>
-      <div class="table-wrap">
-        <div class="table-toolbar">
-          <input class="search-input" placeholder="Cari jurusan..." oninput="filterTable(this,'tbl-jurusan')" />
-        </div>
-        <table id="tbl-jurusan">
-          <thead><tr><th>#</th><th>Nama Jurusan</th><th>Bidang</th><th>Deskripsi Singkat</th><th>Status</th><th>Aksi</th></tr></thead>
-          <tbody>
-            <tr><td>01</td><td><strong>Teknik Pemesinan</strong></td><td>Teknik Mesin</td><td>CNC, bubut, frais, pemesinan presisi</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('Teknik Pemesinan')"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>02</td><td><strong>Teknik Kendaraan Ringan Otomotif</strong></td><td>Teknik Otomotif</td><td>Perawatan dan perbaikan kendaraan ringan</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKRO')"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>03</td><td><strong>Desain Pemodelan &amp; Informasi Bangunan</strong></td><td>Teknik Bangunan</td><td>Gambar teknik, BIM, desain arsitektur</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('DPIB')"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>04</td><td><strong>Teknik Konstruksi &amp; Perumahan</strong></td><td>Teknik Konstruksi</td><td>Konstruksi bangunan perumahan</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKP')"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>05</td><td><strong>Teknik Instalasi Tenaga Listrik</strong></td><td>Ketenagalistrikan</td><td>Instalasi listrik industri dan residensial</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TITL')"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>06</td><td><strong>Teknik Komputer &amp; Jaringan</strong></td><td>Teknologi Informasi</td><td>Jaringan, server, cloud, keamanan siber</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('jurusan',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm" onclick="confirmDelete('TKJ')"><i class="fas fa-trash"></i></button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ FASILITAS ══ -->
-    <div class="panel" id="panel-fasilitas">
-      <div class="sec-header">
-        <div><h3>Fasilitas Sekolah</h3></div>
-        <button class="btn-primary" onclick="openModal('fasilitas')"><i class="fas fa-plus"></i> Tambah Fasilitas</button>
-      </div>
-      <div class="table-wrap">
-        <div class="table-toolbar">
-          <input class="search-input" placeholder="Cari fasilitas..." oninput="filterTable(this,'tbl-fasilitas')" />
-        </div>
-        <table id="tbl-fasilitas">
-          <thead><tr><th>#</th><th>Nama Fasilitas</th><th>Kategori</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td><strong>Ruang Kelas</strong></td><td>Umum</td><td>30 ruang kelas ber-AC</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>2</td><td><strong>Bengkel CNC</strong></td><td>Kejuruan</td><td>Mesin CNC, bubut, frais modern</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>3</td><td><strong>Bengkel Otomotif</strong></td><td>Kejuruan</td><td>Lengkap dengan engine stand, scanner</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>4</td><td><strong>Lab Jaringan &amp; Server</strong></td><td>Kejuruan</td><td>Fiber optic, server rack, cisco</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>5</td><td><strong>Perpustakaan</strong></td><td>Umum</td><td>Koleksi buku teknik dan digital</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td>6</td><td><strong>Lapangan Olahraga</strong></td><td>Umum</td><td>Lapangan basket, voli, futsal</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('fasilitas',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- ══ PRESTASI ══ -->
     <div class="panel" id="panel-prestasi">
       <div class="sec-header">
@@ -484,27 +429,6 @@
             <tr><td>🥇</td><td><strong>Juara 3 Khitobah Putri MAPSI SMK</strong></td><td>Provinsi</td><td>MAPSI Jawa Tengah 2025</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:4})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td>🥈</td><td><strong>Juara 2 LKS Desain Pemodelan Bangunan</strong></td><td>Provinsi</td><td>LKS Bidang Teknik Bangunan</td><td>2024</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:5})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td>🎖️</td><td><strong>Piala Bergilir LKBB Garuda Muda Season 1</strong></td><td>Kabupaten</td><td>Paskibra SMKN 2 Sragen</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:6})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ BKK ══ -->
-    <div class="panel" id="panel-bkk">
-      <div class="sec-header">
-        <div><h3>BKK — Bursa Kerja Khusus</h3></div>
-        <button class="btn-primary" onclick="openModal('bkk')"><i class="fas fa-plus"></i> Tambah Lowongan</button>
-      </div>
-      <div class="table-wrap">
-        <div class="table-toolbar">
-          <input class="search-input" placeholder="Cari lowongan..." oninput="filterTable(this,'tbl-bkk')" />
-        </div>
-        <table id="tbl-bkk">
-          <thead><tr><th>Perusahaan</th><th>Posisi</th><th>Lokasi</th><th>Jurusan</th><th>Batas</th><th>Status</th><th>Aksi</th></tr></thead>
-          <tbody>
-            <tr><td><strong>PT Sinar Mas Agribusiness</strong></td><td>Teknisi Mesin Industri</td><td>Sragen</td><td>Teknik Mesin</td><td>30 Jun 2026</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td><strong>PT Telkom Indonesia</strong></td><td>Network Technician</td><td>Solo</td><td>TKJ</td><td>15 Jul 2026</td><td><span class="status hot">🔥 Hot</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td><strong>PT PLN (Persero) ULP Sragen</strong></td><td>Teknisi Instalasi Listrik</td><td>Sragen</td><td>TITL</td><td>25 Jun 2026</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('bkk',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
           </tbody>
         </table>
       </div>
@@ -548,24 +472,6 @@
             <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg" style="width:100%;height:100%;object-fit:cover;" /></div></td><td><strong>Gerbang Utama SMKN 2 Sragen</strong></td><td>Gedung</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/42944920_1890171144435131_8386577090693483445_n(1).jpg" style="width:100%;height:100%;object-fit:cover;" /></div></td><td><strong>Kegiatan Siswa SMKN 2 Sragen</strong></td><td>Kegiatan</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;background:var(--gray-2);display:flex;align-items:center;justify-content:center;font-size:18px;">⚙️</div></td><td><strong>Praktik Bengkel CNC — Teknik Pemesinan</strong></td><td>Praktik</td><td><span class="status aktif">Tampil</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('galeri',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ PROGRAM UNGGULAN ══ -->
-    <div class="panel" id="panel-program">
-      <div class="sec-header">
-        <div><h3>Program Unggulan</h3></div>
-        <button class="btn-primary" onclick="openModal('program')"><i class="fas fa-plus"></i> Tambah Program</button>
-      </div>
-      <div class="table-wrap">
-        <table id="tbl-program">
-          <thead><tr><th>Ikon</th><th>Nama Program</th><th>Deskripsi</th><th>Status</th><th>Aksi</th></tr></thead>
-          <tbody>
-            <tr><td><i class="fas fa-users" style="color:var(--navy);font-size:18px;"></i></td><td><strong>OSIS &amp; MPK</strong></td><td>Fondasi kepemimpinan dan organisasi siswa</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td><i class="fas fa-futbol" style="color:var(--navy);font-size:18px;"></i></td><td><strong>Ekstrakurikuler</strong></td><td>15+ pilihan ekskul akademik dan non-akademik</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
-            <tr><td><i class="fas fa-brain" style="color:var(--navy);font-size:18px;"></i></td><td><strong>Pengembangan Diri</strong></td><td>Bimbingan karakter, disiplin, tanggung jawab</td><td><span class="status aktif">Aktif</span></td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('program',{id:3})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
           </tbody>
         </table>
       </div>
@@ -632,58 +538,6 @@
       </div>
     </div>
 
-    <!-- ══ PROFIL SEKOLAH ══ -->
-    <div class="panel" id="panel-profil">
-      <div class="sec-header">
-        <div><h3>Profil Sekolah</h3></div>
-      </div>
-      <div class="edit-card">
-        <div class="edit-card-header"><h4>Data Sekolah</h4></div>
-        <div class="edit-card-body">
-          <div class="field-row">
-            <div class="field"><label>Nama Sekolah</label><input type="text" value="SMK Negeri 2 Sragen" /></div>
-            <div class="field"><label>NPSN</label><input type="text" value="20314394" /></div>
-          </div>
-          <div class="field"><label>Alamat</label><input type="text" value="Jl. Dr. Sutomo No.4, Kebayan 1, Sragen Kulon, Kec. Sragen, Kabupaten Sragen, Jawa Tengah 57212" /></div>
-          <div class="field-row">
-            <div class="field"><label>Telepon</label><input type="text" value="(0271) 891047" /></div>
-            <div class="field"><label>Email</label><input type="text" value="smkn2sragen@gmail.com" /></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>Kepala Sekolah</label><input type="text" value="Dr. Sutikno, S.Pd., M.Pd." /></div>
-            <div class="field"><label>Akreditasi</label><input type="text" value="A (BAN-S/M)" /></div>
-          </div>
-          <div class="field"><label>Slogan / Tagline</label><input type="text" value="Excellent, Competent, Character" /></div>
-          <div class="field"><label>Deskripsi Singkat</label><textarea>SMK Negeri 2 Sragen adalah sekolah menengah kejuruan negeri yang berkomitmen mencetak lulusan kompeten, berkarakter mulia, dan siap bersaing di dunia industri nasional maupun internasional.</textarea></div>
-          <button class="btn-primary" onclick="saveToast()"><i class="fas fa-save"></i> Simpan Perubahan</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ HERO & BANNER ══ -->
-    <div class="panel" id="panel-hero">
-      <div class="sec-header">
-        <div><h3>Hero &amp; Banner</h3></div>
-      </div>
-      <div class="edit-card">
-        <div class="edit-card-header"><h4>Hero Section</h4></div>
-        <div class="edit-card-body">
-          <div class="field"><label>Judul Utama (Headline)</label><input type="text" value="Membentuk Generasi Unggul, Berkarakter, dan Siap Kerja" /></div>
-          <div class="field"><label>Sub Judul / Deskripsi</label><textarea>SMK Negeri 2 Sragen — sekolah kejuruan negeri terkemuka di Kabupaten Sragen yang mencetak lulusan kompeten dan berdaya saing tinggi di dunia industri.</textarea></div>
-          <div class="field-row">
-            <div class="field"><label>Teks Tombol 1</label><input type="text" value="Lihat Program Kami" /></div>
-            <div class="field"><label>Teks Tombol 2</label><input type="text" value="Profil Sekolah" /></div>
-          </div>
-          <div class="field"><label>URL Gambar Background</label><input type="text" value="https://raw.githubusercontent.com/l63666365-ops/Foto/refs/heads/main/plang-smk-1-scaled.jpg" /></div>
-          <div class="field-row">
-            <div class="field"><label>Jumlah Siswa Aktif</label><input type="number" value="1900" /></div>
-            <div class="field"><label>Jumlah Tenaga Pendidik</label><input type="number" value="120" /></div>
-          </div>
-          <button class="btn-primary" onclick="saveToast()"><i class="fas fa-save"></i> Simpan Perubahan</button>
-        </div>
-      </div>
-    </div>
-
   </div><!-- /content -->
 </div><!-- /main -->
 
@@ -708,18 +562,12 @@
 <!-- Script UI — tidak butuh Firebase, langsung tersedia -->
 <script>
   const panels = {
-    overview:   { title:'Dashboard Overview',         sub:'Ringkasan konten website SMKN 2 Sragen' },
-    jurusan:    { title:'Program Keahlian / Jurusan', sub:'Kelola data jurusan' },
-    fasilitas:  { title:'Fasilitas Sekolah',          sub:'Kelola sarana dan prasarana' },
-    prestasi:   { title:'Prestasi Siswa',             sub:'Kelola catatan prestasi' },
-    bkk:        { title:'BKK — Bursa Kerja Khusus',  sub:'Kelola lowongan kerja alumni' },
-    berita:     { title:'Berita & Artikel',           sub:'Kelola konten berita sekolah' },
-    galeri:     { title:'Galeri Foto & Momen',        sub:'Kelola dokumentasi kegiatan' },
-    program:    { title:'Program Unggulan',           sub:'Kelola "Apa yang Kami Tawarkan"' },
-    pengumuman: { title:'Info & Pengumuman',          sub:'Kelola pengumuman resmi sekolah' },
-    polling:    { title:'Polling & Jajak Pendapat',   sub:'Kelola polling pengunjung' },
-    profil:     { title:'Profil Sekolah',             sub:'Edit informasi dasar sekolah' },
-    hero:       { title:'Hero & Banner',              sub:'Edit tampilan hero halaman utama' },
+    overview:   { title:'Dashboard Overview' },
+    prestasi:   { title:'Prestasi Siswa' },
+    berita:     { title:'Berita & Artikel' },
+    galeri:     { title:'Galeri / Momen Kegiatan' },
+    pengumuman: { title:'Info & Pengumuman' },
+    polling:    { title:'Polling / Suara' },
   };
 
   function showPanel(id) {
