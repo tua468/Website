@@ -421,7 +421,7 @@
           <input class="search-input" placeholder="Cari prestasi..." oninput="filterTable(this,'tbl-prestasi')" />
         </div>
         <table id="tbl-prestasi">
-          <thead><tr><th>Medali</th><th>Nama Prestasi</th><th>Tingkat</th><th>Keterangan</th><th>Tahun</th><th>Aksi</th></tr></thead>
+          <thead><tr><th>Medali</th><th>Nama Prestasi</th><th>Tingkat</th><th>Keterangan</th><th>Tahun</th><th>Foto</th><th>Aksi</th></tr></thead>
           <tbody>
             <tr><td>🥇</td><td><strong>Juara 1 LKS Teknik Kendaraan Ringan</strong></td><td>Provinsi</td><td>LKS Bidang Otomotif — Jawa Tengah</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:1})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
             <tr><td>🏆</td><td><strong>Finalis LKS Nasional Teknik Listrik</strong></td><td>Nasional</td><td>LKS Tingkat Nasional — Jakarta</td><td>2025</td><td class="td-actions"><button class="btn-edit btn-sm" onclick="openModal('prestasi',{id:2})"><i class="fas fa-edit"></i> Edit</button><button class="btn-danger btn-sm"><i class="fas fa-trash"></i></button></td></tr>
@@ -676,12 +676,12 @@
   // ── Seed data awal
   const SEED = {
     prestasi: [
-      { medal:'🥇', nama:'Juara 1 LKS Teknik Kendaraan Ringan', tingkat:'Provinsi', keterangan:'LKS Bidang Otomotif — Jawa Tengah', tahun:'2025', status:'Aktif' },
-      { medal:'🏆', nama:'Finalis LKS Nasional Teknik Instalasi Listrik', tingkat:'Nasional', keterangan:'LKS Tingkat Nasional — Jakarta', tahun:'2025', status:'Aktif' },
-      { medal:'🥇', nama:'Juara Umum Olimpiade Sains Terapan', tingkat:'Kabupaten', keterangan:'OST Kabupaten Sragen', tahun:'2025', status:'Aktif' },
-      { medal:'🥇', nama:'Juara 3 Khitobah Putri MAPSI SMK', tingkat:'Provinsi', keterangan:'MAPSI Jawa Tengah 2025', tahun:'2025', status:'Aktif' },
-      { medal:'🥈', nama:'Juara 2 LKS Desain Pemodelan Bangunan', tingkat:'Provinsi', keterangan:'LKS Bidang Teknik Bangunan', tahun:'2024', status:'Aktif' },
-      { medal:'🎖️', nama:'Piala Bergilir LKBB Garuda Muda Season 1', tingkat:'Kabupaten', keterangan:'Paskibra SMKN 2 Sragen', tahun:'2025', status:'Aktif' },
+      { medal:'🥇', nama:'Juara 1 LKS Teknik Kendaraan Ringan', tingkat:'Provinsi', keterangan:'LKS Bidang Otomotif — Jawa Tengah', tahun:'2025', status:'Aktif', foto:'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&q=80' },
+      { medal:'🏆', nama:'Finalis LKS Nasional Teknik Instalasi Listrik', tingkat:'Nasional', keterangan:'LKS Tingkat Nasional — Jakarta', tahun:'2025', status:'Aktif', foto:'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&q=80' },
+      { medal:'🥇', nama:'Juara Umum Olimpiade Sains Terapan', tingkat:'Kabupaten', keterangan:'OST Kabupaten Sragen', tahun:'2025', status:'Aktif', foto:'https://images.unsplash.com/photo-1532094349884-543559244a92?w=600&q=80' },
+      { medal:'🥇', nama:'Juara 3 Khitobah Putri MAPSI SMK', tingkat:'Provinsi', keterangan:'MAPSI Jawa Tengah 2025', tahun:'2025', status:'Aktif', foto:'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600&q=80' },
+      { medal:'🥈', nama:'Juara 2 LKS Desain Pemodelan Bangunan', tingkat:'Provinsi', keterangan:'LKS Bidang Teknik Bangunan', tahun:'2024', status:'Aktif', foto:'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80' },
+      { medal:'🎖️', nama:'Piala Bergilir LKBB Garuda Muda Season 1', tingkat:'Kabupaten', keterangan:'Paskibra SMKN 2 Sragen', tahun:'2025', status:'Aktif', foto:'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=600&q=80' },
     ],
     berita: [
       { judul:'Elsa Mutia Hafid Raih Juara 3 Khitobah Putri MAPSI SMK Jawa Tengah 2025', kategori:'Prestasi', tanggal:'2025-11-25', ringkasan:'Ajang bergengsi MAPSI tingkat SMK se-Provinsi Jawa Tengah 2025 mengharumkan nama SMKN 2 Sragen.', isi:'Sragen — Siswi SMKN 2 Sragen, Elsa Mutia Hafid, berhasil meraih Juara 3 cabang Khitobah Putri MAPSI SMK Provinsi Jawa Tengah 2025.', foto:'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=80', status:'Publish' },
@@ -752,7 +752,7 @@
       <button class="btn-edit btn-sm" onclick="openEdit('${col}','${id}')"><i class="fas fa-edit"></i> Edit</button>
       <button class="btn-danger btn-sm" onclick="deleteItem('${col}','${id}','${nm}')"><i class="fas fa-trash"></i></button>
     </td>`;
-    if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama||'-'}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td>${acts}</tr>`;
+    if (col==='prestasi')   return `<tr><td>${d.medal||'-'}</td><td><strong>${d.nama||'-'}</strong></td><td>${d.tingkat||'-'}</td><td>${d.keterangan||'-'}</td><td>${d.tahun||'-'}</td><td>${d.foto ? `<div style="width:56px;height:40px;border-radius:7px;overflow:hidden;"><img src="${d.foto}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div>` : '<span style="font-size:11px;color:#aaa;">-</span>'}</td>${acts}</tr>`;
     if (col==='berita')     return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status ${d.status==='Publish'?'aktif':'draft'}">${d.status||'Draft'}</span></td>${acts}</tr>`;
     if (col==='galeri')     return `<tr><td><div style="width:56px;height:40px;border-radius:7px;overflow:hidden;background:#eef0f6;"><img src="${d.foto||''}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"/></div></td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Tampil'}</span></td>${acts}</tr>`;
     if (col==='pengumuman') return `<tr><td>${d.tanggal||'-'}</td><td><strong>${d.judul||'-'}</strong></td><td>${d.kategori||'-'}</td><td><span class="status aktif">${d.status||'Aktif'}</span></td>${acts}</tr>`;
@@ -765,7 +765,7 @@
     const f  = (lbl,name,val,type='text') => `<div class="field"><label>${lbl}</label><input type="${type}" name="${name}" value="${(val||'').toString().replace(/"/g,'&quot;')}" /></div>`;
     const ta = (lbl,name,val) => `<div class="field"><label>${lbl}</label><textarea name="${name}">${val||''}</textarea></div>`;
     const sl = (lbl,name,opts,val) => `<div class="field"><label>${lbl}</label><select name="${name}">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;
-    if (col==='prestasi')   return sl('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sl('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number');
+    if (col==='prestasi')   return sl('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sl('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number')+f('URL Foto (opsional)','foto',d.foto);
     if (col==='berita')     return f('Judul Berita','judul',d.judul)+sl('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sl('Status','status',['Publish','Draft'],d.status);
     if (col==='galeri')     return f('Judul / Caption','judul',d.judul)+f('URL Foto','foto',d.foto)+sl('Kategori','kategori',['Gedung','Kegiatan','Prestasi','Praktik','Wisuda','Lainnya'],d.kategori)+sl('Status','status',['Tampil','Sembunyikan'],d.status);
     if (col==='pengumuman') return f('Judul','judul',d.judul)+sl('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+sl('Status','status',['Aktif','Arsip'],d.status);
