@@ -585,6 +585,25 @@
     localStorage.setItem('dash_panel', id);
   }
 
+  // Restore panel SEGERA saat halaman load — sebelum Firebase selesai init
+  // Hanya switch CSS class, load tabel nanti dihandle initDashboard
+  (function immediateRestore() {
+    const last = localStorage.getItem('dash_panel');
+    if (!last) return;
+    const panel = document.getElementById('panel-' + last);
+    if (!panel) return;
+    // Switch panel aktif
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    panel.classList.add('active');
+    // Switch nav aktif
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const nav = document.querySelector('.nav-item[onclick="showPanel(\'' + last + '\')"]');
+    if (nav) nav.classList.add('active');
+    // Update topbar title
+    const el = document.getElementById('topbarTitle');
+    if (el && panels[last]) el.textContent = panels[last].title;
+  })();
+
   function filterTable(input, tableId) {
     const q = input.value.toLowerCase();
     document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
@@ -730,10 +749,10 @@
     loadTable('pengumuman');
     loadTable('polling');
 
-    // Restore panel terakhir yang dibuka sebelum refresh
+    // Load tabel untuk panel yang sedang aktif (restore dari localStorage)
     const lastPanel = localStorage.getItem('dash_panel');
-    if (lastPanel && document.getElementById('panel-' + lastPanel)) {
-      showPanel(lastPanel);
+    if (lastPanel && lastPanel !== 'overview') {
+      loadTable(lastPanel);
     }
   }
 
