@@ -1754,13 +1754,21 @@ window._DATA = DATA;
   }
 
   function renderPengumuman(id, d) {
-    // Sembunyikan SEMUA sidebar — tidak relevan untuk pengumuman
+    // Sembunyikan SEMUA sidebar
     document.querySelectorAll('.detail-sidebar .sidebar-card').forEach(el => el.style.display = 'none');
-    // Buat sidebar kosong (tidak ada sidebar kanan)
     document.querySelector('.detail-sidebar').style.display = 'none';
-    // Buat main content full width
     const grid = document.querySelector('.detail-grid');
     if (grid) grid.style.gridTemplateColumns = '1fr';
+
+    // Foto per kategori
+    const fotoMap = {
+      'PPDB':          'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
+      'Akademik':      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&q=80',
+      'Kesiswaan':     'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80',
+      'Administrasi':  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80',
+      'Umum':          'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=1200&q=80',
+    };
+    const heroFoto = d.foto || fotoMap[d.kategori] || fotoMap['Umum'];
 
     const badgeColor = {
       'PPDB': '#e8a020', 'Kesiswaan': 'var(--navy-lt)',
@@ -1771,7 +1779,7 @@ window._DATA = DATA;
       'Info & Pengumuman', 'fas fa-bullhorn',
       d.judul || 'Pengumuman',
       d.kategori ? `Kategori: ${d.kategori}` : '',
-      'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=1200&q=80',
+      heroFoto,
       [
         { icon: 'fas fa-calendar-alt', text: d.tanggal || '-' },
         { icon: 'fas fa-tag',          text: d.kategori || '-' },
@@ -1779,9 +1787,12 @@ window._DATA = DATA;
       ]
     );
 
-    // Isi paragraf — tiap baris jadi <p>
+    // Foto konten (gambar di dalam body)
+    const fotoKonten = d.foto || heroFoto;
+
+    // Isi paragraf
     const isiHTML = d.isi
-      ? d.isi.split('\n').filter(l => l.trim()).map(l => `<p>${l.trim()}</p>`).join('')
+      ? d.isi.split(/\\n|\n/).filter(l => l.trim()).map(l => `<p>${l.trim()}</p>`).join('')
       : '<p style="color:var(--text-3);font-style:italic;">Isi pengumuman belum tersedia.</p>';
 
     document.getElementById('detailMain').innerHTML = `
@@ -1797,14 +1808,21 @@ window._DATA = DATA;
       </div>
 
       <div class="detail-section">
+        <h2><i class="fas fa-image"></i> Foto</h2>
+        <div style="border-radius:16px;overflow:hidden;aspect-ratio:16/9;background:var(--gray-2);margin-bottom:8px;">
+          <img src="${fotoKonten}" alt="${d.judul||''}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" />
+        </div>
+      </div>
+
+      <div class="detail-section">
         <h2><i class="fas fa-align-left"></i> Isi Pengumuman</h2>
         ${isiHTML}
       </div>
 
-      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gray-2);display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="index.html#pengumuman" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:var(--navy);color:#fff;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;transition:background .2s;" onmouseover="this.style.background='#2451a0'" onmouseout="this.style.background='var(--navy)'">
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--gray-2);">
+        <button onclick="goBack()" style="display:inline-flex;align-items:center;gap:7px;padding:10px 22px;background:var(--navy);color:#fff;border-radius:100px;border:none;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#2451a0'" onmouseout="this.style.background='var(--navy)'">
           <i class="fas fa-arrow-left"></i> Kembali ke Info
-        </a>
+        </button>
       </div>`;
   }
 
