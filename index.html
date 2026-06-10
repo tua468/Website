@@ -736,35 +736,20 @@
     /* ── GALERI FOTO ── */
     .galeri { padding: 96px 0; background: var(--gray-1); }
 
-    /* ── Layout galeri: 2 baris, masing-masing punya pola berbeda ── */
+    /* ── Layout galeri: CSS Grid dense — otomatis isi ruang kosong ── */
     .galeri-mosaic {
-      display: flex; flex-direction: column; gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 180px;
+      grid-auto-flow: dense;
+      gap: 10px;
     }
-    /* Baris 1: 1 besar kiri + 2 kecil kanan atas + 1 medium kanan bawah */
-    .galeri-row { display: grid; gap: 10px; }
-    .galeri-row-1 { grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 220px 180px; }
-    .galeri-row-1 .gi-0 { grid-row: span 2; }             /* foto 1 — tinggi penuh */
-    .galeri-row-1 .gi-1 { }                                /* foto 2 — kanan atas kiri */
-    .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
-    .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
-
-    /* Baris 2: layout adaptif tergantung jumlah foto (dikontrol JS via class) */
-    /* Mode 5 foto: 2 kecil kiri + besar tengah span2 + tinggi kanan span2 */
-    .galeri-row-2      { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
-    .galeri-row-2 .gi-0 { }
-    .galeri-row-2 .gi-1 { }
-    .galeri-row-2 .gi-2 { grid-row: span 2; }
-    .galeri-row-2 .gi-3 { grid-row: span 2; }
-    .galeri-row-2 .gi-4 { grid-column: span 2; }
-
-    /* Mode 6 foto: 3 kolom rata × 2 baris */
-    .galeri-row-2.r2-6 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 190px 190px; }
-    .galeri-row-2.r2-6 .gi-0,
-    .galeri-row-2.r2-6 .gi-1,
-    .galeri-row-2.r2-6 .gi-2,
-    .galeri-row-2.r2-6 .gi-3,
-    .galeri-row-2.r2-6 .gi-4,
-    .galeri-row-2.r2-6 .gi-5 { grid-column: span 1; grid-row: span 1; }
+    /* Featured: foto lebar (col span 2) */
+    .galeri-item.feat-w  { grid-column: span 2; }
+    /* Featured: foto tinggi (row span 2) */
+    .galeri-item.feat-h  { grid-row: span 2; }
+    /* Featured: foto besar (col span 2 + row span 2) */
+    .galeri-item.feat-xl { grid-column: span 2; grid-row: span 2; }
 
     .galeri-item {
       border-radius: var(--r-md); overflow: hidden;
@@ -1080,27 +1065,11 @@
       .berita-grid        { grid-template-columns: 1fr; gap: 20px; }
       .berita-main-img    { height: 200px; }
 
-      /* ── Galeri mobile: susun flex column, semua item sama tinggi, tanpa space kosong */
-      .galeri-mosaic      { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-      .galeri-row         { display: contents; }
-      .galeri-row-1,
-      .galeri-row-2       { display: contents; }
-      .galeri-row-1 .gi-0,
-      .galeri-row-1 .gi-1,
-      .galeri-row-1 .gi-2,
-      .galeri-row-1 .gi-3,
-      .galeri-row-2 .gi-0,
-      .galeri-row-2 .gi-1,
-      .galeri-row-2 .gi-2,
-      .galeri-row-2 .gi-3,
-      .galeri-row-2 .gi-4,
-      .galeri-row-2.r2-6 .gi-0,
-      .galeri-row-2.r2-6 .gi-1,
-      .galeri-row-2.r2-6 .gi-2,
-      .galeri-row-2.r2-6 .gi-3,
-      .galeri-row-2.r2-6 .gi-4,
-      .galeri-row-2 .gi-5 { grid-column: span 1; grid-row: span 1; }
-      .galeri-mosaic .galeri-item { min-height: 130px; position: relative; }
+      /* ── Galeri mobile: 2 kolom rata, reset semua featured span */
+      .galeri-mosaic      { grid-template-columns: 1fr 1fr; grid-auto-rows: 130px; gap: 8px; }
+      .galeri-item.feat-w,
+      .galeri-item.feat-h,
+      .galeri-item.feat-xl { grid-column: span 1; grid-row: span 1; }
 
       /* ── Testimonial */
       .testi-grid         { grid-template-columns: 1fr; gap: 16px; }
@@ -2463,7 +2432,7 @@
       </div>`;
   });
 
-  // ── GALERI — mosaic 2 baris, tanpa slot kosong di desktop maupun mobile
+  // ── GALERI — CSS Grid dense, layout otomatis menyesuaikan jumlah foto
   watchCol('galeri', data => {
     const wrap = document.getElementById('galeri-mosaic');
     if (!wrap) return;
@@ -2477,49 +2446,20 @@
     if (!sorted.length) return;
 
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
+    if (!withFoto.length) return;
 
-    // helper buat item
-    const gi = (d, cls='') => `
-      <div class="galeri-item ${cls}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${(d.foto||'')}')">
+    // Pola featured berulang setiap 5 foto:
+    // posisi 0 → feat-xl (besar), posisi 2 → feat-h (tinggi), sisanya normal
+    // grid-auto-flow: dense mengisi celah otomatis
+    const featPattern = ['feat-xl', '', 'feat-h', '', ''];
+
+    wrap.innerHTML = withFoto.map((d, i) => {
+      const feat = featPattern[i % featPattern.length];
+      return `<div class="galeri-item ${feat}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${d.foto||''}')">
         <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.closest('.galeri-item').style.display='none'" />
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
       </div>`;
-
-    // Baris 1 selalu 4 foto
-    const r1 = withFoto.slice(0, 4);
-
-    // Baris 2: ambil sisa foto
-    // Desktop: layout-5 butuh tepat 5, layout-6 butuh tepat 6
-    // Mobile: grid 2-kolom, jadi total harus genap (10 = 4+6)
-    // → ambil 6 foto untuk baris 2 (genap di mobile, pakai mode r2-6 di desktop)
-    // → kalau kurang dari 6 tapi >= 5, pakai 5 (mode default r2-5)
-    const avail2 = withFoto.slice(4);
-    let r2, r2Class = '';
-    if (avail2.length >= 6) {
-      r2 = avail2.slice(0, 6);
-      r2Class = 'r2-6';
-    } else if (avail2.length === 5) {
-      r2 = avail2.slice(0, 5);
-      r2Class = '';
-    } else if (avail2.length > 0) {
-      // Kurang dari 5: tampilkan semua yang ada dengan grid rata
-      r2 = avail2;
-      r2Class = 'r2-6'; // grid rata 3 kolom
-    } else {
-      r2 = [];
-    }
-
-    wrap.innerHTML = `
-      <div class="galeri-row galeri-row-1">
-        ${r1[0] ? gi(r1[0], 'gi-0') : ''}
-        ${r1[1] ? gi(r1[1], 'gi-1') : ''}
-        ${r1[2] ? gi(r1[2], 'gi-2') : ''}
-        ${r1[3] ? gi(r1[3], 'gi-3') : ''}
-      </div>
-      ${r2.length ? `
-      <div class="galeri-row galeri-row-2 ${r2Class}">
-        ${r2.map((d, i) => gi(d, `gi-${i}`)).join('')}
-      </div>` : ''}`;
+    }).join('');
   });
 
   // ── PENGUMUMAN
