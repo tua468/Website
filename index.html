@@ -8,7 +8,9 @@
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     // Sembunyikan halaman hanya kalau perlu scroll ke section lain saat refresh
     // (kalau di hero / posisi 0, biarkan muncul langsung — tidak perlu opacity trick)
+    // Kalau URL punya hash anchor, jangan sembunyikan — biarkan scroll ke anchor
     (function () {
+      if (window.location.hash) return; // ada anchor, skip hide
       var navType = ((performance.getEntriesByType('navigation')[0]) || {}).type;
       var saved   = localStorage.getItem('smkn2_scroll_pos');
       var targetY = saved ? parseInt(saved, 10) : 0;
@@ -2186,6 +2188,26 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
+      // ── Kalau URL punya hash anchor (#pengumuman, #bkk, dll) → scroll ke sana
+      //    dan buang posisi tersimpan supaya tidak di-override
+      var hash = window.location.hash;
+      if (hash) {
+        localStorage.removeItem(KEY);
+        sessionStorage.removeItem('doRestore');
+        // Beri waktu render DOM + Firebase sebelum scroll ke anchor
+        setTimeout(function () {
+          var el = document.querySelector(hash);
+          if (el) {
+            document.documentElement.style.scrollBehavior = 'auto';
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(function () {
+              document.documentElement.style.scrollBehavior = '';
+            }, 800);
+          }
+        }, 300);
+        return;
+      }
+
       if (isNewVisit) {
         // Kunjungan baru: pastikan posisi tersimpan dihapus, halaman langsung visible
         if (!sessionStorage.getItem('doRestore')) localStorage.removeItem(KEY);
@@ -2209,6 +2231,8 @@
 
     // Setelah Firebase render: pastikan posisi tetap tepat
     window.addEventListener('load', function () {
+      // Jika ada hash di URL, jangan restore posisi lama
+      if (window.location.hash) return;
       if (hasTarget) {
         setTimeout(function () {
           window.scrollTo({ top: targetY, behavior: 'smooth' });
