@@ -1918,6 +1918,44 @@
   }, { threshold: 0.4 });
   sections.forEach(s => activeObs.observe(s));
 
+  // ── Scroll persistence: simpan posisi ke localStorage saat scroll
+  (function() {
+    // Deteksi apakah ini reload/refresh menggunakan navigation entry type
+    const navType = performance.getEntriesByType('navigation')[0]?.type;
+    const isReload = navType === 'reload';
+
+    // Kalau ini reload, restore posisi dari localStorage
+    if (isReload) {
+      const savedPos = localStorage.getItem('smkn2_scroll_pos');
+      if (savedPos !== null) {
+        // Nonaktifkan scroll-behavior smooth sementara
+        document.documentElement.style.scrollBehavior = 'auto';
+        // Scroll langsung sebelum render pertama
+        window.scrollTo(0, parseInt(savedPos));
+        // Kembalikan smooth setelah sedikit delay
+        setTimeout(function() {
+          document.documentElement.style.scrollBehavior = '';
+        }, 100);
+      }
+    } else {
+      // Bukan reload (navigasi baru / kembali) — hapus posisi tersimpan agar mulai dari atas
+      // kecuali kalau ada flag restore dari detail
+      const doRestore = sessionStorage.getItem('doRestore');
+      if (!doRestore) {
+        localStorage.removeItem('smkn2_scroll_pos');
+      }
+    }
+
+    // Simpan posisi scroll ke localStorage setiap kali user scroll
+    let scrollTimer;
+    window.addEventListener('scroll', function() {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function() {
+        localStorage.setItem('smkn2_scroll_pos', window.scrollY);
+      }, 150);
+    }, { passive: true });
+  })();
+
   // ── Navigate to detail — simpan scroll position
   function goToDetail(section, id, anchor) {
     sessionStorage.setItem('scrollPos', window.scrollY);
@@ -1933,7 +1971,9 @@
       sessionStorage.removeItem('doRestore');
       // Langsung scroll tanpa animasi ke posisi terakhir
       requestAnimationFrame(function() {
+        document.documentElement.style.scrollBehavior = 'auto';
         window.scrollTo({ top: parseInt(pos), behavior: 'instant' });
+        setTimeout(function() { document.documentElement.style.scrollBehavior = ''; }, 100);
       });
     }
   });
