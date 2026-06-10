@@ -2009,33 +2009,7 @@
   }
   renderCalendar();
 
-  // ── Poll — submit & simpan ke Firebase (dipanggil dari HTML)
-  window.submitPoll = async function() {
-    const selected = document.querySelector('input[name="poll"]:checked');
-    if (!selected) { alert('Pilih salah satu jawaban terlebih dahulu!'); return; }
-    if (!_pollId) { alert('Polling belum dimuat, coba refresh.'); return; }
-
-    const idx = parseInt(selected.value);
-    const btn = document.getElementById('pollSubmitBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan...'; }
-
-    try {
-      const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await updateDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) });
-      localStorage.setItem('voted_' + _pollId, idx.toString());
-
-      // Sembunyikan form, tampilkan hasil
-      const oEl = document.getElementById('pollOptions');
-      if (oEl) oEl.style.display = 'none';
-      if (btn) btn.style.display = 'none';
-      const res = document.getElementById('pollResults');
-      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 100); }
-
-    } catch(e) {
-      alert('Gagal menyimpan: ' + e.message);
-      if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
-    }
-  };
+  // submitPoll didefinisikan di dalam module Firebase di bawah
 
 
 </script>
@@ -2043,7 +2017,7 @@
 <!-- ── Firebase: update 5 section dari Firestore ── -->
 <script type="module">
   import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, getDocs, onSnapshot }
+  import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, increment }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const app = initializeApp({
@@ -2321,6 +2295,36 @@
       bar.style.width = bar.dataset.width;
     });
   }
+
+  // ── submitPoll — di sini biar bisa akses db, _pollId, _animateBars langsung
+  window.submitPoll = async function() {
+    const selected = document.querySelector('input[name="poll"]:checked');
+    if (!selected) { alert('Pilih salah satu jawaban terlebih dahulu!'); return; }
+    if (!_pollId)  { alert('Polling belum dimuat, coba refresh halaman.'); return; }
+
+    const idx = parseInt(selected.value);
+    const btn = document.getElementById('pollSubmitBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; }
+
+    try {
+      await updateDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) });
+      localStorage.setItem('voted_' + _pollId, String(idx));
+
+      // Sembunyikan form & tombol
+      const oEl = document.getElementById('pollOptions');
+      if (oEl) oEl.style.display = 'none';
+      if (btn) btn.style.display = 'none';
+
+      // Tampilkan hasil dengan animasi
+      const res = document.getElementById('pollResults');
+      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 150); }
+
+    } catch(e) {
+      console.error(e);
+      alert('Gagal menyimpan: ' + e.message);
+      if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
+    }
+  };
 </script>
 
 </body>
