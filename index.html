@@ -4,9 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMK Negeri 2 Sragen — Excellent, Competent, Character</title>
-  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  // body mulai invisible, di-fade-in setelah siap
-  document.documentElement.style.opacity = '0';</script>
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    // Sembunyikan halaman hanya kalau perlu scroll ke section lain saat refresh
+    // (kalau di hero / posisi 0, biarkan muncul langsung — tidak perlu opacity trick)
+    (function () {
+      var navType = ((performance.getEntriesByType('navigation')[0]) || {}).type;
+      var saved   = localStorage.getItem('smkn2_scroll_pos');
+      var targetY = saved ? parseInt(saved, 10) : 0;
+      var needHide = (navType === 'reload' || navType === 'back_forward') && targetY > 200;
+      if (needHide) document.documentElement.style.opacity = '0';
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
@@ -1977,17 +1986,14 @@
       }
 
       // ── Refresh / back-forward
-      // Pastikan posisi mulai dari atas (0)
       window.scrollTo(0, 0);
-
-      // Munculkan halaman → animasi rv hero/atas jalan dulu
       revealPage();
 
       if (hasTarget) {
-        // Setelah animasi entry selesai (.45s) + sedikit jeda rv atas muncul (~400ms),
-        // lakukan smooth scroll ke section tersimpan
+        // User ada di section selain hero → smooth scroll ke sana setelah animasi entry
         setTimeout(scrollToSaved, 500);
       }
+      // Kalau targetY <= 200 (hero): cukup revealPage(), tidak perlu scroll — sudah di atas
     });
 
     // ── Setelah Firebase selesai render, pastikan scroll sudah di posisi yang tepat
