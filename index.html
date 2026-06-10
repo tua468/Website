@@ -1739,7 +1739,7 @@
       <div class="poll-widget rv d1">
         <div class="poll-question" id="pollQuestion">Memuat polling...</div>
         <div class="poll-options" id="pollOptions"></div>
-        <button class="poll-submit" id="pollSubmitBtn" onclick="submitPoll()" style="display:none;">Kirim Jawaban <i class="fas fa-paper-plane"></i></button>
+        <button class="poll-submit" id="pollSubmitBtn" style="display:none;">Kirim Jawaban <i class="fas fa-paper-plane"></i></button>
         <div class="poll-result-bar" id="pollResults"></div>
       </div>
       <div class="poll-info-box rv d2">
@@ -2325,6 +2325,10 @@
       if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
     }
   };
+
+  // Pasang event listener ke tombol setelah module load
+  const pollBtn = document.getElementById('pollSubmitBtn');
+  if (pollBtn) pollBtn.addEventListener('click', window.submitPoll);
 </script>
 
 </body>
