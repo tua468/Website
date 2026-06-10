@@ -7,16 +7,12 @@
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     // Sembunyikan halaman hanya kalau perlu scroll ke section lain saat refresh
-    // Kalau URL punya hash anchor, jangan sembunyikan — biarkan scroll ke anchor
+    // (kalau di hero / posisi 0, biarkan muncul langsung — tidak perlu opacity trick)
     (function () {
-      if (window.location.hash) return;
       var navType = ((performance.getEntriesByType('navigation')[0]) || {}).type;
       var saved   = localStorage.getItem('smkn2_scroll_pos');
-      var secId   = localStorage.getItem('smkn2_scroll_pos_sec');
-      // Ada target jika ada section ID tersimpan ATAU scrollY > 200
       var targetY = saved ? parseInt(saved, 10) : 0;
-      var needHide = (navType === 'reload' || navType === 'back_forward')
-                     && (secId || targetY > 200);
+      var needHide = (navType === 'reload' || navType === 'back_forward') && targetY > 200;
       if (needHide) document.documentElement.style.opacity = '0';
     })();
   </script>
@@ -2160,10 +2156,9 @@
     var isBackFwd  = navType === 'back_forward';
     var isNewVisit = !isReload && !isBackFwd;
     var saved      = localStorage.getItem(KEY);
-    var savedSec   = localStorage.getItem(KEY + '_sec');
     var targetY    = saved ? Math.max(0, parseInt(saved, 10)) : 0;
-    // hasTarget: ada section ID tersimpan ATAU scrollY > 200
-    var hasTarget  = (isReload || isBackFwd) && (savedSec || targetY > 200);
+    // hasTarget: hanya kalau perlu scroll ke section selain hero
+    var hasTarget  = (isReload || isBackFwd) && targetY > 200;
 
     // ── Fade-in: pakai CSS transition (bukan animation), opacity 0→1
     //    Hanya dipanggil kalau halaman memang disembunyikan dulu (hasTarget)
@@ -2191,85 +2186,48 @@
     }
 
     window.addEventListener('DOMContentLoaded', function () {
-      // ── Kalau URL punya hash anchor (#pengumuman, #bkk, dll) → scroll ke sana
-      //    dan buang posisi tersimpan supaya tidak di-override
-      var hash = window.location.hash;
-      if (hash) {
-        localStorage.removeItem(KEY);
-        sessionStorage.removeItem('doRestore');
-        setTimeout(function () {
-          var el = document.querySelector(hash);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 350);
-        return;
-      }
-
       if (isNewVisit) {
+        // Kunjungan baru: pastikan posisi tersimpan dihapus, halaman langsung visible
         if (!sessionStorage.getItem('doRestore')) localStorage.removeItem(KEY);
+        // Tidak perlu apa-apa — halaman sudah visible (tidak disembunyikan di <head>)
         return;
       }
 
-      // Tidak ada target (di hero): scroll ke atas
+      // Refresh / back-forward di hero (targetY <= 200):
+      // Tidak disembunyikan di <head>, tidak perlu fade — langsung visible, animasi .rv jalan normal
       if (!hasTarget) {
         window.scrollTo(0, 0);
         return;
       }
 
-      // Ada target: sembunyikan dulu (sudah opacity:0 dari <head>), baru fade-in
-      // Scroll restore dilakukan SEKALI saja di 'load' event setelah konten render
+      // Refresh / back-forward di section lain:
+      // Halaman sudah opacity:0 dari <head> → mulai dari atas → fade-in → smooth scroll
       window.scrollTo(0, 0);
       revealPage();
+      setTimeout(scrollToSaved, 500);
     });
 
-    // Scroll restore: SATU KALI saja, setelah page + Firebase konten selesai render
+    // Setelah Firebase render: pastikan posisi tetap tepat
     window.addEventListener('load', function () {
-      if (window.location.hash) return;
-      if (!hasTarget) return;
-      var delay = (window.innerWidth <= 768) ? 1200 : 700;
-      setTimeout(function () {
-        // Prioritas: pakai section ID tersimpan (akurat di semua layar)
-        var secId = localStorage.getItem(KEY + '_sec');
-        if (secId) {
-          var el = document.getElementById(secId);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            return;
-          }
-        }
-        // Fallback: pakai scrollY (hanya akurat di desktop)
-        window.scrollTo({ top: targetY, behavior: 'smooth' });
-      }, delay);
+      if (hasTarget) {
+        setTimeout(function () {
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }, 800);
+      }
     });
 
-    // Simpan section aktif (bukan scrollY mentah) agar akurat di semua ukuran layar
-    var _activeSection = '';
-    var _saveT;
+    // Simpan posisi setiap scroll (debounce 200ms)
+    var _t;
     window.addEventListener('scroll', function () {
-      clearTimeout(_saveT);
-      _saveT = setTimeout(function () {
-        // Simpan scrollY sebagai fallback
+      clearTimeout(_t);
+      _t = setTimeout(function () {
         localStorage.setItem(KEY, String(window.scrollY));
-        // Simpan juga section yang sedang aktif
-        var secs = document.querySelectorAll('section[id], div[id]');
-        var current = '';
-        secs.forEach(function (sec) {
-          var rect = sec.getBoundingClientRect();
-          if (rect.top <= 120) current = sec.id;
-        });
-        if (current) localStorage.setItem(KEY + '_sec', current);
       }, 200);
     }, { passive: true });
 
     // Simpan tepat sebelum refresh
     window.addEventListener('beforeunload', function () {
       localStorage.setItem(KEY, String(window.scrollY));
-      var secs = document.querySelectorAll('section[id], div[id]');
-      var current = '';
-      secs.forEach(function (sec) {
-        var rect = sec.getBoundingClientRect();
-        if (rect.top <= 120) current = sec.id;
-      });
-      if (current) localStorage.setItem(KEY + '_sec', current);
     });
   })();
 
