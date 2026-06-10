@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMK Negeri 2 Sragen — Excellent, Competent, Character</title>
-  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  // body mulai invisible, di-fade-in setelah siap
+  document.documentElement.style.opacity = '0';</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
@@ -39,10 +41,19 @@
 
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
+    /* ── PAGE ENTRY — fade-in halus seluruh halaman saat pertama load ── */
+    @keyframes pageEntry {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    html.page-ready {
+      animation: pageEntry .45s cubic-bezier(.4,0,.2,1) both;
+    }
+
     /* REVEAL */
-    .rv { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    .rv { opacity: 0; transform: translateY(32px); transition: opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1); }
     .rv.on { opacity: 1; transform: none; }
-    .d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s} .d4{transition-delay:.32s}
+    .d1{transition-delay:.07s} .d2{transition-delay:.14s} .d3{transition-delay:.21s} .d4{transition-delay:.28s}
 
 
     /* ── NAVBAR ── */
@@ -1920,46 +1931,76 @@
   }, { threshold: 0.4 });
   sections.forEach(s => activeObs.observe(s));
 
-  // ── SCROLL PERSISTENCE ──────────────────────────────────
-  //  Saat refresh: scroll diam-diam ke posisi tersimpan,
-  //  lalu biarkan IntersectionObserver trigger animasi .rv
-  //  secara natural (muncul dari bawah ke atas) — persis
-  //  seperti pertama kali halaman dibuka.
-  // ────────────────────────────────────────────────────────
+  // ── SCROLL PERSISTENCE + PAGE ENTRY PREMIUM ─────────────
+  //  Alur saat refresh:
+  //  1. Halaman mulai dari ATAS (scrollY = 0), opacity masih 0
+  //  2. Animasi .rv jalan natural dari atas (muncul dari bawah ke atas)
+  //  3. Setelah 400ms (rv atas sudah muncul), smooth scroll ke posisi tersimpan
+  //  4. Sepanjang scroll, konten di viewport langsung muncul via IntersectionObserver
+  //  Hasilnya: elegan, tidak kedip, tidak lompat — seperti website premium
+  // ─────────────────────────────────────────────────────────
   (function () {
-    var KEY = 'smkn2_scroll_pos';
-    var navType = ((performance.getEntriesByType('navigation')[0]) || {}).type;
-    var isReload      = navType === 'reload';
-    var isBackForward = navType === 'back_forward';
+    var KEY          = 'smkn2_scroll_pos';
+    var navType      = ((performance.getEntriesByType('navigation')[0]) || {}).type;
+    var isReload     = navType === 'reload';
+    var isBackFwd    = navType === 'back_forward';
+    var isNewVisit   = !isReload && !isBackFwd;
+    var saved        = localStorage.getItem(KEY);
+    var targetY      = saved ? Math.max(0, parseInt(saved, 10)) : 0;
+    var hasTarget    = (isReload || isBackFwd) && targetY > 0;
 
-    if (isReload || isBackForward) {
-      var saved = localStorage.getItem(KEY);
-      if (saved) {
-        var target = parseInt(saved, 10);
-        // Matikan smooth scroll agar langsung posisi ke target tanpa animasi
-        document.documentElement.style.scrollBehavior = 'auto';
-        // Scroll setelah DOM selesai diparse
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function () {
-            window.scrollTo(0, target);
-          });
-        } else {
-          window.scrollTo(0, target);
-        }
-        // Kembalikan smooth scroll setelah posisi terset
-        window.addEventListener('load', function () {
-          window.scrollTo(0, target);
-          document.documentElement.style.scrollBehavior = '';
-        });
-      }
-    } else {
-      // Buka baru / navigasi link — mulai dari atas
-      if (!sessionStorage.getItem('doRestore')) {
-        localStorage.removeItem(KEY);
-      }
+    // ── Aktifkan page-ready: lepas opacity 0, jalankan animasi pageEntry
+    function revealPage() {
+      var html = document.documentElement;
+      html.style.opacity = '';          // lepas inline opacity → CSS animation ambil alih
+      html.classList.add('page-ready'); // trigger @keyframes pageEntry (.45s)
     }
 
-    // Simpan posisi scroll setiap user scroll (debounce 200ms)
+    // ── Smooth scroll premium ke posisi tersimpan
+    //    Dipanggil setelah halaman muncul + rv atas sempat animate
+    function scrollToSaved() {
+      // Nonaktifkan smooth html dulu — kita pakai window.scrollTo behavior:smooth sendiri
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      // Kembalikan scroll-behavior setelah selesai
+      setTimeout(function () {
+        document.documentElement.style.scrollBehavior = '';
+      }, 1200);
+    }
+
+    window.addEventListener('DOMContentLoaded', function () {
+      if (isNewVisit) {
+        // ── Kunjungan baru / buka tab baru: langsung tampilkan
+        if (!sessionStorage.getItem('doRestore')) localStorage.removeItem(KEY);
+        revealPage();
+        return;
+      }
+
+      // ── Refresh / back-forward
+      // Pastikan posisi mulai dari atas (0)
+      window.scrollTo(0, 0);
+
+      // Munculkan halaman → animasi rv hero/atas jalan dulu
+      revealPage();
+
+      if (hasTarget) {
+        // Setelah animasi entry selesai (.45s) + sedikit jeda rv atas muncul (~400ms),
+        // lakukan smooth scroll ke section tersimpan
+        setTimeout(scrollToSaved, 500);
+      }
+    });
+
+    // ── Setelah Firebase selesai render, pastikan scroll sudah di posisi yang tepat
+    window.addEventListener('load', function () {
+      if (hasTarget) {
+        // Scroll ulang kalau konten Firebase bikin layout berubah
+        setTimeout(function () {
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }, 800);
+      }
+    });
+
+    // ── Simpan posisi setiap scroll (debounce 200ms)
     var _t;
     window.addEventListener('scroll', function () {
       clearTimeout(_t);
@@ -1968,7 +2009,7 @@
       }, 200);
     }, { passive: true });
 
-    // Simpan tepat sebelum refresh untuk nilai paling akurat
+    // ── Simpan tepat sebelum refresh (nilai paling akurat)
     window.addEventListener('beforeunload', function () {
       localStorage.setItem(KEY, String(window.scrollY));
     });
