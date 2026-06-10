@@ -748,13 +748,14 @@
     .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
     .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
 
-    /* Baris 2: 2 kecil kiri + 1 besar tengah + 1 tinggi kanan */
-    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
+    /* Baris 2: 2 kecil kiri + 1 besar tengah + 1 tinggi kanan + 1 ekstra bawah kiri */
+    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px 190px; }
     .galeri-row-2 .gi-0 { }                                /* foto 5 */
     .galeri-row-2 .gi-1 { }                                /* foto 6 */
     .galeri-row-2 .gi-2 { grid-row: span 2; }              /* foto 7 — tengah tinggi */
     .galeri-row-2 .gi-3 { grid-row: span 2; }              /* foto 8 — kanan tinggi */
     .galeri-row-2 .gi-4 { grid-column: span 2; }           /* foto 9 — kiri bawah lebar */
+    .galeri-row-2 .gi-5 { grid-column: span 2; }           /* foto 10 — kiri bawah baris 3 */
 
     .galeri-item {
       border-radius: var(--r-md); overflow: hidden;
@@ -1083,7 +1084,8 @@
       .galeri-row-2 .gi-1,
       .galeri-row-2 .gi-2,
       .galeri-row-2 .gi-3,
-      .galeri-row-2 .gi-4 { grid-column: span 1; grid-row: span 1; }
+      .galeri-row-2 .gi-4,
+      .galeri-row-2 .gi-5 { grid-column: span 1; grid-row: span 1; }
       .galeri-mosaic .galeri-item { min-height: 130px; position: relative; }
 
       /* ── Testimonial */
@@ -2447,7 +2449,7 @@
       </div>`;
   });
 
-  // ── GALERI — mosaic 2 baris (9 foto), urut terbaru
+  // ── GALERI — mosaic 2 baris (10 foto), urut terbaru
   watchCol('galeri', data => {
     const wrap = document.getElementById('galeri-mosaic');
     if (!wrap) return;
@@ -2463,7 +2465,8 @@
 
     // Filter hanya yang punya foto valid
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
-    const tampil = withFoto.slice(0, 9);
+    // 10 foto = genap di mobile 2 kolom (5 baris × 2), tanpa slot kosong
+    const tampil = withFoto.slice(0, 10);
 
     // helper buat item
     const gi = (d, cls='') => `
@@ -2474,8 +2477,9 @@
 
     // Baris 1: foto 0–3 (pola: besar kiri + 2 kecil + 1 lebar bawah)
     const r1 = tampil.slice(0, 4);
-    // Baris 2: foto 4–8 (pola: 2 kecil + besar tengah + tinggi kanan + lebar bawah kiri)
-    const r2 = tampil.slice(4, 9);
+    // Baris 2: foto 4–9 (pola: 2 kecil + besar tengah + tinggi kanan + lebar bawah kiri + 1 extra)
+    // Di desktop: 5 foto dengan layout kompleks; di mobile: 6 foto grid 2 kolom = 3 baris penuh
+    const r2 = tampil.slice(4, 10);
 
     wrap.innerHTML = `
       <div class="galeri-row galeri-row-1">
@@ -2491,6 +2495,7 @@
         ${r2[2] ? gi(r2[2], 'gi-2') : ''}
         ${r2[3] ? gi(r2[3], 'gi-3') : ''}
         ${r2[4] ? gi(r2[4], 'gi-4') : ''}
+        ${r2[5] ? gi(r2[5], 'gi-5') : ''}
       </div>` : ''}`;
   });
 
