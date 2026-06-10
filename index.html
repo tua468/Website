@@ -2453,7 +2453,8 @@
     // grid-auto-flow: dense mengisi celah otomatis
     const featPattern = ['feat-xl', '', 'feat-h', '', ''];
 
-    wrap.innerHTML = withFoto.map((d, i) => {
+    // Batasi 10 foto di halaman utama — lihat semua via galeri.html
+    wrap.innerHTML = withFoto.slice(0, 10).map((d, i) => {
       const feat = featPattern[i % featPattern.length];
       return `<div class="galeri-item ${feat}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${d.foto||''}')">
         <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.closest('.galeri-item').style.display='none'" />
