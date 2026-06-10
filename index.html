@@ -748,14 +748,23 @@
     .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
     .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
 
-    /* Baris 2: 2 kecil kiri + 1 besar tengah + 1 tinggi kanan + 1 ekstra bawah kiri */
-    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px 190px; }
-    .galeri-row-2 .gi-0 { }                                /* foto 5 */
-    .galeri-row-2 .gi-1 { }                                /* foto 6 */
-    .galeri-row-2 .gi-2 { grid-row: span 2; }              /* foto 7 — tengah tinggi */
-    .galeri-row-2 .gi-3 { grid-row: span 2; }              /* foto 8 — kanan tinggi */
-    .galeri-row-2 .gi-4 { grid-column: span 2; }           /* foto 9 — kiri bawah lebar */
-    .galeri-row-2 .gi-5 { grid-column: span 2; }           /* foto 10 — kiri bawah baris 3 */
+    /* Baris 2: layout adaptif tergantung jumlah foto (dikontrol JS via class) */
+    /* Mode 5 foto: 2 kecil kiri + besar tengah span2 + tinggi kanan span2 */
+    .galeri-row-2      { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
+    .galeri-row-2 .gi-0 { }
+    .galeri-row-2 .gi-1 { }
+    .galeri-row-2 .gi-2 { grid-row: span 2; }
+    .galeri-row-2 .gi-3 { grid-row: span 2; }
+    .galeri-row-2 .gi-4 { grid-column: span 2; }
+
+    /* Mode 6 foto: 3 kolom rata × 2 baris */
+    .galeri-row-2.r2-6 { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 190px 190px; }
+    .galeri-row-2.r2-6 .gi-0,
+    .galeri-row-2.r2-6 .gi-1,
+    .galeri-row-2.r2-6 .gi-2,
+    .galeri-row-2.r2-6 .gi-3,
+    .galeri-row-2.r2-6 .gi-4,
+    .galeri-row-2.r2-6 .gi-5 { grid-column: span 1; grid-row: span 1; }
 
     .galeri-item {
       border-radius: var(--r-md); overflow: hidden;
@@ -1085,6 +1094,11 @@
       .galeri-row-2 .gi-2,
       .galeri-row-2 .gi-3,
       .galeri-row-2 .gi-4,
+      .galeri-row-2.r2-6 .gi-0,
+      .galeri-row-2.r2-6 .gi-1,
+      .galeri-row-2.r2-6 .gi-2,
+      .galeri-row-2.r2-6 .gi-3,
+      .galeri-row-2.r2-6 .gi-4,
       .galeri-row-2 .gi-5 { grid-column: span 1; grid-row: span 1; }
       .galeri-mosaic .galeri-item { min-height: 130px; position: relative; }
 
@@ -2449,24 +2463,20 @@
       </div>`;
   });
 
-  // ── GALERI — mosaic 2 baris (10 foto), urut terbaru
+  // ── GALERI — mosaic 2 baris, tanpa slot kosong di desktop maupun mobile
   watchCol('galeri', data => {
     const wrap = document.getElementById('galeri-mosaic');
     if (!wrap) return;
     const sorted = data
       .filter(d => d.status !== 'Sembunyikan')
       .sort((a, b) => {
-        // Sort by createdAt desc, fallback by judul
         const tA = a.createdAt?.seconds || 0;
         const tB = b.createdAt?.seconds || 0;
         return tB - tA;
       });
     if (!sorted.length) return;
 
-    // Filter hanya yang punya foto valid
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
-    // 10 foto = genap di mobile 2 kolom (5 baris × 2), tanpa slot kosong
-    const tampil = withFoto.slice(0, 10);
 
     // helper buat item
     const gi = (d, cls='') => `
@@ -2475,11 +2485,29 @@
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
       </div>`;
 
-    // Baris 1: foto 0–3 (pola: besar kiri + 2 kecil + 1 lebar bawah)
-    const r1 = tampil.slice(0, 4);
-    // Baris 2: foto 4–9 (pola: 2 kecil + besar tengah + tinggi kanan + lebar bawah kiri + 1 extra)
-    // Di desktop: 5 foto dengan layout kompleks; di mobile: 6 foto grid 2 kolom = 3 baris penuh
-    const r2 = tampil.slice(4, 10);
+    // Baris 1 selalu 4 foto
+    const r1 = withFoto.slice(0, 4);
+
+    // Baris 2: ambil sisa foto
+    // Desktop: layout-5 butuh tepat 5, layout-6 butuh tepat 6
+    // Mobile: grid 2-kolom, jadi total harus genap (10 = 4+6)
+    // → ambil 6 foto untuk baris 2 (genap di mobile, pakai mode r2-6 di desktop)
+    // → kalau kurang dari 6 tapi >= 5, pakai 5 (mode default r2-5)
+    const avail2 = withFoto.slice(4);
+    let r2, r2Class = '';
+    if (avail2.length >= 6) {
+      r2 = avail2.slice(0, 6);
+      r2Class = 'r2-6';
+    } else if (avail2.length === 5) {
+      r2 = avail2.slice(0, 5);
+      r2Class = '';
+    } else if (avail2.length > 0) {
+      // Kurang dari 5: tampilkan semua yang ada dengan grid rata
+      r2 = avail2;
+      r2Class = 'r2-6'; // grid rata 3 kolom
+    } else {
+      r2 = [];
+    }
 
     wrap.innerHTML = `
       <div class="galeri-row galeri-row-1">
@@ -2489,13 +2517,8 @@
         ${r1[3] ? gi(r1[3], 'gi-3') : ''}
       </div>
       ${r2.length ? `
-      <div class="galeri-row galeri-row-2">
-        ${r2[0] ? gi(r2[0], 'gi-0') : ''}
-        ${r2[1] ? gi(r2[1], 'gi-1') : ''}
-        ${r2[2] ? gi(r2[2], 'gi-2') : ''}
-        ${r2[3] ? gi(r2[3], 'gi-3') : ''}
-        ${r2[4] ? gi(r2[4], 'gi-4') : ''}
-        ${r2[5] ? gi(r2[5], 'gi-5') : ''}
+      <div class="galeri-row galeri-row-2 ${r2Class}">
+        ${r2.map((d, i) => gi(d, `gi-${i}`)).join('')}
       </div>` : ''}`;
   });
 
