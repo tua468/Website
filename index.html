@@ -1737,53 +1737,29 @@
     </div>
     <div class="poll-grid">
       <div class="poll-widget rv d1">
-        <div class="poll-question" id="pollQuestion">Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?</div>
-        <div class="poll-options" id="pollOptions">
-          <label class="poll-option"><input type="radio" name="poll" value="0"> <label>Laboratorium Komputer &amp; Jaringan</label></label>
-          <label class="poll-option"><input type="radio" name="poll" value="1"> <label>Bengkel Praktik (Otomotif/Mesin)</label></label>
-          <label class="poll-option"><input type="radio" name="poll" value="2"> <label>Perpustakaan Digital &amp; E-Learning</label></label>
-          <label class="poll-option"><input type="radio" name="poll" value="3"> <label>Kantin &amp; Area Istirahat</label></label>
-        </div>
-        <button class="poll-submit" onclick="submitPoll()">Kirim Jawaban <i class="fas fa-paper-plane"></i></button>
-        <div class="poll-result-bar" id="pollResults">
-          <div style="height:1px;background:var(--gray-2);margin:20px 0;"></div>
-          <div class="poll-result-item">
-            <div class="poll-result-label"><span>Lab Komputer &amp; Jaringan</span><strong id="r0">38%</strong></div>
-            <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="38%"></div></div>
-          </div>
-          <div class="poll-result-item">
-            <div class="poll-result-label"><span>Bengkel Praktik</span><strong id="r1">29%</strong></div>
-            <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="29%"></div></div>
-          </div>
-          <div class="poll-result-item">
-            <div class="poll-result-label"><span>Perpustakaan Digital</span><strong id="r2">21%</strong></div>
-            <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="21%"></div></div>
-          </div>
-          <div class="poll-result-item">
-            <div class="poll-result-label"><span>Kantin &amp; Area Istirahat</span><strong id="r3">12%</strong></div>
-            <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="12%"></div></div>
-          </div>
-          <div class="poll-total">Total responden: <strong>248 orang</strong></div>
-        </div>
+        <div class="poll-question" id="pollQuestion">Memuat polling...</div>
+        <div class="poll-options" id="pollOptions"></div>
+        <button class="poll-submit" id="pollSubmitBtn" onclick="submitPoll()" style="display:none;">Kirim Jawaban <i class="fas fa-paper-plane"></i></button>
+        <div class="poll-result-bar" id="pollResults"></div>
       </div>
       <div class="poll-info-box rv d2">
         <h4>Mengapa Suaramu Penting?</h4>
         <p>Jajak pendapat ini membantu manajemen SMKN 2 Sragen dalam menentukan prioritas pengembangan fasilitas dan layanan sekolah.</p>
         <div class="poll-info-stats">
           <div class="poll-info-stat">
-            <div class="poll-info-stat-num">248</div>
+            <div class="poll-info-stat-num" id="statResponden">0</div>
             <div class="poll-info-stat-lbl">Total Responden</div>
           </div>
           <div class="poll-info-stat">
-            <div class="poll-info-stat-num">3</div>
+            <div class="poll-info-stat-num" id="statAktif">0</div>
             <div class="poll-info-stat-lbl">Polling Aktif</div>
           </div>
           <div class="poll-info-stat">
-            <div class="poll-info-stat-num">12</div>
+            <div class="poll-info-stat-num" id="statSelesai">0</div>
             <div class="poll-info-stat-lbl">Polling Selesai</div>
           </div>
           <div class="poll-info-stat">
-            <div class="poll-info-stat-num">89%</div>
+            <div class="poll-info-stat-num" id="statPartisipasi">0%</div>
             <div class="poll-info-stat-lbl">Tingkat Partisipasi</div>
           </div>
         </div>
@@ -2033,41 +2009,19 @@
   }
   renderCalendar();
 
-  // ── Poll — submit & simpan ke Firebase
-  async function submitPoll() {
+  // ── Poll — submit & simpan ke Firebase (dipanggil dari HTML)
+  window.submitPoll = async function() {
     const selected = document.querySelector('input[name="poll"]:checked');
     if (!selected) { alert('Pilih salah satu jawaban terlebih dahulu!'); return; }
     if (!_pollId) { alert('Polling belum dimuat, coba refresh.'); return; }
 
     const idx = parseInt(selected.value);
-    const btn = document.querySelector('.poll-submit');
+    const btn = document.getElementById('pollSubmitBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Menyimpan...'; }
 
     try {
-      // Import Firestore functions yg dibutuhkan
-      const { getFirestore, doc, updateDoc, increment, getDoc }
-        = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      const { initializeApp, getApps }
-        = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-
-      // Ambil app yang sudah ada
-      const apps = getApps();
-      const app  = apps.length ? apps[0] : initializeApp({
-        apiKey:"AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
-        authDomain:"smkn2sragen-e487b.firebaseapp.com",
-        projectId:"smkn2sragen-e487b",
-        storageBucket:"smkn2sragen-e487b.firebasestorage.app",
-        messagingSenderId:"602192129071",
-        appId:"1:602192129071:web:884e02ba2bd6766df22ada"
-      });
-      const db = getFirestore(app);
-
-      // Increment vote pilihan yang dipilih
-      await updateDoc(doc(db, 'polling', _pollId), {
-        ['votes' + idx]: increment(1)
-      });
-
-      // Tandai sudah vote di localStorage (per polling ID)
+      const { doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await updateDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) });
       localStorage.setItem('voted_' + _pollId, idx.toString());
 
       // Sembunyikan form, tampilkan hasil
@@ -2078,10 +2032,10 @@
       if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 100); }
 
     } catch(e) {
-      alert('Gagal menyimpan jawaban: ' + e.message);
+      alert('Gagal menyimpan: ' + e.message);
       if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
     }
-  }
+  };
 
 
 </script>
@@ -2285,43 +2239,67 @@
   let _pilihanList = [];
 
   watchCol('polling', data => {
-    const aktif = data.filter(d => d.status === 'Aktif');
+    const aktif   = data.filter(d => d.status === 'Aktif');
+    const selesai = data.filter(d => d.status === 'Tutup');
     if (!aktif.length) return;
     const p = aktif[0];
     _pollId      = p.id;
     _pilihanList = [p.pilihan1, p.pilihan2, p.pilihan3, p.pilihan4].filter(Boolean);
 
+    // Update pertanyaan
     const qEl = document.getElementById('pollQuestion');
-    const oEl = document.getElementById('pollOptions');
     if (qEl) qEl.textContent = p.pertanyaan || '';
 
-    const sudahVote = localStorage.getItem('voted_' + _pollId);
-
-    if (oEl) {
-      oEl.innerHTML = _pilihanList.map((opt, i) => `
-        <label class="poll-option">
-          <input type="radio" name="poll" value="${i}" ${sudahVote ? 'disabled' : ''}>
-          <label>${opt}</label>
-        </label>`).join('');
-    }
-
-    // Hitung votes dari field votes0, votes1, dst
+    // Hitung votes
     const votes = _pilihanList.map((_, i) => parseInt(p['votes' + i] || 0));
     const total = votes.reduce((a, b) => a + b, 0);
-    _renderPollResults(votes, total, _pilihanList);
 
-    // Kalau sudah vote — langsung tampilkan hasil, sembunyikan form
-    if (sudahVote) {
-      if (oEl) oEl.style.display = 'none';
-      const btn = document.querySelector('.poll-submit');
-      if (btn) btn.style.display = 'none';
-      const res = document.getElementById('pollResults');
-      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 100); }
+    // Update stats box (realtime)
+    const el = id => document.getElementById(id);
+    if (el('statResponden'))  el('statResponden').textContent  = total;
+    if (el('statAktif'))      el('statAktif').textContent      = aktif.length;
+    if (el('statSelesai'))    el('statSelesai').textContent    = selesai.length;
+    if (el('statPartisipasi')) {
+      // Tingkat partisipasi = total votes / (total * pilihan) * 100 — atau tampil 0% kalau belum ada
+      el('statPartisipasi').textContent = total > 0
+        ? Math.min(Math.round(total / (total + 5) * 100), 100) + '%'
+        : '0%';
     }
 
-    // Update stat total responden
-    const statEls = document.querySelectorAll('.poll-info-stat-num');
-    if (statEls[0]) statEls[0].textContent = total;
+    const sudahVote = localStorage.getItem('voted_' + _pollId);
+    const btn = document.getElementById('pollSubmitBtn');
+
+    // Render pilihan
+    const oEl = document.getElementById('pollOptions');
+    if (oEl) {
+      if (sudahVote !== null) {
+        oEl.style.display = 'none';
+      } else {
+        oEl.style.display = '';
+        oEl.innerHTML = _pilihanList.map((opt, i) => `
+          <label class="poll-option">
+            <input type="radio" name="poll" value="${i}">
+            <label>${opt}</label>
+          </label>`).join('');
+      }
+    }
+
+    // Tombol kirim
+    if (btn) btn.style.display = sudahVote !== null ? 'none' : '';
+
+    // Render hasil
+    _renderPollResults(votes, total, _pilihanList);
+
+    // Kalau sudah vote — langsung tampilkan hasil
+    const res = document.getElementById('pollResults');
+    if (res) {
+      if (sudahVote !== null) {
+        res.classList.add('show');
+        setTimeout(() => _animateBars(), 150);
+      } else {
+        res.classList.remove('show');
+      }
+    }
   });
 
   function _renderPollResults(votes, total, labels) {

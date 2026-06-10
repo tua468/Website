@@ -501,40 +501,8 @@
         <div><h3>Polling &amp; Jajak Pendapat</h3></div>
         <button class="btn-primary" onclick="openModal('polling')"><i class="fas fa-plus"></i> Buat Polling</button>
       </div>
-      <div class="edit-card">
-        <div class="edit-card-header"><h4>Polling Aktif Saat Ini</h4></div>
-        <div class="edit-card-body">
-          <div style="margin-bottom:16px;">
-            <div style="font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:12px;">❓ Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?</div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:38%;height:100%;background:var(--navy);border-radius:100px;"></div></div>
-                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">38%</span>
-                <span style="font-size:12.5px;color:var(--text-2);">Lab Komputer &amp; Jaringan</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:29%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
-                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">29%</span>
-                <span style="font-size:12.5px;color:var(--text-2);">Bengkel Praktik</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:21%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
-                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">21%</span>
-                <span style="font-size:12.5px;color:var(--text-2);">Perpustakaan Digital</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;"><div style="width:12%;height:100%;background:var(--navy-lt);border-radius:100px;"></div></div>
-                <span style="font-size:12.5px;font-weight:700;color:var(--navy);min-width:36px;">12%</span>
-                <span style="font-size:12.5px;color:var(--text-2);">Kantin &amp; Area Istirahat</span>
-              </div>
-            </div>
-            <div style="margin-top:12px;font-size:12px;color:var(--text-3);">Total responden: <strong>248 orang</strong></div>
-          </div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn-edit" onclick="openModal('polling',{id:1})"><i class="fas fa-edit"></i> Edit Polling</button>
-            <button class="btn-danger"><i class="fas fa-trash"></i> Hapus</button>
-          </div>
-        </div>
+      <div id="polling-live-container">
+        <div style="text-align:center;padding:40px;color:var(--text-3);"><i class="fas fa-spinner fa-spin"></i> Memuat polling...</div>
       </div>
     </div>
 
@@ -775,6 +743,53 @@
     }
   }
   window._loadTable = loadTable;
+
+  // ── Realtime panel polling
+  function loadPollingPanel() {
+    const container = document.getElementById('polling-live-container');
+    if (!container) return;
+    onSnapshot(collection(db, 'polling'), snap => {
+      if (snap.empty) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-3);">Belum ada polling. Klik "Buat Polling" untuk membuat baru.</div>';
+        return;
+      }
+      container.innerHTML = snap.docs.map(docSnap => {
+        const d  = docSnap.data();
+        const id = docSnap.id;
+        const pilihanList = [d.pilihan1, d.pilihan2, d.pilihan3, d.pilihan4].filter(Boolean);
+        const votes  = pilihanList.map((_, i) => parseInt(d['votes' + i] || 0));
+        const total  = votes.reduce((a, b) => a + b, 0);
+        const bars   = pilihanList.map((lbl, i) => {
+          const pct = total > 0 ? Math.round(votes[i] / total * 100) : 0;
+          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="flex:1;background:var(--gray-2);border-radius:100px;height:8px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:var(--navy);border-radius:100px;transition:width .6s;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:var(--navy);min-width:36px;">${pct}%</span>
+            <span style="font-size:12px;color:var(--text-2);min-width:140px;">${lbl} (${votes[i]})</span>
+          </div>`;
+        }).join('');
+        const statusBadge = d.status === 'Aktif'
+          ? '<span style="background:#d4edda;color:#155724;font-size:10px;font-weight:700;padding:2px 10px;border-radius:100px;">Aktif</span>'
+          : '<span style="background:#f8d7da;color:#721c24;font-size:10px;font-weight:700;padding:2px 10px;border-radius:100px;">Tutup</span>';
+        return `<div class="edit-card" style="margin-bottom:16px;">
+          <div class="edit-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+            <h4 style="margin:0;">❓ ${d.pertanyaan||'-'}</h4>
+            ${statusBadge}
+          </div>
+          <div class="edit-card-body">
+            ${bars}
+            <div style="font-size:12px;color:var(--text-3);margin-top:8px;margin-bottom:16px;">Total responden: <strong>${total} orang</strong></div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn-edit btn-sm" onclick="openEdit('polling','${id}')"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn-danger btn-sm" onclick="deleteItem('polling','${id}','${(d.pertanyaan||'').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }, err => console.warn('polling panel', err));
+  }
+  loadPollingPanel();
 
   // ── Render baris tabel
   function renderRow(col, id, d) {
