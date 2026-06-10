@@ -4,21 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMK Negeri 2 Sragen — Excellent, Competent, Character</title>
-  <!-- Scroll persistence: disable browser default scroll restoration -->
-  <script>
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    (function () {
-      var navType = (performance.getEntriesByType('navigation')[0] || {}).type;
-      var hasSaved = !!localStorage.getItem('smkn2_scroll_pos');
-      if ((navType === 'reload' || navType === 'back_forward') && hasSaved) {
-        // 1. Pasang class is-restoring → CSS langsung buat semua .rv visible (opacity:1, transform:none, no transition)
-        document.documentElement.classList.add('is-restoring');
-        // 2. Sembunyikan halaman → user tidak lihat proses scroll ke posisi tersimpan
-        document.documentElement.style.opacity = '0';
-        document.documentElement.style.transition = 'none';
-      }
-    })();
-  </script>
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
@@ -58,17 +44,6 @@
     .rv.on { opacity: 1; transform: none; }
     .d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s} .d4{transition-delay:.32s}
 
-    /* Saat restore scroll (refresh/back): semua .rv langsung visible, tanpa animasi */
-    html.is-restoring .rv,
-    html.is-restoring .rv.d1,
-    html.is-restoring .rv.d2,
-    html.is-restoring .rv.d3,
-    html.is-restoring .rv.d4 {
-      opacity: 1 !important;
-      transform: none !important;
-      transition: none !important;
-      transition-delay: 0s !important;
-    }
 
     /* ── NAVBAR ── */
     .nav {
@@ -1945,119 +1920,57 @@
   }, { threshold: 0.4 });
   sections.forEach(s => activeObs.observe(s));
 
-  // ══════════════════════════════════════════════════════
-  // ── SCROLL PERSISTENCE — tetap di posisi yang sama saat refresh
-  //    Pendekatan: is-restoring class di <html> → CSS matikan semua .rv sekaligus
-  //    sehingga TIDAK ADA elemen yang invisible / lompat saat restore
-  // ══════════════════════════════════════════════════════
+  // ── SCROLL PERSISTENCE ──────────────────────────────────
+  //  Saat refresh: scroll diam-diam ke posisi tersimpan,
+  //  lalu biarkan IntersectionObserver trigger animasi .rv
+  //  secara natural (muncul dari bawah ke atas) — persis
+  //  seperti pertama kali halaman dibuka.
+  // ────────────────────────────────────────────────────────
   (function () {
-    var STORAGE_KEY   = 'smkn2_scroll_pos';
-    var FADE_DURATION = 300; // ms
-
-    var navEntry = performance.getEntriesByType('navigation')[0];
-    var navType  = navEntry ? navEntry.type : '';
+    var KEY = 'smkn2_scroll_pos';
+    var navType = ((performance.getEntriesByType('navigation')[0]) || {}).type;
     var isReload      = navType === 'reload';
     var isBackForward = navType === 'back_forward';
 
-    // ── Fade-in halus: aktifkan transisi opacity lalu set ke 1
-    function fadeIn() {
-      var html = document.documentElement;
-      html.style.transition = 'opacity ' + FADE_DURATION + 'ms ease';
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          html.style.opacity = '1';
-          setTimeout(function () {
-            // Setelah fade selesai: hapus is-restoring → IntersectionObserver
-            // bisa kembali bekerja normal untuk elemen di bawah yang belum terlihat
-            html.classList.remove('is-restoring');
-            html.style.transition = '';
-            html.style.opacity    = '';
-          }, FADE_DURATION + 50);
-        });
-      });
-    }
-
-    // ── Fungsi utama restore
-    var _done = false;
-    function restoreScroll(savedPos) {
-      if (_done) return;
-      _done = true;
-
-      var targetY = savedPos !== null ? parseInt(savedPos, 10) : 0;
-      if (isNaN(targetY)) targetY = 0;
-
-      // Matikan smooth scroll sementara
-      document.documentElement.style.scrollBehavior = 'auto';
-      document.body.style.scrollBehavior            = 'auto';
-
-      // Set posisi — is-restoring sudah aktif sejak <head>, jadi semua .rv sudah visible
-      window.scrollTo(0, targetY);
-
-      // Fade-in setelah browser selesai render frame di posisi yang benar
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          fadeIn();
-          setTimeout(function () {
-            document.documentElement.style.scrollBehavior = '';
-            document.body.style.scrollBehavior            = '';
-          }, FADE_DURATION + 60);
-        });
-      });
-    }
-
     if (isReload || isBackForward) {
-      var savedPos = localStorage.getItem(STORAGE_KEY);
-
-      // Jalankan restore setelah DOM siap
-      function run() { restoreScroll(savedPos); }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', run);
-      } else {
-        run();
-      }
-
-      // Setelah semua resource + Firebase render: scroll ulang untuk memastikan posisi tepat
-      window.addEventListener('load', function () {
-        if (savedPos) {
-          var target = parseInt(savedPos, 10);
-          var retries = 0;
-          var iv = setInterval(function () {
+      var saved = localStorage.getItem(KEY);
+      if (saved) {
+        var target = parseInt(saved, 10);
+        // Matikan smooth scroll agar langsung posisi ke target tanpa animasi
+        document.documentElement.style.scrollBehavior = 'auto';
+        // Scroll setelah DOM selesai diparse
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () {
             window.scrollTo(0, target);
-            if (++retries >= 6) clearInterval(iv);
-          }, 200);
+          });
+        } else {
+          window.scrollTo(0, target);
         }
-      });
-
-      // Failsafe: kalau 3 detik masih putih, paksa tampil
-      setTimeout(function () {
-        if (document.documentElement.style.opacity === '0') {
-          document.documentElement.classList.remove('is-restoring');
-          fadeIn();
-        }
-      }, 3000);
-
+        // Kembalikan smooth scroll setelah posisi terset
+        window.addEventListener('load', function () {
+          window.scrollTo(0, target);
+          document.documentElement.style.scrollBehavior = '';
+        });
+      }
     } else {
-      // Navigasi baru / buka tab baru — langsung visible, hapus sisa state
-      document.documentElement.classList.remove('is-restoring');
-      document.documentElement.style.opacity    = '';
-      document.documentElement.style.transition = '';
+      // Buka baru / navigasi link — mulai dari atas
       if (!sessionStorage.getItem('doRestore')) {
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(KEY);
       }
     }
 
-    // ── Simpan posisi saat scroll (debounce 200ms)
-    var _st;
+    // Simpan posisi scroll setiap user scroll (debounce 200ms)
+    var _t;
     window.addEventListener('scroll', function () {
-      clearTimeout(_st);
-      _st = setTimeout(function () {
-        localStorage.setItem(STORAGE_KEY, String(window.scrollY));
+      clearTimeout(_t);
+      _t = setTimeout(function () {
+        localStorage.setItem(KEY, String(window.scrollY));
       }, 200);
     }, { passive: true });
 
-    // ── Simpan posisi tepat sebelum refresh (nilai paling akurat)
+    // Simpan tepat sebelum refresh untuk nilai paling akurat
     window.addEventListener('beforeunload', function () {
-      localStorage.setItem(STORAGE_KEY, String(window.scrollY));
+      localStorage.setItem(KEY, String(window.scrollY));
     });
   })();
 
