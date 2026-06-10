@@ -72,9 +72,11 @@
     .nav-inner {
       max-width: 1100px; margin: 0 auto; padding: 0 24px;
       height: 64px; display: flex; align-items: center; gap: 0;
+      /* Pastikan navbar tidak pernah lebih lebar dari layar */
+      overflow: hidden;
     }
-    .nav-logo { flex-shrink: 0; display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .nav-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 8px; }
+    .nav-logo { flex-shrink: 0; display: flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; }
+    .nav-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; margin-left: 4px; }
     .nav-logo-icon {
       width: 52px; height: 52px; border-radius: 10px;
       overflow: hidden; display: flex; align-items: center; justify-content: center;
@@ -599,6 +601,8 @@
       border-radius: var(--r-xl); padding: 28px 32px;
       display: flex; align-items: center; gap: 18px;
       margin-bottom: 20px; position: relative; overflow: hidden;
+      /* Fix overflow di mobile */
+      max-width: 100%; box-sizing: border-box;
     }
     .info-alert::before {
       content: ''; position: absolute; right: -20px; top: -20px;
@@ -611,10 +615,10 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 18px; color: var(--gold-lt);
     }
-    .info-alert-body { flex: 1; }
+    .info-alert-body { flex: 1; min-width: 0; overflow: hidden; }
     .info-alert-tag { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 4px; }
-    .info-alert-title { font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.45; }
-    .info-alert-date { font-size: 11.5px; color: rgba(255,255,255,.6); margin-top: 4px; }
+    .info-alert-title { font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .info-alert-date { font-size: 11.5px; color: rgba(255,255,255,.6); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .info-alert-arrow { color: rgba(255,255,255,.5); font-size: 14px; flex-shrink: 0; }
 
     .info-card {
@@ -979,11 +983,14 @@
       .bkk, .stats-section { padding: 64px 0; }
 
       /* ── Navbar */
-      .nav-logo-text      { font-size: 13px; }
+      .nav-inner          { padding: 0 12px; }
+      .nav-logo-text      { font-size: 12.5px; }
       .nav-logo-sub       { display: none; }
-      .nav-logo-icon      { width: 40px; height: 40px; }
-      .nav-search.open .nav-search-input { width: 130px; }
-      .nav-cta            { padding: 7px 14px !important; font-size: 12px !important; }
+      .nav-logo-icon      { width: 36px; height: 36px; border-radius: 8px; }
+      /* Search icon disembunyikan di mobile agar tidak mepet */
+      .nav-search-btn     { display: none; }
+      /* CTA hanya tampil ikon + teks pendek */
+      .nav-cta            { padding: 6px 12px !important; font-size: 11.5px !important; margin-left: 4px; white-space: nowrap; }
 
       /* ── Hero */
       .hero-inner         { padding: 60px 20px; }
@@ -1036,12 +1043,18 @@
       .berita-grid        { grid-template-columns: 1fr; gap: 20px; }
       .berita-main-img    { height: 200px; }
 
-      /* ── Galeri */
+      /* ── Galeri mobile: grid sederhana 2 kolom, tidak ada span yang bikin slot kosong */
+      .galeri-mosaic      { gap: 8px; }
+      .galeri-row         { gap: 8px; }
       .galeri-row-1       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
       .galeri-row-1 .gi-0 { grid-row: span 1; }
+      .galeri-row-1 .gi-1 { }
+      .galeri-row-1 .gi-2 { }
       .galeri-row-1 .gi-3 { grid-column: span 2; }
       .galeri-row-2       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-      .galeri-row-2 .gi-2,
+      .galeri-row-2 .gi-0 { }
+      .galeri-row-2 .gi-1 { }
+      .galeri-row-2 .gi-2 { grid-row: span 1; }
       .galeri-row-2 .gi-3 { grid-row: span 1; }
       .galeri-row-2 .gi-4 { grid-column: span 2; }
       .galeri-row .galeri-item { min-height: 140px; }
@@ -1085,8 +1098,10 @@
       .container          { padding: 0 16px; }
 
       /* ── Navbar lebih compact */
-      .nav-inner          { padding: 0 16px; }
-      .nav-menu a         { font-size: 12.5px; padding: 5px 10px; }
+      .nav-inner          { padding: 0 12px; }
+      .nav-menu a         { font-size: 12px; padding: 5px 9px; }
+      .nav-cta            { padding: 6px 10px !important; font-size: 11px !important; }
+      .nav-logo-text      { font-size: 12px; }
 
       /* ── Hero */
       .hero-inner         { padding: 48px 16px; }
