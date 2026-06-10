@@ -952,42 +952,182 @@
     .poll-info-stat-lbl { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
 
     /* ── RESPONSIVE ── */
+    /* ══════════════════════════════════════
+       RESPONSIVE — TABLET (≤ 1024px)
+    ══════════════════════════════════════ */
     @media (max-width: 1024px) {
-      .about-grid, .vismis-grid, .pengumuman-grid, .berita-grid,
-      .agenda-grid, .poll-grid { grid-template-columns: 1fr; gap: 24px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
-      .prestasi-banner { grid-template-columns: 1fr; }
+      .about-grid          { grid-template-columns: 1fr; gap: 36px; }
+      .vismis-grid         { grid-template-columns: 1fr; gap: 20px; }
+      .berita-grid         { grid-template-columns: 1fr; gap: 20px; }
+      .agenda-grid         { grid-template-columns: 1fr; gap: 20px; }
+      .poll-grid           { grid-template-columns: 1fr; gap: 20px; }
+      .pengumuman-grid     { grid-template-columns: 1fr; gap: 20px; }
+      .footer-grid         { grid-template-columns: 1fr 1fr; gap: 36px; }
+      .prestasi-banner     { grid-template-columns: 1fr; padding: 40px 36px 0; }
       .prestasi-banner-right { display: none; }
-      .ppdb-box { position: static; }
+      .ppdb-box            { position: static; }
+      .program-grid        { grid-template-columns: repeat(2,1fr); }
     }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — MOBILE (≤ 768px)
+    ══════════════════════════════════════ */
     @media (max-width: 768px) {
-      .nav-menu { display: flex; }
-      .nav-right .nav-cta span { display: none; }
-      .nav-right .nav-cta::after { content: 'Kontak'; }
-      .nav-search.open .nav-search-input { width: 150px; }
-      .program-grid, .jurusan-grid, .prestasi-grid, .bkk-grid { grid-template-columns: repeat(2,1fr); }
-      @media (max-width: 540px) { .program-grid { grid-template-columns: 1fr 1fr; } }
-      .fasil-grid { grid-template-columns: repeat(2,1fr); }
-      .testi-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .stats-grid { grid-template-columns: 1fr; }
-      .hero-stats { flex-direction: column; border-radius: var(--r-lg); }
-      .hstat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.15); }
-      .hstat:last-child { border-bottom: none; }
-      .galeri-row-1 { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      /* ── Section padding lebih compact */
+      .about, .vismis, .jurusan, .fasil, .prestasi,
+      .berita, .testi, .program, .pengumuman,
+      .bkk, .stats-section { padding: 64px 0; }
+
+      /* ── Navbar */
+      .nav-logo-text      { font-size: 13px; }
+      .nav-logo-sub       { display: none; }
+      .nav-logo-icon      { width: 40px; height: 40px; }
+      .nav-search.open .nav-search-input { width: 130px; }
+      .nav-cta            { padding: 7px 14px !important; font-size: 12px !important; }
+
+      /* ── Hero */
+      .hero-inner         { padding: 60px 20px; }
+      .hero-desc          { font-size: 15px; }
+      .hero-btns          { flex-direction: column; align-items: center; gap: 10px; }
+      .btn-white, .btn-outline-white { width: 100%; max-width: 280px; justify-content: center; }
+      .hero-stats         { flex-direction: column; border-radius: var(--r-lg); margin-top: 40px; }
+      .hstat              { padding: 18px 24px; border-right: none; border-bottom: 1px solid rgba(255,255,255,.15); }
+      .hstat:last-child   { border-bottom: none; }
+      .hstat-num          { font-size: 1.7rem; }
+
+      /* ── About */
+      .about-grid         { grid-template-columns: 1fr; gap: 32px; }
+      .about-img          { aspect-ratio: 16/9; border-radius: var(--r-xl); }
+      .about-quote        { font-size: 15px; }
+      .about-body-text    { font-size: 14px; }
+
+      /* ── Visi Misi */
+      .vismis-grid        { grid-template-columns: 1fr; gap: 16px; }
+      .vm-card            { padding: 28px 24px; }
+
+      /* ── Jurusan */
+      .jurusan-grid       { grid-template-columns: repeat(2,1fr); gap: 14px; }
+      .jcard              { padding: 24px 18px; }
+      .jcard h3           { font-size: 13px; }
+      .jcard p            { font-size: 12px; }
+
+      /* ── Fasilitas */
+      .fasil-grid         { grid-template-columns: repeat(3,1fr); gap: 12px; }
+      .fcard              { padding: 20px 12px; }
+      .fcard i            { font-size: 1.5rem; }
+      .fcard h4           { font-size: 11px; }
+
+      /* ── Prestasi */
+      .prestasi-banner    { padding: 32px 24px 0; border-radius: var(--r-xl); }
+      .prestasi-banner h2 { font-size: 1.5rem; }
+      .prestasi-banner p  { font-size: 13.5px; }
+      .prestasi-grid      { grid-template-columns: repeat(2,1fr); gap: 14px; }
+
+      /* ── BKK */
+      .bkk-banner         { flex-direction: column; gap: 16px; }
+      .bkk-header-row     { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .bkk-grid           { grid-template-columns: repeat(2,1fr); }
+
+      /* ── Program */
+      .program-grid       { grid-template-columns: repeat(2,1fr); gap: 14px; }
+      .pcard              { padding: 28px 20px; }
+
+      /* ── Berita */
+      .berita-grid        { grid-template-columns: 1fr; gap: 20px; }
+      .berita-main-img    { height: 200px; }
+
+      /* ── Galeri */
+      .galeri-row-1       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
       .galeri-row-1 .gi-0 { grid-row: span 1; }
-      .galeri-row-1 .gi-3 { grid-column: span 1; }
-      .galeri-row-2 { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-      .galeri-row-2 .gi-2, .galeri-row-2 .gi-3 { grid-row: span 1; }
-      .galeri-row-2 .gi-4 { grid-column: span 1; }
-      .galeri-row .galeri-item { min-height: 150px; }
-      .bkk-banner { flex-direction: column; }
-      .bkk-header-row { flex-direction: column; align-items: flex-start; }
-      .lightbox-img { min-width: 90vw; min-height: 250px; }
+      .galeri-row-1 .gi-3 { grid-column: span 2; }
+      .galeri-row-2       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .galeri-row-2 .gi-2,
+      .galeri-row-2 .gi-3 { grid-row: span 1; }
+      .galeri-row-2 .gi-4 { grid-column: span 2; }
+      .galeri-row .galeri-item { min-height: 140px; }
+
+      /* ── Testimonial */
+      .testi-grid         { grid-template-columns: 1fr; gap: 16px; }
+      .tcard              { min-height: 300px; }
+
+      /* ── Pengumuman */
+      .info-alert         { padding: 20px 18px; gap: 14px; border-radius: var(--r-lg); }
+      .info-alert-title   { font-size: 13.5px; }
+
+      /* ── Agenda */
+      .agenda-grid        { grid-template-columns: 1fr; gap: 20px; }
+
+      /* ── Poll */
+      .poll-grid          { grid-template-columns: 1fr; gap: 20px; }
+      .poll-info-stats    { grid-template-columns: repeat(2,1fr); gap: 12px; }
+
+      /* ── Stats */
+      .stats-grid         { grid-template-columns: 1fr; gap: 1px; }
+      .stat-num           { font-size: 2.2rem; }
+
+      /* ── Footer */
+      .footer-grid        { grid-template-columns: 1fr; gap: 32px; }
+      .foot-bottom        { flex-direction: column; text-align: center; }
+
+      /* ── Lightbox */
+      .lightbox-img       { min-width: 90vw; min-height: 220px; }
+
+      /* ── Section header */
+      .s-header           { margin-bottom: 36px; }
+      .s-desc             { font-size: 14px; }
     }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — SMALL MOBILE (≤ 480px)
+    ══════════════════════════════════════ */
     @media (max-width: 480px) {
-      .fasil-grid { grid-template-columns: repeat(2,1fr); }
-      .poll-info-stats { grid-template-columns: 1fr; }
+      /* ── Container lebih nafas */
+      .container          { padding: 0 16px; }
+
+      /* ── Navbar lebih compact */
+      .nav-inner          { padding: 0 16px; }
+      .nav-menu a         { font-size: 12.5px; padding: 5px 10px; }
+
+      /* ── Hero */
+      .hero-inner         { padding: 48px 16px; }
+      .hero-title         { font-size: clamp(1.75rem, 7vw, 2.4rem); }
+      .hero-badge         { font-size: 10px; padding: 5px 14px; }
+
+      /* ── Section judul */
+      .s-title            { font-size: clamp(1.45rem, 6vw, 1.9rem); }
+
+      /* ── About */
+      .about-img          { aspect-ratio: 4/3; }
+
+      /* ── Jurusan & Program — 1 kolom di HP kecil */
+      .jurusan-grid       { grid-template-columns: 1fr; gap: 12px; }
+      .program-grid       { grid-template-columns: 1fr; gap: 12px; }
+
+      /* ── Fasilitas — 2 kolom tetap */
+      .fasil-grid         { grid-template-columns: repeat(2,1fr); gap: 10px; }
+      .fcard              { padding: 18px 10px; }
+
+      /* ── Prestasi */
+      .prestasi-grid      { grid-template-columns: 1fr; gap: 14px; }
+      .prestasi-banner    { padding: 24px 20px 0; }
+
+      /* ── BKK */
+      .bkk-grid           { grid-template-columns: 1fr; }
+
+      /* ── Poll info stats */
+      .poll-info-stats    { grid-template-columns: repeat(2,1fr); }
+
+      /* ── Info alert compact */
+      .info-alert         { flex-direction: row; padding: 16px 14px; }
+      .info-alert-ico     { width: 36px; height: 36px; font-size: 15px; }
+
+      /* ── Visi Misi padding */
+      .vm-card            { padding: 24px 18px; }
+      .vm-card h3         { font-size: 17px; }
+
+      /* ── Stats */
+      .stat-num           { font-size: 2rem; }
+      .stats-inner p      { font-size: 13.5px; }
     }
   </style>
 </head>
