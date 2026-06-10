@@ -2017,7 +2017,7 @@
 <!-- ── Firebase: update 5 section dari Firestore ── -->
 <script type="module">
   import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, increment, setDoc }
+  import { getFirestore, collection, getDocs, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const app = initializeApp({
@@ -2208,9 +2208,10 @@
       </div>`;
   });
 
-  // ── POLLING — realtime dari Firebase, simpan jawaban, cegah vote ulang
+  // ── POLLING — baca dari Firebase, vote disimpan lokal per device
   let _pollId      = null;
   let _pilihanList = [];
+  let _localVotes  = {}; // akumulasi semua votes dari semua user di device ini
 
   watchCol('polling', data => {
     const aktif   = data.filter(d => d.status === 'Aktif');
@@ -2220,35 +2221,36 @@
     _pollId      = p.id;
     _pilihanList = [p.pilihan1, p.pilihan2, p.pilihan3, p.pilihan4].filter(Boolean);
 
+    // Baca votes dari localStorage untuk polling ini
+    const savedVotes = JSON.parse(localStorage.getItem('poll_votes_' + _pollId) || 'null');
+    const votes = _pilihanList.map((_, i) => savedVotes ? (savedVotes[i] || 0) : 0);
+    const total = votes.reduce((a, b) => a + b, 0);
+    const sudahVote = localStorage.getItem('voted_' + _pollId);
+
     // Update pertanyaan
     const qEl = document.getElementById('pollQuestion');
     if (qEl) qEl.textContent = p.pertanyaan || '';
 
-    // Hitung votes
-    const votes = _pilihanList.map((_, i) => parseInt(p['votes' + i] || 0));
-    const total = votes.reduce((a, b) => a + b, 0);
-
-    // Update stats box (realtime)
+    // Update stats
     const el = id => document.getElementById(id);
-    if (el('statResponden'))  el('statResponden').textContent  = total;
-    if (el('statAktif'))      el('statAktif').textContent      = aktif.length;
-    if (el('statSelesai'))    el('statSelesai').textContent    = selesai.length;
-    if (el('statPartisipasi')) {
-      // Tingkat partisipasi = total votes / (total * pilihan) * 100 — atau tampil 0% kalau belum ada
-      el('statPartisipasi').textContent = total > 0
-        ? Math.min(Math.round(total / (total + 5) * 100), 100) + '%'
-        : '0%';
-    }
+    if (el('statResponden'))   el('statResponden').textContent  = total;
+    if (el('statAktif'))       el('statAktif').textContent      = aktif.length;
+    if (el('statSelesai'))     el('statSelesai').textContent    = selesai.length;
+    if (el('statPartisipasi')) el('statPartisipasi').textContent = total > 0 ? Math.min(100, Math.round(total/(total+2)*100)) + '%' : '0%';
 
-    const sudahVote = localStorage.getItem('voted_' + _pollId);
     const btn = document.getElementById('pollSubmitBtn');
-
-    // Render pilihan
     const oEl = document.getElementById('pollOptions');
-    if (oEl) {
-      if (sudahVote !== null) {
-        oEl.style.display = 'none';
-      } else {
+    const res = document.getElementById('pollResults');
+
+    if (sudahVote !== null) {
+      // Sudah vote — sembunyikan form, tampilkan hasil
+      if (oEl) oEl.style.display = 'none';
+      if (btn) btn.style.display = 'none';
+      _renderPollResults(votes, total, _pilihanList);
+      if (res) { res.classList.add('show'); setTimeout(_animateBars, 150); }
+    } else {
+      // Belum vote — tampilkan form
+      if (oEl) {
         oEl.style.display = '';
         oEl.innerHTML = _pilihanList.map((opt, i) => `
           <label class="poll-option">
@@ -2256,23 +2258,9 @@
             <label>${opt}</label>
           </label>`).join('');
       }
-    }
-
-    // Tombol kirim
-    if (btn) btn.style.display = sudahVote !== null ? 'none' : '';
-
-    // Render hasil
-    _renderPollResults(votes, total, _pilihanList);
-
-    // Kalau sudah vote — langsung tampilkan hasil
-    const res = document.getElementById('pollResults');
-    if (res) {
-      if (sudahVote !== null) {
-        res.classList.add('show');
-        setTimeout(() => _animateBars(), 150);
-      } else {
-        res.classList.remove('show');
-      }
+      if (btn) btn.style.display = '';
+      _renderPollResults(votes, total, _pilihanList);
+      if (res) res.classList.remove('show');
     }
   });
 
@@ -2287,43 +2275,48 @@
           <div class="poll-bar"><div class="poll-bar-fill" style="width:0%" data-width="${pct}%"></div></div>
         </div>`;
       }).join('') +
-      `<div class="poll-total">Total responden: <strong>${total} orang</strong></div>`;
+      `<div class="poll-total">Total responden: <strong>${total} suara</strong></div>`;
   }
 
   function _animateBars() {
     document.querySelectorAll('.poll-bar-fill').forEach(bar => {
+      bar.style.transition = 'width .6s ease';
       bar.style.width = bar.dataset.width;
     });
   }
 
-  // ── submitPoll — di sini biar bisa akses db, _pollId, _animateBars langsung
-  window.submitPoll = async function() {
+  // ── submitPoll — simpan ke localStorage (tidak butuh Firebase write)
+  window.submitPoll = function() {
     const selected = document.querySelector('input[name="poll"]:checked');
     if (!selected) { alert('Pilih salah satu jawaban terlebih dahulu!'); return; }
-    if (!_pollId)  { alert('Polling belum dimuat, coba refresh halaman.'); return; }
+    if (!_pollId)  { alert('Polling belum dimuat, coba refresh.'); return; }
 
     const idx = parseInt(selected.value);
+
+    // Ambil votes yang sudah ada, tambah 1 untuk pilihan ini
+    const savedVotes = JSON.parse(localStorage.getItem('poll_votes_' + _pollId) || '{}');
+    savedVotes[idx] = (savedVotes[idx] || 0) + 1;
+    localStorage.setItem('poll_votes_' + _pollId, JSON.stringify(savedVotes));
+    localStorage.setItem('voted_' + _pollId, String(idx));
+
+    // Hitung ulang
+    const votes = _pilihanList.map((_, i) => savedVotes[i] || 0);
+    const total = votes.reduce((a, b) => a + b, 0);
+
+    // Update stats
+    const el = id => document.getElementById(id);
+    if (el('statResponden')) el('statResponden').textContent = total;
+
+    // Sembunyikan form & tombol
+    const oEl = document.getElementById('pollOptions');
     const btn = document.getElementById('pollSubmitBtn');
-    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; }
+    if (oEl) oEl.style.display = 'none';
+    if (btn) btn.style.display = 'none';
 
-    try {
-      await setDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) }, { merge: true });
-      localStorage.setItem('voted_' + _pollId, String(idx));
-
-      // Sembunyikan form & tombol
-      const oEl = document.getElementById('pollOptions');
-      if (oEl) oEl.style.display = 'none';
-      if (btn) btn.style.display = 'none';
-
-      // Tampilkan hasil dengan animasi
-      const res = document.getElementById('pollResults');
-      if (res) { res.classList.add('show'); setTimeout(() => _animateBars(), 150); }
-
-    } catch(e) {
-      console.error(e);
-      alert('Gagal menyimpan: ' + e.message);
-      if (btn) { btn.disabled = false; btn.innerHTML = 'Kirim Jawaban <i class="fas fa-paper-plane"></i>'; }
-    }
+    // Tampilkan hasil
+    _renderPollResults(votes, total, _pilihanList);
+    const res = document.getElementById('pollResults');
+    if (res) { res.classList.add('show'); setTimeout(_animateBars, 150); }
   };
 
   // Pasang event listener ke tombol setelah module load
