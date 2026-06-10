@@ -4,19 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMK Negeri 2 Sragen — Excellent, Competent, Character</title>
-  <!-- Scroll persistence: disable browser default & sembunyikan body sesaat agar restore tidak kelihatan kaku -->
+  <!-- Scroll persistence: disable browser default scroll restoration -->
   <script>
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    // Kalau ini reload atau back/forward, sembunyikan body dulu sebelum render
-    // supaya proses restore scroll tidak kelihatan (nanti di-fade-in setelah posisi sudah benar)
-    var _snNavType = (performance.getEntriesByType('navigation')[0] || {}).type;
-    if (_snNavType === 'reload' || _snNavType === 'back_forward') {
-      var _snHasSaved = !!localStorage.getItem('smkn2_scroll_pos');
-      if (_snHasSaved) {
+    (function () {
+      var navType = (performance.getEntriesByType('navigation')[0] || {}).type;
+      var hasSaved = !!localStorage.getItem('smkn2_scroll_pos');
+      if ((navType === 'reload' || navType === 'back_forward') && hasSaved) {
+        // 1. Pasang class is-restoring → CSS langsung buat semua .rv visible (opacity:1, transform:none, no transition)
+        document.documentElement.classList.add('is-restoring');
+        // 2. Sembunyikan halaman → user tidak lihat proses scroll ke posisi tersimpan
         document.documentElement.style.opacity = '0';
         document.documentElement.style.transition = 'none';
       }
-    }
+    })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,6 +57,18 @@
     .rv { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
     .rv.on { opacity: 1; transform: none; }
     .d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s} .d4{transition-delay:.32s}
+
+    /* Saat restore scroll (refresh/back): semua .rv langsung visible, tanpa animasi */
+    html.is-restoring .rv,
+    html.is-restoring .rv.d1,
+    html.is-restoring .rv.d2,
+    html.is-restoring .rv.d3,
+    html.is-restoring .rv.d4 {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+      transition-delay: 0s !important;
+    }
 
     /* ── NAVBAR ── */
     .nav {
@@ -1934,101 +1947,56 @@
 
   // ══════════════════════════════════════════════════════
   // ── SCROLL PERSISTENCE — tetap di posisi yang sama saat refresh
-  //    dengan fade-in halus agar tidak kelihatan kaku
+  //    Pendekatan: is-restoring class di <html> → CSS matikan semua .rv sekaligus
+  //    sehingga TIDAK ADA elemen yang invisible / lompat saat restore
   // ══════════════════════════════════════════════════════
   (function () {
-    var STORAGE_KEY = 'smkn2_scroll_pos';
-    var FADE_DURATION = 280; // ms — durasi fade-in saat restore
+    var STORAGE_KEY   = 'smkn2_scroll_pos';
+    var FADE_DURATION = 300; // ms
 
-    // ── 1. Deteksi tipe navigasi
     var navEntry = performance.getEntriesByType('navigation')[0];
     var navType  = navEntry ? navEntry.type : '';
     var isReload      = navType === 'reload';
     var isBackForward = navType === 'back_forward';
 
-    // ── 2. Fungsi: fade-in halus setelah scroll diset
+    // ── Fade-in halus: aktifkan transisi opacity lalu set ke 1
     function fadeIn() {
-      // Aktifkan transisi opacity
-      document.documentElement.style.transition = 'opacity ' + FADE_DURATION + 'ms ease';
-      // Pastikan transisi terpasang dulu sebelum ubah opacity
+      var html = document.documentElement;
+      html.style.transition = 'opacity ' + FADE_DURATION + 'ms ease';
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          document.documentElement.style.opacity = '1';
-          // Bersihkan style inline setelah selesai
+          html.style.opacity = '1';
           setTimeout(function () {
-            document.documentElement.style.transition = '';
-            document.documentElement.style.opacity = '';
+            // Setelah fade selesai: hapus is-restoring → IntersectionObserver
+            // bisa kembali bekerja normal untuk elemen di bawah yang belum terlihat
+            html.classList.remove('is-restoring');
+            html.style.transition = '';
+            html.style.opacity    = '';
           }, FADE_DURATION + 50);
         });
       });
     }
 
-    // ── 3. Hitung posisi absolut elemen dari atas document (tidak bergantung scroll saat ini)
-    function getAbsoluteTop(el) {
-      var top = 0;
-      while (el) {
-        top += el.offsetTop || 0;
-        el   = el.offsetParent;
-      }
-      return top;
-    }
+    // ── Fungsi utama restore
+    var _done = false;
+    function restoreScroll(savedPos) {
+      if (_done) return;
+      _done = true;
 
-    // ── 4. Bypass animasi reveal (.rv) untuk semua elemen yang ada
-    //    di atas atau dalam viewport tujuan (targetY ~ targetY + innerHeight)
-    //    Harus dipanggil SEBELUM window.scrollTo agar posisi absolut akurat
-    function bypassRevealAbove(targetY) {
-      var viewportH = window.innerHeight;
-      document.querySelectorAll('.rv').forEach(function (el) {
-        // Pakai offsetTop chain — tidak terpengaruh posisi scroll saat ini
-        var elTop = getAbsoluteTop(el);
-        // Bypass kalau elemen ada di atas batas bawah viewport tujuan
-        if (elTop < targetY + viewportH) {
-          el.style.transition = 'none';
-          el.style.opacity    = '1';
-          el.style.transform  = 'none';
-          el.classList.add('on');
-          // Kembalikan kontrol ke CSS setelah 2 frame
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              el.style.transition = '';
-              el.style.opacity    = '';
-              el.style.transform  = '';
-            });
-          });
-        }
-      });
-    }
+      var targetY = savedPos !== null ? parseInt(savedPos, 10) : 0;
+      if (isNaN(targetY)) targetY = 0;
 
-    // ── 5. Fungsi utama: bypass reveal → set scroll → fade in
-    var _restoreDone = false;
-    function restoreScroll(savedPos, doFade) {
-      if (_restoreDone) return;
-      if (savedPos === null || savedPos === undefined) {
-        if (doFade) fadeIn();
-        return;
-      }
-      var targetY = parseInt(savedPos, 10);
-      if (isNaN(targetY) || targetY <= 0) {
-        if (doFade) fadeIn();
-        return;
-      }
-
-      // Matikan smooth scroll bawaan sementara
+      // Matikan smooth scroll sementara
       document.documentElement.style.scrollBehavior = 'auto';
       document.body.style.scrollBehavior            = 'auto';
 
-      // Bypass reveal dulu (saat scrollY masih 0, offsetTop masih akurat)
-      bypassRevealAbove(targetY);
-
-      // Lalu set posisi scroll
+      // Set posisi — is-restoring sudah aktif sejak <head>, jadi semua .rv sudah visible
       window.scrollTo(0, targetY);
 
-      // Setelah 2 frame (browser selesai paint di posisi yang benar), fade-in halus
+      // Fade-in setelah browser selesai render frame di posisi yang benar
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          if (doFade) fadeIn();
-          _restoreDone = true;
-          // Kembalikan smooth scroll setelah fade selesai
+          fadeIn();
           setTimeout(function () {
             document.documentElement.style.scrollBehavior = '';
             document.body.style.scrollBehavior            = '';
@@ -2037,61 +2005,57 @@
       });
     }
 
-    // ── 5. Jalankan restore kalau ini reload atau back/forward
     if (isReload || isBackForward) {
       var savedPos = localStorage.getItem(STORAGE_KEY);
-      var needFade = document.documentElement.style.opacity === '0'; // body sudah disembunyikan di <head>
 
-      // Restore setelah DOM siap
-      function doRestore() {
-        if (_restoreDone) return;
-        restoreScroll(savedPos, true);
-      }
-
-      // Coba restore sesegera mungkin
+      // Jalankan restore setelah DOM siap
+      function run() { restoreScroll(savedPos); }
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', doRestore);
+        document.addEventListener('DOMContentLoaded', run);
       } else {
-        doRestore();
+        run();
       }
 
-      // Retry setelah semua resource + Firebase selesai render
+      // Setelah semua resource + Firebase render: scroll ulang untuk memastikan posisi tepat
       window.addEventListener('load', function () {
-        if (!_restoreDone) doRestore();
-        // Ekstra: scroll ulang setelah Firebase render konten (max 1.2 detik)
-        var retries = 0;
-        var retryInterval = setInterval(function () {
-          retries++;
-          if (savedPos) window.scrollTo(0, parseInt(savedPos, 10));
-          if (retries >= 6) clearInterval(retryInterval);
-        }, 200);
+        if (savedPos) {
+          var target = parseInt(savedPos, 10);
+          var retries = 0;
+          var iv = setInterval(function () {
+            window.scrollTo(0, target);
+            if (++retries >= 6) clearInterval(iv);
+          }, 200);
+        }
       });
 
-      // Failsafe: kalau 2.5 detik belum fade-in juga, paksa tampilkan
+      // Failsafe: kalau 3 detik masih putih, paksa tampil
       setTimeout(function () {
-        if (document.documentElement.style.opacity === '0') fadeIn();
-      }, 2500);
+        if (document.documentElement.style.opacity === '0') {
+          document.documentElement.classList.remove('is-restoring');
+          fadeIn();
+        }
+      }, 3000);
 
     } else {
-      // Navigasi baru / link baru — pastikan halaman langsung visible
+      // Navigasi baru / buka tab baru — langsung visible, hapus sisa state
+      document.documentElement.classList.remove('is-restoring');
       document.documentElement.style.opacity    = '';
       document.documentElement.style.transition = '';
-      // Hapus posisi tersimpan (kecuali ada flag kembali dari detail)
       if (!sessionStorage.getItem('doRestore')) {
         localStorage.removeItem(STORAGE_KEY);
       }
     }
 
-    // ── 6. Simpan posisi scroll ke localStorage (debounce 200ms)
-    var scrollTimer;
+    // ── Simpan posisi saat scroll (debounce 200ms)
+    var _st;
     window.addEventListener('scroll', function () {
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(function () {
+      clearTimeout(_st);
+      _st = setTimeout(function () {
         localStorage.setItem(STORAGE_KEY, String(window.scrollY));
       }, 200);
     }, { passive: true });
 
-    // ── 7. Simpan posisi tepat sebelum refresh/tutup (backup paling akurat)
+    // ── Simpan posisi tepat sebelum refresh (nilai paling akurat)
     window.addEventListener('beforeunload', function () {
       localStorage.setItem(STORAGE_KEY, String(window.scrollY));
     });
