@@ -1963,22 +1963,43 @@
       });
     }
 
-    // ── 3. Fungsi: bypass animasi reveal (.rv) untuk elemen di atas posisi scroll tujuan
-    //    agar tidak ada elemen yang muncul dari bawah / flash saat fade-in
+    // ── 3. Hitung posisi absolut elemen dari atas document (tidak bergantung scroll saat ini)
+    function getAbsoluteTop(el) {
+      var top = 0;
+      while (el) {
+        top += el.offsetTop || 0;
+        el   = el.offsetParent;
+      }
+      return top;
+    }
+
+    // ── 4. Bypass animasi reveal (.rv) untuk semua elemen yang ada
+    //    di atas atau dalam viewport tujuan (targetY ~ targetY + innerHeight)
+    //    Harus dipanggil SEBELUM window.scrollTo agar posisi absolut akurat
     function bypassRevealAbove(targetY) {
+      var viewportH = window.innerHeight;
       document.querySelectorAll('.rv').forEach(function (el) {
-        var elAbsTop = el.getBoundingClientRect().top + window.scrollY;
-        if (elAbsTop < targetY + window.innerHeight) {
+        // Pakai offsetTop chain — tidak terpengaruh posisi scroll saat ini
+        var elTop = getAbsoluteTop(el);
+        // Bypass kalau elemen ada di atas batas bawah viewport tujuan
+        if (elTop < targetY + viewportH) {
           el.style.transition = 'none';
+          el.style.opacity    = '1';
+          el.style.transform  = 'none';
           el.classList.add('on');
+          // Kembalikan kontrol ke CSS setelah 2 frame
           requestAnimationFrame(function () {
-            requestAnimationFrame(function () { el.style.transition = ''; });
+            requestAnimationFrame(function () {
+              el.style.transition = '';
+              el.style.opacity    = '';
+              el.style.transform  = '';
+            });
           });
         }
       });
     }
 
-    // ── 4. Fungsi utama: set scroll → bypass reveal → fade in
+    // ── 5. Fungsi utama: bypass reveal → set scroll → fade in
     var _restoreDone = false;
     function restoreScroll(savedPos, doFade) {
       if (_restoreDone) return;
@@ -1996,13 +2017,13 @@
       document.documentElement.style.scrollBehavior = 'auto';
       document.body.style.scrollBehavior            = 'auto';
 
-      // Bypass animasi reveal agar tidak ada elemen bergerak saat fade-in
+      // Bypass reveal dulu (saat scrollY masih 0, offsetTop masih akurat)
       bypassRevealAbove(targetY);
 
-      // Set posisi scroll
+      // Lalu set posisi scroll
       window.scrollTo(0, targetY);
 
-      // Setelah 2 frame (browser selesai paint), fade-in halus
+      // Setelah 2 frame (browser selesai paint di posisi yang benar), fade-in halus
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           if (doFade) fadeIn();
