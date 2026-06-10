@@ -4,8 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SMK Negeri 2 Sragen — Excellent, Competent, Character</title>
-  <!-- Disable browser default scroll restoration agar scroll persistence custom bisa bekerja -->
-  <script>if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }</script>
+  <!-- Scroll persistence: disable browser default & sembunyikan body sesaat agar restore tidak kelihatan kaku -->
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    // Kalau ini reload atau back/forward, sembunyikan body dulu sebelum render
+    // supaya proses restore scroll tidak kelihatan (nanti di-fade-in setelah posisi sudah benar)
+    var _snNavType = (performance.getEntriesByType('navigation')[0] || {}).type;
+    if (_snNavType === 'reload' || _snNavType === 'back_forward') {
+      var _snHasSaved = !!localStorage.getItem('smkn2_scroll_pos');
+      if (_snHasSaved) {
+        document.documentElement.style.opacity = '0';
+        document.documentElement.style.transition = 'none';
+      }
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
@@ -1922,97 +1934,134 @@
 
   // ══════════════════════════════════════════════════════
   // ── SCROLL PERSISTENCE — tetap di posisi yang sama saat refresh
+  //    dengan fade-in halus agar tidak kelihatan kaku
   // ══════════════════════════════════════════════════════
   (function () {
     var STORAGE_KEY = 'smkn2_scroll_pos';
+    var FADE_DURATION = 280; // ms — durasi fade-in saat restore
 
     // ── 1. Deteksi tipe navigasi
     var navEntry = performance.getEntriesByType('navigation')[0];
     var navType  = navEntry ? navEntry.type : '';
-    // 'reload'    = F5 / Ctrl+R / refresh button
-    // 'navigate'  = ketik URL baru / klik link dari luar
-    // 'back_forward' = tombol back/forward browser
-
     var isReload      = navType === 'reload';
     var isBackForward = navType === 'back_forward';
 
-    // ── 2. Fungsi: bypass animasi reveal untuk semua elemen di atas target scroll
-    //    Ini penting agar konten tidak "lompat" / flash saat restore posisi
+    // ── 2. Fungsi: fade-in halus setelah scroll diset
+    function fadeIn() {
+      // Aktifkan transisi opacity
+      document.documentElement.style.transition = 'opacity ' + FADE_DURATION + 'ms ease';
+      // Pastikan transisi terpasang dulu sebelum ubah opacity
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          document.documentElement.style.opacity = '1';
+          // Bersihkan style inline setelah selesai
+          setTimeout(function () {
+            document.documentElement.style.transition = '';
+            document.documentElement.style.opacity = '';
+          }, FADE_DURATION + 50);
+        });
+      });
+    }
+
+    // ── 3. Fungsi: bypass animasi reveal (.rv) untuk elemen di atas posisi scroll tujuan
+    //    agar tidak ada elemen yang muncul dari bawah / flash saat fade-in
     function bypassRevealAbove(targetY) {
       document.querySelectorAll('.rv').forEach(function (el) {
-        var rect = el.getBoundingClientRect();
-        var elTop = rect.top + targetY; // posisi absolut elemen dari atas halaman
-        if (elTop < targetY + window.innerHeight) {
-          // Elemen ini ada di atas atau dalam viewport tujuan — langsung tampilkan tanpa animasi
+        var elAbsTop = el.getBoundingClientRect().top + window.scrollY;
+        if (elAbsTop < targetY + window.innerHeight) {
           el.style.transition = 'none';
           el.classList.add('on');
-          // Kembalikan transisi setelah browser selesai render frame ini
           requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              el.style.transition = '';
-            });
+            requestAnimationFrame(function () { el.style.transition = ''; });
           });
         }
       });
     }
 
-    // ── 3. Fungsi utama: restore scroll ke posisi tersimpan
-    function restoreScroll(savedPos) {
-      if (savedPos === null || savedPos === undefined) return;
+    // ── 4. Fungsi utama: set scroll → bypass reveal → fade in
+    var _restoreDone = false;
+    function restoreScroll(savedPos, doFade) {
+      if (_restoreDone) return;
+      if (savedPos === null || savedPos === undefined) {
+        if (doFade) fadeIn();
+        return;
+      }
       var targetY = parseInt(savedPos, 10);
-      if (isNaN(targetY) || targetY <= 0) return;
+      if (isNaN(targetY) || targetY <= 0) {
+        if (doFade) fadeIn();
+        return;
+      }
 
-      // Bypass animasi reveal untuk elemen di atas posisi tujuan
+      // Matikan smooth scroll bawaan sementara
+      document.documentElement.style.scrollBehavior = 'auto';
+      document.body.style.scrollBehavior            = 'auto';
+
+      // Bypass animasi reveal agar tidak ada elemen bergerak saat fade-in
       bypassRevealAbove(targetY);
 
-      // Matikan smooth scroll sementara agar tidak ada efek "meluncur" saat restore
-      document.documentElement.style.scrollBehavior = 'auto';
-      document.body.style.scrollBehavior = 'auto';
-
-      // Scroll langsung ke posisi — pakai multiple attempt untuk memastikan berhasil
-      // (konten Firebase bisa belum selesai render saat pertama kali)
+      // Set posisi scroll
       window.scrollTo(0, targetY);
 
-      var attempts = 0;
-      var maxAttempts = 8;
-      var interval = setInterval(function () {
-        attempts++;
-        window.scrollTo(0, targetY);
-        if (attempts >= maxAttempts) {
-          clearInterval(interval);
-          // Kembalikan smooth scroll
+      // Setelah 2 frame (browser selesai paint), fade-in halus
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (doFade) fadeIn();
+          _restoreDone = true;
+          // Kembalikan smooth scroll setelah fade selesai
           setTimeout(function () {
             document.documentElement.style.scrollBehavior = '';
-            document.body.style.scrollBehavior = '';
-          }, 80);
-        }
-      }, 80);
+            document.body.style.scrollBehavior            = '';
+          }, FADE_DURATION + 60);
+        });
+      });
     }
 
-    // ── 4. Jalankan restore kalau ini reload atau back/forward
+    // ── 5. Jalankan restore kalau ini reload atau back/forward
     if (isReload || isBackForward) {
       var savedPos = localStorage.getItem(STORAGE_KEY);
-      // Restore segera (sebelum paint pertama selesai)
-      restoreScroll(savedPos);
-      // Restore lagi setelah DOMContentLoaded kalau belum sempat
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-          restoreScroll(savedPos);
-        });
+      var needFade = document.documentElement.style.opacity === '0'; // body sudah disembunyikan di <head>
+
+      // Restore setelah DOM siap
+      function doRestore() {
+        if (_restoreDone) return;
+        restoreScroll(savedPos, true);
       }
-      // Restore sekali lagi setelah semua resource load (termasuk Firebase)
+
+      // Coba restore sesegera mungkin
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', doRestore);
+      } else {
+        doRestore();
+      }
+
+      // Retry setelah semua resource + Firebase selesai render
       window.addEventListener('load', function () {
-        restoreScroll(savedPos);
+        if (!_restoreDone) doRestore();
+        // Ekstra: scroll ulang setelah Firebase render konten (max 1.2 detik)
+        var retries = 0;
+        var retryInterval = setInterval(function () {
+          retries++;
+          if (savedPos) window.scrollTo(0, parseInt(savedPos, 10));
+          if (retries >= 6) clearInterval(retryInterval);
+        }, 200);
       });
+
+      // Failsafe: kalau 2.5 detik belum fade-in juga, paksa tampilkan
+      setTimeout(function () {
+        if (document.documentElement.style.opacity === '0') fadeIn();
+      }, 2500);
+
     } else {
-      // Navigasi baru: hapus posisi tersimpan (kecuali kalau ada flag kembali dari detail)
-      var doRestore = sessionStorage.getItem('doRestore');
-      if (!doRestore) {
+      // Navigasi baru / link baru — pastikan halaman langsung visible
+      document.documentElement.style.opacity    = '';
+      document.documentElement.style.transition = '';
+      // Hapus posisi tersimpan (kecuali ada flag kembali dari detail)
+      if (!sessionStorage.getItem('doRestore')) {
         localStorage.removeItem(STORAGE_KEY);
       }
     }
 
-    // ── 5. Simpan posisi scroll ke localStorage setiap user scroll (debounce 200ms)
+    // ── 6. Simpan posisi scroll ke localStorage (debounce 200ms)
     var scrollTimer;
     window.addEventListener('scroll', function () {
       clearTimeout(scrollTimer);
@@ -2021,7 +2070,7 @@
       }, 200);
     }, { passive: true });
 
-    // ── 6. Simpan posisi sebelum halaman ditutup/refresh (sebagai backup)
+    // ── 7. Simpan posisi tepat sebelum refresh/tutup (backup paling akurat)
     window.addEventListener('beforeunload', function () {
       localStorage.setItem(STORAGE_KEY, String(window.scrollY));
     });
