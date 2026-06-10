@@ -2017,7 +2017,7 @@
 <!-- ── Firebase: update 5 section dari Firestore ── -->
 <script type="module">
   import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, increment }
+  import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, increment, setDoc }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const app = initializeApp({
@@ -2307,7 +2307,7 @@
     if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; }
 
     try {
-      await updateDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) });
+      await setDoc(doc(db, 'polling', _pollId), { ['votes' + idx]: increment(1) }, { merge: true });
       localStorage.setItem('voted_' + _pollId, String(idx));
 
       // Sembunyikan form & tombol

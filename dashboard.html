@@ -691,7 +691,7 @@
       { judul:'Orientasi Siswa Baru (MPLS) TA 2025/2026 — Pendaftaran Panitia Dibuka', kategori:'Kesiswaan', tanggal:'2026-05-15', isi:'OSIS SMKN 2 Sragen membuka pendaftaran panitia Masa Pengenalan Lingkungan Sekolah (MPLS) Tahun Ajaran 2025/2026. MPLS akan dilaksanakan pada minggu pertama masuk sekolah di bulan Juli 2026 dan diperuntukkan bagi seluruh siswa baru kelas X.\n\nSiswa kelas XI yang berminat menjadi panitia MPLS dapat mendaftarkan diri melalui formulir yang tersedia di sekretariat OSIS atau mengisi form digital yang dapat diakses melalui link yang disebarkan oleh pengurus OSIS di grup kelas masing-masing. Pendaftaran dibuka mulai 15 Mei hingga 31 Mei 2026.\n\nPersyaratan menjadi panitia MPLS: siswa kelas XI aktif, memiliki nilai sikap minimal B (Baik), tidak sedang menjalani sanksi akademik, mendapat persetujuan orang tua, dan bersedia mengikuti seluruh rangkaian pelatihan panitia yang dijadwalkan pada bulan Juni 2026.\n\nMPLS SMKN 2 Sragen dirancang sebagai kegiatan edukatif dan menyenangkan yang bebas dari perpeloncoan. Seluruh rangkaian kegiatan telah mendapat persetujuan dari pihak sekolah dan bertujuan untuk membantu siswa baru mengenal lingkungan, fasilitas, program keahlian, dan kegiatan ekstrakurikuler yang tersedia di SMKN 2 Sragen.', status:'Aktif' },
     ],
     polling: [
-      { pertanyaan:'Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?', pilihan1:'Lab Komputer & Jaringan', pilihan2:'Bengkel Praktik', pilihan3:'Perpustakaan Digital', pilihan4:'Kantin & Area Istirahat', status:'Aktif' },
+      { pertanyaan:'Menurut kamu, fasilitas mana yang perlu ditingkatkan di SMKN 2 Sragen?', pilihan1:'Lab Komputer & Jaringan', pilihan2:'Bengkel Praktik', pilihan3:'Perpustakaan Digital', pilihan4:'Kantin & Area Istirahat', status:'Aktif', votes0:0, votes1:0, votes2:0, votes3:0 },
     ],
   };
 
@@ -815,7 +815,7 @@
     if (col==='berita')     return f('Judul Berita','judul',d.judul)+sl('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sl('Status','status',['Publish','Draft'],d.status);
     if (col==='galeri')     return f('Judul / Caption','judul',d.judul)+f('URL Foto','foto',d.foto)+sl('Kategori','kategori',['Gedung','Kegiatan','Prestasi','Praktik','Wisuda','Lainnya'],d.kategori)+sl('Status','status',['Tampil','Sembunyikan'],d.status);
     if (col==='pengumuman') return f('Judul','judul',d.judul)+sl('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+f('URL Foto (opsional)','foto',d.foto)+sl('Status','status',['Aktif','Arsip'],d.status);
-    if (col==='polling')    return ta('Pertanyaan','pertanyaan',d.pertanyaan)+f('Pilihan 1','pilihan1',d.pilihan1)+f('Pilihan 2','pilihan2',d.pilihan2)+f('Pilihan 3','pilihan3',d.pilihan3)+f('Pilihan 4','pilihan4',d.pilihan4)+sl('Status','status',['Aktif','Tutup'],d.status);
+    if (col==='polling')    return ta('Pertanyaan','pertanyaan',d.pertanyaan)+f('Pilihan 1','pilihan1',d.pilihan1)+f('Pilihan 2','pilihan2',d.pilihan2)+f('Pilihan 3','pilihan3',d.pilihan3)+f('Pilihan 4','pilihan4',d.pilihan4)+sl('Status','status',['Aktif','Tutup'],d.status)+'<div class="field"><label style=\'color:#e53e3e;font-size:12px;\'>⚠️ Reset votes ke 0 saat simpan? <input type="checkbox" name="resetVotes" /></label></div>';
     return '<p>Form tidak tersedia.</p>';
   }
 
@@ -836,6 +836,18 @@
     const inputs = document.getElementById('modalBody').querySelectorAll('input,textarea,select');
     const data = {}; inputs.forEach(el => { if (el.name) data[el.name] = el.value; });
     data.updatedAt = serverTimestamp();
+    // Reset votes kalau checkbox dicentang
+    const resetVotes = document.querySelector('input[name="resetVotes"]');
+    if (resetVotes && resetVotes.checked) {
+      data.votes0 = 0; data.votes1 = 0; data.votes2 = 0; data.votes3 = 0;
+    }
+    // Pastikan votes selalu ada saat create baru
+    if (!window._curId && window._curCol === 'polling') {
+      data.votes0 = data.votes0 || 0;
+      data.votes1 = data.votes1 || 0;
+      data.votes2 = data.votes2 || 0;
+      data.votes3 = data.votes3 || 0;
+    }
     try {
       if (window._curId) { await updateDoc(doc(db, window._curCol, window._curId), data); }
       else { data.createdAt = serverTimestamp(); await addDoc(collection(db, window._curCol), data); }
