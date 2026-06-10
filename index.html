@@ -106,6 +106,17 @@
       transition: background .2s, transform .2s !important;
     }
     .nav-cta:hover { background: var(--navy-lt) !important; transform: translateY(-1px) !important; }
+    /* Tombol hamburger — hidden di desktop */
+    .nav-hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 9px;
+      align-items: center; justify-content: center;
+      font-size: 16px; color: var(--text-2);
+      transition: background .2s, color .2s;
+      flex-shrink: 0;
+    }
+    .nav-hamburger:hover { background: var(--navy-dim); color: var(--navy); }
 
 
     /* ── HERO ── */
@@ -602,7 +613,7 @@
       display: flex; align-items: center; gap: 18px;
       margin-bottom: 20px; position: relative; overflow: hidden;
       /* Fix overflow di mobile */
-      max-width: 100%; box-sizing: border-box;
+      max-width: 100%; box-sizing: border-box; width: 100%;
     }
     .info-alert::before {
       content: ''; position: absolute; right: -20px; top: -20px;
@@ -617,8 +628,8 @@
     }
     .info-alert-body { flex: 1; min-width: 0; overflow: hidden; }
     .info-alert-tag { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 4px; }
-    .info-alert-title { font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .info-alert-date { font-size: 11.5px; color: rgba(255,255,255,.6); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .info-alert-title { font-size: 14.5px; font-weight: 700; color: #fff; line-height: 1.45; word-break: break-word; overflow-wrap: break-word; }
+    .info-alert-date { font-size: 11.5px; color: rgba(255,255,255,.6); margin-top: 4px; word-break: break-word; overflow-wrap: break-word; }
     .info-alert-arrow { color: rgba(255,255,255,.5); font-size: 14px; flex-shrink: 0; }
 
     .info-card {
@@ -626,9 +637,10 @@
       border-radius: var(--r-lg); padding: 16px 20px;
       display: flex; align-items: flex-start; gap: 14px;
       margin-bottom: 10px; cursor: pointer;
-      transition: border-color .2s, box-shadow .2s, transform .2s;
+      transition: border-color .2s, box-shadow .2s;
+      overflow: hidden; width: 100%; box-sizing: border-box;
     }
-    .info-card:hover { border-color: var(--navy); box-shadow: 0 4px 16px rgba(26,53,102,.1); transform: translateX(4px); }
+    .info-card:hover { border-color: var(--navy); box-shadow: 0 4px 16px rgba(26,53,102,.1); }
     .info-card-dot {
       width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
       background: var(--navy); margin-top: 6px;
@@ -980,18 +992,32 @@
       /* ── Section padding lebih compact */
       .about, .vismis, .jurusan, .fasil, .prestasi,
       .berita, .testi, .program, .pengumuman,
-      .bkk, .stats-section { padding: 64px 0; }
+      .bkk, .stats-section, .galeri,
+      .agenda-section, .poll-section { padding: 56px 0; }
 
-      /* ── Navbar */
-      .nav-inner          { padding: 0 12px; }
+      /* ── Navbar mobile: logo + hamburger + CTA ikon */
+      .nav-inner          { padding: 0 12px; overflow: visible; }
       .nav-logo-text      { font-size: 12.5px; }
       .nav-logo-sub       { display: none; }
       .nav-logo-icon      { width: 36px; height: 36px; border-radius: 8px; }
-      /* Search icon disembunyikan di mobile agar tidak mepet */
+      /* Sembunyikan menu horizontal, tampilkan dropdown via hamburger */
+      .nav-menu           { display: none; }
+      .nav-menu.open      {
+        display: flex; flex-direction: column; align-items: stretch;
+        position: fixed; top: 64px; left: 0; right: 0;
+        background: rgba(255,255,255,.98); backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--gray-2);
+        box-shadow: 0 8px 24px rgba(26,53,102,.12);
+        padding: 10px 16px 16px; gap: 2px; z-index: 998;
+        max-height: calc(100vh - 64px); overflow-y: auto;
+      }
+      .nav-menu.open a    { font-size: 14px; padding: 10px 14px; border-radius: 10px; }
+      /* Tombol hamburger */
+      .nav-hamburger      { display: flex; align-items: center; justify-content: center; }
+      /* Search icon disembunyikan di mobile */
       .nav-search-btn     { display: none; }
-      /* CTA hanya tampil ikon + teks pendek */
-      .nav-cta            { padding: 6px 12px !important; font-size: 11.5px !important; margin-left: 4px; white-space: nowrap; }
-
+      /* CTA: tampilkan teks pendek */
+      .nav-cta            { padding: 7px 14px !important; font-size: 12px !important; margin-left: 4px; white-space: nowrap; flex-shrink: 0; }
       /* ── Hero */
       .hero-inner         { padding: 60px 20px; }
       .hero-desc          { font-size: 15px; }
@@ -1043,34 +1069,45 @@
       .berita-grid        { grid-template-columns: 1fr; gap: 20px; }
       .berita-main-img    { height: 200px; }
 
-      /* ── Galeri mobile: 2 kolom rata, semua span di-reset */
-      .galeri-mosaic      { gap: 8px; }
-      .galeri-row         { gap: 8px; }
+      /* ── Galeri mobile: susun flex column, semua item sama tinggi, tanpa space kosong */
+      .galeri-mosaic      { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .galeri-row         { display: contents; }
       .galeri-row-1,
-      .galeri-row-2       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .galeri-row-2       { display: contents; }
       .galeri-row-1 .gi-0,
       .galeri-row-1 .gi-1,
       .galeri-row-1 .gi-2,
+      .galeri-row-1 .gi-3,
       .galeri-row-2 .gi-0,
       .galeri-row-2 .gi-1,
       .galeri-row-2 .gi-2,
-      .galeri-row-2 .gi-3 { grid-column: span 1; grid-row: span 1; }
-      .galeri-row-1 .gi-3,
-      .galeri-row-2 .gi-4 { grid-column: span 2; grid-row: span 1; }
-      .galeri-row .galeri-item { min-height: 140px; }
+      .galeri-row-2 .gi-3,
+      .galeri-row-2 .gi-4 { grid-column: span 1; grid-row: span 1; }
+      .galeri-mosaic .galeri-item { min-height: 130px; position: relative; }
 
       /* ── Testimonial */
       .testi-grid         { grid-template-columns: 1fr; gap: 16px; }
       .tcard              { min-height: 300px; }
 
       /* ── Pengumuman */
-      .info-alert         { padding: 20px 18px; gap: 14px; border-radius: var(--r-lg); }
-      .info-alert-title   { font-size: 13.5px; }
+      .info-alert         { padding: 16px 14px; gap: 12px; border-radius: var(--r-lg); align-items: flex-start; }
+      .info-alert-ico     { width: 36px; height: 36px; font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+      .info-alert-title   { font-size: 13px; white-space: normal; }
+      .info-alert-date    { font-size: 11px; white-space: normal; }
+      .info-alert-arrow   { display: none; }
+      .info-card          { padding: 12px 14px; gap: 10px; }
+      .info-card-snippet  { white-space: normal; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+      .info-card-top      { flex-wrap: wrap; }
+      .ppdb-box           { position: static; padding: 20px 16px; }
 
       /* ── Agenda */
-      .agenda-grid        { grid-template-columns: 1fr; gap: 20px; }
+      .agenda-grid        { grid-template-columns: 1fr; gap: 16px; }
+      .cal-widget         { padding: 20px 16px; }
+      .agenda-item        { padding: 14px 16px; gap: 12px; }
 
       /* ── Poll */
+      .poll-widget        { padding: 24px 18px; }
+      .poll-info-box      { padding: 24px 18px; }
       .poll-grid          { grid-template-columns: 1fr; gap: 20px; }
       .poll-info-stats    { grid-template-columns: repeat(2,1fr); gap: 12px; }
 
@@ -1079,15 +1116,20 @@
       .stat-num           { font-size: 2.2rem; }
 
       /* ── Footer */
-      .footer-grid        { grid-template-columns: 1fr; gap: 32px; }
+      .footer-grid        { grid-template-columns: 1fr; gap: 28px; }
+      .footer             { padding: 40px 0 0; }
       .foot-bottom        { flex-direction: column; text-align: center; }
 
       /* ── Lightbox */
       .lightbox-img       { min-width: 90vw; min-height: 220px; }
 
       /* ── Section header */
-      .s-header           { margin-bottom: 36px; }
+      .s-header           { margin-bottom: 28px; }
       .s-desc             { font-size: 14px; }
+      /* Kurangi gap header berita dan bkk */
+      .berita .rv[style], .bkk-header-row { margin-bottom: 24px !important; }
+      /* Kurangi margin prestasi banner */
+      .prestasi-banner    { margin-bottom: 28px; }
     }
 
     /* ══════════════════════════════════════
@@ -1098,9 +1140,9 @@
       .container          { padding: 0 16px; }
 
       /* ── Navbar lebih compact */
-      .nav-inner          { padding: 0 12px; }
-      .nav-menu a         { font-size: 12px; padding: 5px 9px; }
-      .nav-cta            { padding: 6px 10px !important; font-size: 11px !important; }
+      .nav-inner          { padding: 0 10px; }
+      .nav-menu a         { font-size: 13.5px; padding: 10px 12px; }
+      .nav-cta            { padding: 6px 11px !important; font-size: 11.5px !important; }
       .nav-logo-text      { font-size: 12px; }
 
       /* ── Hero */
@@ -1143,6 +1185,17 @@
       /* ── Stats */
       .stat-num           { font-size: 2rem; }
       .stats-inner p      { font-size: 13.5px; }
+
+      /* ── Section padding lebih kecil lagi di HP sangat kecil */
+      .about, .vismis, .jurusan, .fasil, .prestasi,
+      .berita, .testi, .program, .pengumuman,
+      .bkk, .stats-section, .galeri,
+      .agenda-section, .poll-section { padding: 44px 0; }
+      /* Kurangi gap header section */
+      .s-header           { margin-bottom: 22px; }
+      /* Footer lebih compact */
+      .footer             { padding: 32px 0 0; }
+      .footer-grid        { gap: 22px; margin-bottom: 28px; }
     }
   </style>
 </head>
@@ -1159,7 +1212,7 @@
         <span class="nav-logo-sub">Kabupaten Sragen · Jawa Tengah</span>
       </div>
     </a>
-    <div class="nav-menu">
+    <div class="nav-menu" id="navMenu">
       <a href="#tentang">Profil</a>
       <a href="#visi-misi">Visi &amp; Misi</a>
       <a href="#jurusan">Program</a>
@@ -1178,6 +1231,7 @@
         <button class="nav-search-btn" id="searchBtn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
       </div>
       <a href="#kontak" class="nav-cta">Hubungi Kami</a>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleNavMenu()" aria-label="Menu"><i class="fas fa-bars" id="hamburgerIcon"></i></button>
     </div>
   </div>
 </nav>
@@ -2211,6 +2265,26 @@
       alert('Mencari: ' + e.target.value + '\n(Fitur pencarian akan terhubung ke database sekolah)');
     }
     if (e.key === 'Escape') toggleSearch();
+  });
+
+  // ── Hamburger menu toggle (mobile)
+  function toggleNavMenu() {
+    const menu = document.getElementById('navMenu');
+    const icon = document.getElementById('hamburgerIcon');
+    const isOpen = menu.classList.toggle('open');
+    icon.className = isOpen ? 'fas fa-times' : 'fas fa-bars';
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+  // Tutup menu saat link di-klik
+  document.getElementById('navMenu').querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      const menu = document.getElementById('navMenu');
+      if (menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        document.getElementById('hamburgerIcon').className = 'fas fa-bars';
+        document.body.style.overflow = '';
+      }
+    });
   });
 
   // ── Lightbox
