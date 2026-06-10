@@ -1043,20 +1043,20 @@
       .berita-grid        { grid-template-columns: 1fr; gap: 20px; }
       .berita-main-img    { height: 200px; }
 
-      /* ── Galeri mobile: grid sederhana 2 kolom, tidak ada span yang bikin slot kosong */
+      /* ── Galeri mobile: 2 kolom rata, semua span di-reset */
       .galeri-mosaic      { gap: 8px; }
       .galeri-row         { gap: 8px; }
-      .galeri-row-1       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-      .galeri-row-1 .gi-0 { grid-row: span 1; }
-      .galeri-row-1 .gi-1 { }
-      .galeri-row-1 .gi-2 { }
-      .galeri-row-1 .gi-3 { grid-column: span 2; }
+      .galeri-row-1,
       .galeri-row-2       { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-      .galeri-row-2 .gi-0 { }
-      .galeri-row-2 .gi-1 { }
-      .galeri-row-2 .gi-2 { grid-row: span 1; }
-      .galeri-row-2 .gi-3 { grid-row: span 1; }
-      .galeri-row-2 .gi-4 { grid-column: span 2; }
+      .galeri-row-1 .gi-0,
+      .galeri-row-1 .gi-1,
+      .galeri-row-1 .gi-2,
+      .galeri-row-2 .gi-0,
+      .galeri-row-2 .gi-1,
+      .galeri-row-2 .gi-2,
+      .galeri-row-2 .gi-3 { grid-column: span 1; grid-row: span 1; }
+      .galeri-row-1 .gi-3,
+      .galeri-row-2 .gi-4 { grid-column: span 2; grid-row: span 1; }
       .galeri-row .galeri-item { min-height: 140px; }
 
       /* ── Testimonial */
@@ -2386,12 +2386,14 @@
       });
     if (!sorted.length) return;
 
-    const tampil = sorted.slice(0, 9);
+    // Filter hanya yang punya foto valid
+    const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
+    const tampil = withFoto.slice(0, 9);
 
     // helper buat item
     const gi = (d, cls='') => `
       <div class="galeri-item ${cls}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${(d.foto||'')}')">
-        <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.style.display='none'" />
+        <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.closest('.galeri-item').style.display='none'" />
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
       </div>`;
 
