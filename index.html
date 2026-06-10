@@ -50,13 +50,9 @@
 
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
-    /* ── PAGE ENTRY — fade-in halus seluruh halaman saat pertama load ── */
-    @keyframes pageEntry {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    html.page-ready {
-      animation: pageEntry .45s cubic-bezier(.4,0,.2,1) both;
+    /* ── PAGE ENTRY — fade-in halus hanya saat perlu (dikontrol JS via inline transition) ── */
+    html.page-fading {
+      transition: opacity .4s cubic-bezier(.4,0,.2,1);
     }
 
     /* REVEAL */
@@ -1940,38 +1936,38 @@
   }, { threshold: 0.4 });
   sections.forEach(s => activeObs.observe(s));
 
-  // ── SCROLL PERSISTENCE + PAGE ENTRY PREMIUM ─────────────
-  //  Alur saat refresh:
-  //  1. Halaman mulai dari ATAS (scrollY = 0), opacity masih 0
-  //  2. Animasi .rv jalan natural dari atas (muncul dari bawah ke atas)
-  //  3. Setelah 400ms (rv atas sudah muncul), smooth scroll ke posisi tersimpan
-  //  4. Sepanjang scroll, konten di viewport langsung muncul via IntersectionObserver
-  //  Hasilnya: elegan, tidak kedip, tidak lompat — seperti website premium
-  // ─────────────────────────────────────────────────────────
+  // ── SCROLL PERSISTENCE ───────────────────────────────────
   (function () {
-    var KEY          = 'smkn2_scroll_pos';
-    var navType      = ((performance.getEntriesByType('navigation')[0]) || {}).type;
-    var isReload     = navType === 'reload';
-    var isBackFwd    = navType === 'back_forward';
-    var isNewVisit   = !isReload && !isBackFwd;
-    var saved        = localStorage.getItem(KEY);
-    var targetY      = saved ? Math.max(0, parseInt(saved, 10)) : 0;
-    var hasTarget    = (isReload || isBackFwd) && targetY > 0;
+    var KEY        = 'smkn2_scroll_pos';
+    var navType    = ((performance.getEntriesByType('navigation')[0]) || {}).type;
+    var isReload   = navType === 'reload';
+    var isBackFwd  = navType === 'back_forward';
+    var isNewVisit = !isReload && !isBackFwd;
+    var saved      = localStorage.getItem(KEY);
+    var targetY    = saved ? Math.max(0, parseInt(saved, 10)) : 0;
+    // hasTarget: hanya kalau perlu scroll ke section selain hero
+    var hasTarget  = (isReload || isBackFwd) && targetY > 200;
 
-    // ── Aktifkan page-ready: lepas opacity 0, jalankan animasi pageEntry
+    // ── Fade-in: pakai CSS transition (bukan animation), opacity 0→1
+    //    Hanya dipanggil kalau halaman memang disembunyikan dulu (hasTarget)
     function revealPage() {
       var html = document.documentElement;
-      html.style.opacity = '';          // lepas inline opacity → CSS animation ambil alih
-      html.classList.add('page-ready'); // trigger @keyframes pageEntry (.45s)
+      html.classList.add('page-fading');     // pasang transition
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          html.style.opacity = '1';           // trigger fade-in
+          setTimeout(function () {
+            html.classList.remove('page-fading');
+            html.style.opacity = '';
+          }, 450);
+        });
+      });
     }
 
-    // ── Smooth scroll premium ke posisi tersimpan
-    //    Dipanggil setelah halaman muncul + rv atas sempat animate
+    // ── Smooth scroll ke posisi tersimpan
     function scrollToSaved() {
-      // Nonaktifkan smooth html dulu — kita pakai window.scrollTo behavior:smooth sendiri
       document.documentElement.style.scrollBehavior = 'auto';
       window.scrollTo({ top: targetY, behavior: 'smooth' });
-      // Kembalikan scroll-behavior setelah selesai
       setTimeout(function () {
         document.documentElement.style.scrollBehavior = '';
       }, 1200);
@@ -1979,34 +1975,36 @@
 
     window.addEventListener('DOMContentLoaded', function () {
       if (isNewVisit) {
-        // ── Kunjungan baru / buka tab baru: langsung tampilkan
+        // Kunjungan baru: pastikan posisi tersimpan dihapus, halaman langsung visible
         if (!sessionStorage.getItem('doRestore')) localStorage.removeItem(KEY);
-        revealPage();
+        // Tidak perlu apa-apa — halaman sudah visible (tidak disembunyikan di <head>)
         return;
       }
 
-      // ── Refresh / back-forward
+      // Refresh / back-forward di hero (targetY <= 200):
+      // Tidak disembunyikan di <head>, tidak perlu fade — langsung visible, animasi .rv jalan normal
+      if (!hasTarget) {
+        window.scrollTo(0, 0);
+        return;
+      }
+
+      // Refresh / back-forward di section lain:
+      // Halaman sudah opacity:0 dari <head> → mulai dari atas → fade-in → smooth scroll
       window.scrollTo(0, 0);
       revealPage();
-
-      if (hasTarget) {
-        // User ada di section selain hero → smooth scroll ke sana setelah animasi entry
-        setTimeout(scrollToSaved, 500);
-      }
-      // Kalau targetY <= 200 (hero): cukup revealPage(), tidak perlu scroll — sudah di atas
+      setTimeout(scrollToSaved, 500);
     });
 
-    // ── Setelah Firebase selesai render, pastikan scroll sudah di posisi yang tepat
+    // Setelah Firebase render: pastikan posisi tetap tepat
     window.addEventListener('load', function () {
       if (hasTarget) {
-        // Scroll ulang kalau konten Firebase bikin layout berubah
         setTimeout(function () {
           window.scrollTo({ top: targetY, behavior: 'smooth' });
         }, 800);
       }
     });
 
-    // ── Simpan posisi setiap scroll (debounce 200ms)
+    // Simpan posisi setiap scroll (debounce 200ms)
     var _t;
     window.addEventListener('scroll', function () {
       clearTimeout(_t);
@@ -2015,7 +2013,7 @@
       }, 200);
     }, { passive: true });
 
-    // ── Simpan tepat sebelum refresh (nilai paling akurat)
+    // Simpan tepat sebelum refresh
     window.addEventListener('beforeunload', function () {
       localStorage.setItem(KEY, String(window.scrollY));
     });
