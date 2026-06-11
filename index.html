@@ -748,14 +748,18 @@
     .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
     .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
 
-    /* Baris 2: 2 kecil kiri + 1 besar tengah + 1 tinggi kanan + 1 ekstra bawah kiri */
-    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px 190px; }
-    .galeri-row-2 .gi-0 { }                                /* foto 5 */
-    .galeri-row-2 .gi-1 { }                                /* foto 6 */
-    .galeri-row-2 .gi-2 { grid-row: span 2; }              /* foto 7 — tengah tinggi */
-    .galeri-row-2 .gi-3 { grid-row: span 2; }              /* foto 8 — kanan tinggi */
-    .galeri-row-2 .gi-4 { grid-column: span 2; }           /* foto 9 — kiri bawah lebar */
-    .galeri-row-2 .gi-5 { grid-column: span 2; }           /* foto 10 — kiri bawah baris 3 */
+    /* Baris 2: layout 4 kolom × 2 baris, pas untuk 6 foto tanpa celah */
+    /* Kolom: 1fr 1fr 1.8fr 1.2fr | Baris: 190px 190px                 */
+    /* gi-0: kol1 baris1 | gi-1: kol2 baris1                           */
+    /* gi-2: kol3-4 baris1 (lebar) | gi-3: kol1 baris2                 */
+    /* gi-4: kol2 baris2 | gi-5: kol3-4 baris2 (lebar)                 */
+    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
+    .galeri-row-2 .gi-0 { }                                /* foto 5 — kol1 baris1 */
+    .galeri-row-2 .gi-1 { }                                /* foto 6 — kol2 baris1 */
+    .galeri-row-2 .gi-2 { grid-column: span 2; }           /* foto 7 — kol3-4 baris1 lebar */
+    .galeri-row-2 .gi-3 { }                                /* foto 8 — kol1 baris2 */
+    .galeri-row-2 .gi-4 { }                                /* foto 9 — kol2 baris2 */
+    .galeri-row-2 .gi-5 { grid-column: span 2; }           /* foto 10 — kol3-4 baris2 lebar */
 
     .galeri-item {
       border-radius: var(--r-md); overflow: hidden;
