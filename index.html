@@ -2473,7 +2473,9 @@
     // Filter hanya yang punya foto valid
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
     // 10 foto = genap di mobile 2 kolom (5 baris × 2), tanpa slot kosong
-    const tampil = withFoto.slice(0, 11);
+    // Desktop: 11 foto, Mobile: 10 foto (genap di 2 kolom)
+    const isMobile = window.innerWidth <= 768;
+    const tampil = withFoto.slice(0, isMobile ? 10 : 11);
 
     // helper buat item
     const gi = (d, cls='') => `
@@ -2484,8 +2486,8 @@
 
     // Baris 1: foto 0–3 (4 foto)
     const r1 = tampil.slice(0, 4);
-    // Baris 2: foto 4–10 (7 foto) — mengisi semua slot grid 4kol×3baris
-    const r2 = tampil.slice(4, 11);
+    // Baris 2: desktop 7 foto (mengisi grid 4kol×3baris), mobile 6 foto (grid 2kol × 3baris)
+    const r2 = tampil.slice(4);
 
     wrap.innerHTML = `
       <div class="galeri-row galeri-row-1">
