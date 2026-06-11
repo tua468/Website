@@ -748,18 +748,20 @@
     .galeri-row-1 .gi-2 { }                                /* foto 3 — kanan atas kanan */
     .galeri-row-1 .gi-3 { grid-column: span 2; }           /* foto 4 — kanan bawah lebar */
 
-    /* Baris 2: layout 4 kolom × 2 baris, pas untuk 6 foto tanpa celah */
-    /* Kolom: 1fr 1fr 1.8fr 1.2fr | Baris: 190px 190px                 */
-    /* gi-0: kol1 baris1 | gi-1: kol2 baris1                           */
-    /* gi-2: kol3-4 baris1 (lebar) | gi-3: kol1 baris2                 */
-    /* gi-4: kol2 baris2 | gi-5: kol3-4 baris2 (lebar)                 */
-    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px; }
-    .galeri-row-2 .gi-0 { }                                /* foto 5 — kol1 baris1 */
-    .galeri-row-2 .gi-1 { }                                /* foto 6 — kol2 baris1 */
-    .galeri-row-2 .gi-2 { grid-column: span 2; }           /* foto 7 — kol3-4 baris1 lebar */
-    .galeri-row-2 .gi-3 { }                                /* foto 8 — kol1 baris2 */
-    .galeri-row-2 .gi-4 { }                                /* foto 9 — kol2 baris2 */
-    .galeri-row-2 .gi-5 { grid-column: span 2; }           /* foto 10 — kol3-4 baris2 lebar */
+    /* Baris 2: 4 kolom × 3 baris, 7 foto mengisi semua slot               */
+    /* Kolom: 1fr 1fr 1.8fr 1.2fr | Baris: 190px 190px 190px             */
+    /* gi-0: kol1 baris1 | gi-1: kol2 baris1                             */
+    /* gi-2: kol3 baris1-2 (tinggi) | gi-3: kol4 baris1-2 (tinggi)       */
+    /* gi-4: kol1-2 baris3 (lebar) | gi-5: kol3-4 baris3 (lebar)         */
+    /* gi-6: kol1-2 baris2 (lebar) — mengisi sisa slot kol1-2 baris2     */
+    .galeri-row-2 { grid-template-columns: 1fr 1fr 1.8fr 1.2fr; grid-template-rows: 190px 190px 190px; }
+    .galeri-row-2 .gi-0 { }                                    /* foto 5  — kol1 baris1 */
+    .galeri-row-2 .gi-1 { }                                    /* foto 6  — kol2 baris1 */
+    .galeri-row-2 .gi-2 { grid-row: span 2; }                  /* foto 7  — kol3 baris1-2 tinggi */
+    .galeri-row-2 .gi-3 { grid-row: span 2; }                  /* foto 8  — kol4 baris1-2 tinggi */
+    .galeri-row-2 .gi-4 { grid-column: span 2; }               /* foto 9  — kol1-2 baris2 lebar */
+    .galeri-row-2 .gi-5 { grid-column: span 2; }               /* foto 10 — kol1-2 baris3 lebar */
+    .galeri-row-2 .gi-6 { grid-column: 3 / span 2; grid-row: 3; } /* foto 11 — kol3-4 baris3 */
 
     .galeri-item {
       border-radius: var(--r-md); overflow: hidden;
@@ -1089,7 +1091,8 @@
       .galeri-row-2 .gi-2,
       .galeri-row-2 .gi-3,
       .galeri-row-2 .gi-4,
-      .galeri-row-2 .gi-5 { grid-column: span 1; grid-row: span 1; }
+      .galeri-row-2 .gi-5,
+      .galeri-row-2 .gi-6 { grid-column: span 1; grid-row: span 1; }
       .galeri-mosaic .galeri-item { min-height: 130px; position: relative; }
 
       /* ── Testimonial */
@@ -2470,7 +2473,7 @@
     // Filter hanya yang punya foto valid
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
     // 10 foto = genap di mobile 2 kolom (5 baris × 2), tanpa slot kosong
-    const tampil = withFoto.slice(0, 10);
+    const tampil = withFoto.slice(0, 11);
 
     // helper buat item
     const gi = (d, cls='') => `
@@ -2479,11 +2482,10 @@
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
       </div>`;
 
-    // Baris 1: foto 0–3 (pola: besar kiri + 2 kecil + 1 lebar bawah)
+    // Baris 1: foto 0–3 (4 foto)
     const r1 = tampil.slice(0, 4);
-    // Baris 2: foto 4–9 (pola: 2 kecil + besar tengah + tinggi kanan + lebar bawah kiri + 1 extra)
-    // Di desktop: 5 foto dengan layout kompleks; di mobile: 6 foto grid 2 kolom = 3 baris penuh
-    const r2 = tampil.slice(4, 10);
+    // Baris 2: foto 4–10 (7 foto) — mengisi semua slot grid 4kol×3baris
+    const r2 = tampil.slice(4, 11);
 
     wrap.innerHTML = `
       <div class="galeri-row galeri-row-1">
@@ -2500,6 +2502,7 @@
         ${r2[3] ? gi(r2[3], 'gi-3') : ''}
         ${r2[4] ? gi(r2[4], 'gi-4') : ''}
         ${r2[5] ? gi(r2[5], 'gi-5') : ''}
+        ${r2[6] ? gi(r2[6], 'gi-6') : ''}
       </div>` : ''}`;
   });
 
