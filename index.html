@@ -2432,7 +2432,7 @@
       </div>`;
   });
 
-  // ── GALERI — CSS Grid dense, layout otomatis menyesuaikan jumlah foto
+  // ── GALERI — CSS Grid dense, pola fixed per jumlah foto, tidak ada slot kosong
   watchCol('galeri', data => {
     const wrap = document.getElementById('galeri-mosaic');
     if (!wrap) return;
@@ -2448,15 +2448,30 @@
     const withFoto = sorted.filter(d => d.foto && d.foto.trim() !== '');
     if (!withFoto.length) return;
 
-    // Pola featured berulang setiap 5 foto:
-    // posisi 0 → feat-xl (besar), posisi 2 → feat-h (tinggi), sisanya normal
-    // grid-auto-flow: dense mengisi celah otomatis
-    const featPattern = ['feat-xl', '', 'feat-h', '', ''];
+    // Ambil maks 10 foto untuk halaman utama
+    const tampil = withFoto.slice(0, 10);
+    const n = tampil.length;
 
-    // Batasi 10 foto di halaman utama — lihat semua via galeri.html
-    wrap.innerHTML = withFoto.slice(0, 10).map((d, i) => {
-      const feat = featPattern[i % featPattern.length];
-      return `<div class="galeri-item ${feat}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${d.foto||''}')">
+    // Pola kelas per-index, dihitung tepat mengisi grid 4 kolom tanpa sisa slot kosong
+    // feat-xl = 2col×2row (4 slot), feat-h = 1col×2row (2 slot),
+    // feat-w  = 2col×1row (2 slot), '' = 1col×1row (1 slot)
+    //
+    // Verifikasi slot tiap pola (baris grid 4 kolom = 4 slot/baris):
+    // n=8:  feat-xl(4) + ''(1)+''(1)+feat-h(2) | feat-xl(4)+''(1)+feat-w(2)+''(1) → 16 slot = 4 baris ✓
+    // n=9:  feat-xl(4)+''(1)+''(1)+feat-h(2) | feat-xl(4)+''(1)+''(1)+''(1)+feat-w(2) → 18? → pakai semua normal saja
+    // n=10: feat-xl(4)+''(1)+feat-h(2)+''(1) | feat-xl(4)+feat-h(2)+''(1)+''(1)+''(1)+''(1) → 20 slot = 5 baris ✓
+    const patterns = {
+       8: ['feat-xl','','','feat-h',  'feat-xl','','feat-w',''],
+      10: ['feat-xl','','feat-h','',  'feat-xl','feat-h','','','',''],
+    };
+
+    // Kalau tidak ada pola eksak → tampilkan semua normal (tidak ada span = tidak ada celah)
+    const pat = patterns[n];
+    const makeClass = i => pat ? (pat[i] || '') : '';
+
+    wrap.innerHTML = tampil.map((d, i) => {
+      const cls = makeClass(i);
+      return `<div class="galeri-item ${cls}" onclick="openLightbox('${(d.judul||'').replace(/'/g,"\\'")}','${d.foto||''}')">
         <img src="${d.foto||''}" alt="${d.judul||''}" loading="lazy" onerror="this.closest('.galeri-item').style.display='none'" />
         <div class="galeri-overlay"><span class="galeri-caption">${d.judul||''}</span></div>
       </div>`;
