@@ -637,7 +637,7 @@
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
   const firebaseConfig = {
@@ -876,42 +876,43 @@
   window.uploadFotoToStorage = async (input) => {
     const file = input.files[0];
     if (!file) return;
-    const statusEl   = document.getElementById('uploadStatus');
-    const urlHidden  = document.getElementById('fotoUrl');
-    const urlText    = document.getElementById('fotoUrlText');
-    const preview    = document.getElementById('fotoPreview');
+    const statusEl    = document.getElementById('uploadStatus');
+    const urlHidden   = document.getElementById('fotoUrl');
+    const urlText     = document.getElementById('fotoUrlText');
+    const preview     = document.getElementById('fotoPreview');
     const previewWrap = document.getElementById('fotoPreviewWrap');
 
     window._uploadInProgress = true;
     statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i>Mengupload...';
 
     try {
-      const ext  = file.name.split('.').pop().toLowerCase();
+      const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
       const path = `${window._curCol || 'uploads'}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
       const sRef = storageRef(storage, path);
-      const task = uploadBytesResumable(sRef, file);
 
-      task.on('state_changed',
-        (snap) => {
-          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
-          statusEl.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i>Mengupload ${pct}%...`;
-        },
-        (err) => {
-          statusEl.innerHTML = `<i class="fas fa-times-circle" style="color:#e53e3e;margin-right:4px;"></i>Gagal: ${err.message}`;
-          window._uploadInProgress = false;
-        },
-        async () => {
-          const url = await getDownloadURL(task.snapshot.ref);
-          urlHidden.value = url;
-          if (urlText) urlText.value = url;
-          preview.src = url;
-          previewWrap.style.display = 'block';
-          statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169;margin-right:4px;"></i>Upload berhasil!';
-          window._uploadInProgress = false;
-        }
-      );
+      const snapshot = await uploadBytes(sRef, file);
+      const url      = await getDownloadURL(snapshot.ref);
+
+      urlHidden.value = url;
+      if (urlText) urlText.value = url;
+      preview.src = url;
+      previewWrap.style.display = 'block';
+      statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169;margin-right:4px;"></i>Upload berhasil!';
+      window._uploadInProgress = false;
+
     } catch(e) {
-      statusEl.innerHTML = `<i class="fas fa-times-circle" style="color:#e53e3e;margin-right:4px;"></i>Gagal: ${e.message}`;
+      console.error('[Storage] error code:', e.code, '| message:', e.message);
+      const errMap = {
+        'storage/unauthorized':           '⛔ Akses ditolak — perbarui Firebase Storage Rules',
+        'storage/unauthenticated':        '🔒 Sesi login habis — silakan login ulang',
+        'storage/quota-exceeded':         '💾 Kuota Firebase Storage penuh',
+        'storage/canceled':               '❌ Upload dibatalkan',
+        'storage/invalid-checksum':       '📁 File rusak — coba upload ulang',
+        'storage/retry-limit-exceeded':   '⏱ Terlalu banyak percobaan — coba lagi nanti',
+        'storage/server-file-wrong-size': '⚠️ Ukuran file tidak sesuai — coba lagi',
+      };
+      const msg = errMap[e.code] || e.message || `Error tidak diketahui (${e.code})`;
+      statusEl.innerHTML = `<i class="fas fa-times-circle" style="color:#e53e3e;margin-right:4px;"></i>${msg}`;
       window._uploadInProgress = false;
     }
   };
