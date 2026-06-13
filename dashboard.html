@@ -637,6 +637,8 @@
   import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyAvkyQXtfQ3d4pfYxnOEuk1sq8QWArzWXY",
@@ -650,6 +652,7 @@
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+  const storage = getStorage(app);
 
   // ── Auth guard
   onAuthStateChanged(auth, user => {
@@ -831,17 +834,87 @@
   }
 
   // ── Form builder
+  function fotoField(val) {
+    const safe = (val||'').replace(/"/g, '&quot;');
+    return `<div class="field">
+      <label>Foto</label>
+      <div id="fotoPreviewWrap" style="margin-bottom:8px;border-radius:10px;overflow:hidden;max-height:140px;background:var(--gray-2);${val ? '' : 'display:none;'}">
+        <img id="fotoPreview" src="${safe}" style="width:100%;max-height:140px;object-fit:cover;display:block;" onerror="this.parentElement.style.display='none'" />
+      </div>
+      <input type="hidden" name="foto" id="fotoUrl" value="${safe}" />
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <label style="display:inline-flex;align-items:center;gap:7px;background:var(--navy);color:#fff;padding:8px 18px;border-radius:100px;font-size:12.5px;font-weight:700;cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <i class="fas fa-upload"></i> Upload Foto
+          <input type="file" accept="image/*" style="display:none;" onchange="window.uploadFotoToStorage(this)" />
+        </label>
+        <span id="uploadStatus" style="font-size:12px;color:var(--text-3);">
+          ${val
+            ? '<i class="fas fa-check-circle" style="color:#38a169;margin-right:4px;"></i>Foto tersimpan'
+            : 'Belum ada foto — upload atau tempel URL di bawah'}
+        </span>
+      </div>
+      <input type="text" id="fotoUrlText" placeholder="Atau tempel URL gambar di sini..."
+        value="${safe}"
+        style="margin-top:8px;width:100%;padding:8px 12px;border:1.5px solid var(--gray-3);border-radius:10px;font-size:13px;font-family:var(--sans);outline:none;"
+        oninput="document.getElementById('fotoUrl').value=this.value;var p=document.getElementById('fotoPreview');var w=document.getElementById('fotoPreviewWrap');if(this.value){p.src=this.value;w.style.display='block';}else{w.style.display='none';}" />
+    </div>`;
+  }
+
   function buildForm(col, d) {
     const f  = (lbl,name,val,type='text') => `<div class="field"><label>${lbl}</label><input type="${type}" name="${name}" value="${(val||'').toString().replace(/"/g,'&quot;')}" /></div>`;
     const ta = (lbl,name,val) => `<div class="field"><label>${lbl}</label><textarea name="${name}">${val||''}</textarea></div>`;
     const sl = (lbl,name,opts,val) => `<div class="field"><label>${lbl}</label><select name="${name}">${opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('')}</select></div>`;
-    if (col==='prestasi')   return sl('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sl('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan (singkat)','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number')+f('URL Foto (opsional)','foto',d.foto)+ta('Deskripsi (opsional — tampil di halaman detail)','deskripsi',d.deskripsi);
-    if (col==='berita')     return f('Judul Berita','judul',d.judul)+sl('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+f('URL Foto','foto',d.foto)+sl('Status','status',['Publish','Draft'],d.status);
-    if (col==='galeri')     return f('Judul / Caption','judul',d.judul)+f('URL Foto','foto',d.foto)+sl('Kategori','kategori',['Gedung','Kegiatan','Prestasi','Praktik','Wisuda','Lainnya'],d.kategori)+sl('Status','status',['Tampil','Sembunyikan'],d.status);
-    if (col==='pengumuman') return f('Judul','judul',d.judul)+sl('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+f('URL Foto (opsional)','foto',d.foto)+sl('Status','status',['Aktif','Arsip'],d.status);
+    if (col==='prestasi')   return sl('Medali','medal',['🥇','🥈','🥉','🏆','🎖️'],d.medal)+f('Nama Prestasi','nama',d.nama)+sl('Tingkat','tingkat',['Kabupaten','Provinsi','Nasional','Internasional'],d.tingkat)+ta('Keterangan (singkat)','keterangan',d.keterangan)+f('Tahun','tahun',d.tahun,'number')+fotoField(d.foto)+ta('Deskripsi (opsional — tampil di halaman detail)','deskripsi',d.deskripsi);
+    if (col==='berita')     return f('Judul Berita','judul',d.judul)+sl('Kategori','kategori',['Prestasi','Teknologi','Kesiswaan','Akademik','Lingkungan','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Ringkasan','ringkasan',d.ringkasan)+ta('Isi Berita','isi',d.isi)+fotoField(d.foto)+sl('Status','status',['Publish','Draft'],d.status);
+    if (col==='galeri')     return f('Judul / Caption','judul',d.judul)+fotoField(d.foto)+sl('Kategori','kategori',['Gedung','Kegiatan','Prestasi','Praktik','Wisuda','Lainnya'],d.kategori)+sl('Status','status',['Tampil','Sembunyikan'],d.status);
+    if (col==='pengumuman') return f('Judul','judul',d.judul)+sl('Kategori','kategori',['PPDB','Akademik','Kesiswaan','Administrasi','Umum'],d.kategori)+f('Tanggal','tanggal',d.tanggal,'date')+ta('Isi','isi',d.isi)+fotoField(d.foto)+sl('Status','status',['Aktif','Arsip'],d.status);
     if (col==='polling')    return ta('Pertanyaan','pertanyaan',d.pertanyaan)+f('Pilihan 1','pilihan1',d.pilihan1)+f('Pilihan 2','pilihan2',d.pilihan2)+f('Pilihan 3','pilihan3',d.pilihan3)+f('Pilihan 4','pilihan4',d.pilihan4)+sl('Status','status',['Aktif','Tutup'],d.status)+'<div class="field"><label style=\'color:#e53e3e;font-size:12px;\'>⚠️ Reset votes ke 0 saat simpan? <input type="checkbox" name="resetVotes" /></label></div>';
     return '<p>Form tidak tersedia.</p>';
   }
+
+  // ── Upload foto ke Firebase Storage
+  window.uploadFotoToStorage = async (input) => {
+    const file = input.files[0];
+    if (!file) return;
+    const statusEl   = document.getElementById('uploadStatus');
+    const urlHidden  = document.getElementById('fotoUrl');
+    const urlText    = document.getElementById('fotoUrlText');
+    const preview    = document.getElementById('fotoPreview');
+    const previewWrap = document.getElementById('fotoPreviewWrap');
+
+    window._uploadInProgress = true;
+    statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i>Mengupload...';
+
+    try {
+      const ext  = file.name.split('.').pop().toLowerCase();
+      const path = `${window._curCol || 'uploads'}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const sRef = storageRef(storage, path);
+      const task = uploadBytesResumable(sRef, file);
+
+      task.on('state_changed',
+        (snap) => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          statusEl.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i>Mengupload ${pct}%...`;
+        },
+        (err) => {
+          statusEl.innerHTML = `<i class="fas fa-times-circle" style="color:#e53e3e;margin-right:4px;"></i>Gagal: ${err.message}`;
+          window._uploadInProgress = false;
+        },
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          urlHidden.value = url;
+          if (urlText) urlText.value = url;
+          preview.src = url;
+          previewWrap.style.display = 'block';
+          statusEl.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169;margin-right:4px;"></i>Upload berhasil!';
+          window._uploadInProgress = false;
+        }
+      );
+    } catch(e) {
+      statusEl.innerHTML = `<i class="fas fa-times-circle" style="color:#e53e3e;margin-right:4px;"></i>Gagal: ${e.message}`;
+      window._uploadInProgress = false;
+    }
+  };
 
   // ── Open edit
   window._fbEdit = async (col, id) => {
@@ -857,6 +930,7 @@
 
   // ── Save
   window._fbSave = async () => {
+    if (window._uploadInProgress) { showToast('⏳ Tunggu upload foto selesai dulu!'); return; }
     const inputs = document.getElementById('modalBody').querySelectorAll('input,textarea,select');
     const data = {}; inputs.forEach(el => { if (el.name) data[el.name] = el.value; });
     data.updatedAt = serverTimestamp();
