@@ -387,15 +387,15 @@
         </div>
         <div class="ov-card">
           <div class="ov-icon gold"><i class="fas fa-trophy"></i></div>
-          <div><div class="ov-num">12</div><div class="ov-lbl">Prestasi Tercatat</div></div>
+          <div><div class="ov-num" id="ov-num-prestasi">—</div><div class="ov-lbl">Prestasi Tercatat</div></div>
         </div>
         <div class="ov-card">
-          <div class="ov-icon green"><i class="fas fa-briefcase"></i></div>
-          <div><div class="ov-num">3</div><div class="ov-lbl">Lowongan BKK Aktif</div></div>
+          <div class="ov-icon green"><i class="fas fa-bullhorn"></i></div>
+          <div><div class="ov-num" id="ov-num-pengumuman">—</div><div class="ov-lbl">Pengumuman Aktif</div></div>
         </div>
         <div class="ov-card">
           <div class="ov-icon red"><i class="fas fa-newspaper"></i></div>
-          <div><div class="ov-num">4</div><div class="ov-lbl">Berita Terpublish</div></div>
+          <div><div class="ov-num" id="ov-num-berita">—</div><div class="ov-lbl">Berita Terpublish</div></div>
         </div>
       </div>
 
@@ -704,6 +704,27 @@
     console.log('Seeded:', colName);
   }
 
+  // ── Update overview counters dari Firestore
+  async function updateOverviewCounts() {
+    try {
+      const [prestasiSnap, beritaSnap, pengumumanSnap] = await Promise.all([
+        getDocs(collection(db, 'prestasi')),
+        getDocs(collection(db, 'berita')),
+        getDocs(collection(db, 'pengumuman')),
+      ]);
+
+      const elPrestasi    = document.getElementById('ov-num-prestasi');
+      const elBerita      = document.getElementById('ov-num-berita');
+      const elPengumuman  = document.getElementById('ov-num-pengumuman');
+
+      if (elPrestasi)   elPrestasi.textContent   = prestasiSnap.size;
+      if (elBerita)     elBerita.textContent      = beritaSnap.docs.filter(d => d.data().status === 'Publish').length;
+      if (elPengumuman) elPengumuman.textContent  = pengumumanSnap.docs.filter(d => d.data().status === 'Aktif').length;
+    } catch(e) {
+      console.warn('Overview count error:', e);
+    }
+  }
+
   // ── Init dashboard
   async function initDashboard() {
     await Promise.all([
@@ -713,6 +734,7 @@
       seedIfEmpty('pengumuman', SEED.pengumuman),
       seedIfEmpty('polling',    SEED.polling),
     ]);
+    updateOverviewCounts();
     loadTable('prestasi');
     loadTable('berita');
     loadTable('galeri');
@@ -854,6 +876,7 @@
       closeModalDirect();
       showToast('✅ Berhasil disimpan!');
       loadTable(window._curCol);
+      updateOverviewCounts();
     } catch(e) { showToast('❌ Gagal: ' + e.message); }
   };
   window.saveModal = window._fbSave;
@@ -865,6 +888,7 @@
       await deleteDoc(doc(db, col, id));
       showToast('🗑️ "' + name + '" berhasil dihapus.');
       loadTable(col);
+      updateOverviewCounts();
     } catch(e) { showToast('❌ Gagal: ' + e.message); }
   };
   window.deleteItem = window._fbDelete;
